@@ -1,0 +1,35 @@
+# Node dependencies & Next.js builds
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# Environment files
+.env*.local
+.env
+
+# PHP / Composer dependencies
+backend/vendor/
+vendor/
+backend/storage/logs/*.log
+backend/storage/framework/cache/data/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/bootstrap/cache/*.php
+
+# Temporary directories
+*-temp/
+backend-temp/
+frontend-temp/
+
+# OS / IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

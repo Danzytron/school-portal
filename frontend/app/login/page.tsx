@@ -131,6 +131,30 @@ export default function LoginPage() {
                   </div>
                 </div>
 
+                {/* DEMO NOTICE — Red-themed prominent disclaimer */}
+                <div className="mb-4 sm:mb-5 font-sans">
+                  <div className="bg-red-50/80 border border-red-200 rounded-lg px-3.5 py-3">
+                    <div className="flex items-start gap-2.5">
+                      <div className="mt-[3px] shrink-0">
+                        <Shield size={14} className="text-red-500" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <p className="text-[10px] font-extrabold uppercase tracking-wider text-red-600 m-0 leading-none">
+                          Demo Notice
+                        </p>
+                        <p className="text-[10px] sm:text-[11px] text-red-700/80 leading-relaxed m-0">
+                          This School Portal is a prototype created for testing and demonstration purposes only. It is{" "}
+                          <span className="font-bold text-red-700">NOT the official CEC School Portal</span>{" "}
+                          and is not affiliated with, endorsed by, or officially connected to CEC or its official systems.
+                        </p>
+                        <p className="text-[10px] sm:text-[11px] text-red-600/60 leading-relaxed m-0">
+                          Demo accounts and information are for testing purposes only. Created by Roldan Jr. for testing and demonstration purposes.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Form Header */}
                 <div className="mb-5 sm:mb-6">
                   <h3 className="font-heading text-xl sm:text-2xl font-bold text-slate-900 m-0 tracking-tight">
@@ -273,27 +297,6 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                {/* Prototype / Demo Disclaimer Notice */}
-                <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-slate-100 font-sans">
-                  <div className="bg-slate-50 border border-slate-200/80 rounded-lg px-3.5 py-3">
-                    <div className="flex items-start gap-2.5">
-                      <div className="mt-0.5 shrink-0">
-                        <Info size={14} className="text-slate-400" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 m-0 leading-none">
-                          Demo / Prototype Notice
-                        </p>
-                        <p className="text-[10px] sm:text-[11px] text-slate-500 leading-relaxed m-0">
-                          This School Portal is a student&#47;development prototype created for demonstration and educational purposes only. It is not the official CEC School Portal and is not affiliated with, endorsed by, or officially connected to Cebu Eastern College or its official school systems.
-                        </p>
-                        <p className="text-[10px] sm:text-[11px] text-slate-400 leading-relaxed m-0">
-                          The demo accounts and information displayed in this prototype are for testing and demonstration purposes only.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
 
                 {/* Card Institutional Footer */}
                 <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-sans">

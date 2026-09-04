@@ -13,7 +13,8 @@ import {
   Building2, 
   Home, 
   ExternalLink,
-  CheckCircle2
+  CheckCircle2,
+  Info
 } from "lucide-react";
 import Link from "next/link";
 
@@ -237,7 +238,7 @@ export default function LoginPage() {
                 <div className="mt-5 sm:mt-6 pt-4 sm:pt-5 border-t border-slate-100 font-sans">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                      Quick Demo Accounts
+                      Demo Account Credentials
                     </span>
                     <span className="text-[10px] text-slate-400 font-mono">Pass: Portal2025!</span>
                   </div>
@@ -272,6 +273,28 @@ export default function LoginPage() {
                   </div>
                 </div>
 
+                {/* Prototype / Demo Disclaimer Notice */}
+                <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-slate-100 font-sans">
+                  <div className="bg-slate-50 border border-slate-200/80 rounded-lg px-3.5 py-3">
+                    <div className="flex items-start gap-2.5">
+                      <div className="mt-0.5 shrink-0">
+                        <Info size={14} className="text-slate-400" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 m-0 leading-none">
+                          Demo / Prototype Notice
+                        </p>
+                        <p className="text-[10px] sm:text-[11px] text-slate-500 leading-relaxed m-0">
+                          This School Portal is a student&#47;development prototype created for demonstration and educational purposes only. It is not the official CEC School Portal and is not affiliated with, endorsed by, or officially connected to Cebu Eastern College or its official school systems.
+                        </p>
+                        <p className="text-[10px] sm:text-[11px] text-slate-400 leading-relaxed m-0">
+                          The demo accounts and information displayed in this prototype are for testing and demonstration purposes only.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Card Institutional Footer */}
                 <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-sans">
                   <span>
@@ -301,10 +324,10 @@ export default function LoginPage() {
       <footer className="relative z-10 w-full px-4 sm:px-8 lg:px-12 py-3 text-center text-xs text-slate-500 lg:text-slate-300 font-sans bg-white lg:bg-black/50 backdrop-blur-xs border-t border-slate-200 lg:border-white/10">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2">
           <div>
-            © 2026 Cebu Eastern College. All rights reserved. • Data Privacy Act (R.A. 10173)
+            © 2026 School Portal Prototype. For demonstration purposes only. Not affiliated with CEC.
           </div>
           <div className="text-[10px] sm:text-[11px] text-slate-400 font-mono">
-            Official University Information System (UIS)
+            Student Development Prototype
           </div>
         </div>
       </footer>

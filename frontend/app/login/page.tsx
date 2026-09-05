@@ -69,9 +69,9 @@ export default function LoginPage() {
       <header className="relative z-10 w-full px-4 sm:px-8 lg:px-12 py-3 sm:py-4 flex items-center justify-between text-slate-800 lg:text-white border-b border-slate-200 lg:border-white/10 bg-white lg:bg-black/30 backdrop-blur-xs">
         <div className="flex items-center gap-2.5 sm:gap-3">
           <img 
-            src="/cec-logo.jpg" 
+            src="/cec-logo.png" 
             alt="Cebu Eastern College Seal" 
-            className="w-7 h-7 sm:w-8 sm:h-8 object-contain rounded-full bg-white p-0.5 ring-1 ring-slate-200 lg:ring-white/50 shrink-0" 
+            className="w-7 h-7 sm:w-8 sm:h-8 object-contain shrink-0 drop-shadow-xs" 
           />
           <div>
             <div className="font-heading font-bold text-xs sm:text-sm tracking-tight text-slate-900 lg:text-white leading-tight">
@@ -95,21 +95,21 @@ export default function LoginPage() {
           
           {/* Left Column: University Branding (Desktop Only: hidden on mobile) */}
           <div className="hidden lg:block lg:col-span-6 text-white space-y-4 px-2 sm:px-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-3.5">
+            <div className="space-y-4">
+              <div>
                 <img 
-                  src="/cec-logo.jpg" 
+                  src="/cec-logo.png" 
                   alt="Cebu Eastern College" 
-                  className="w-14 h-14 object-contain rounded-full bg-white p-1 ring-2 ring-white/40 shadow-md shrink-0" 
+                  className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-xl shrink-0" 
                 />
-                <div>
-                  <h1 className="font-heading font-extrabold text-2xl sm:text-4xl text-white tracking-tight leading-tight m-0 drop-shadow-sm">
-                    CEBU EASTERN COLLEGE
-                  </h1>
-                  <p className="text-sm sm:text-base text-slate-200 font-medium tracking-wide m-0">
-                    University Information System
-                  </p>
-                </div>
+              </div>
+              <div className="space-y-1">
+                <h1 className="font-heading font-extrabold text-2xl sm:text-4xl text-white tracking-tight leading-tight m-0 drop-shadow-sm">
+                  CEBU EASTERN COLLEGE
+                </h1>
+                <p className="text-sm sm:text-base text-slate-200 font-medium tracking-wide m-0">
+                  School Portal System
+                </p>
               </div>
 
               <h2 className="font-heading text-lg sm:text-xl font-bold text-white/90 pt-2 m-0 drop-shadow-xs">
@@ -127,16 +127,16 @@ export default function LoginPage() {
                 {/* Mobile-Only Institution Header Capsule */}
                 <div className="lg:hidden flex items-center gap-3 pb-4 mb-4 border-b border-slate-100">
                   <img 
-                    src="/cec-logo.jpg" 
+                    src="/cec-logo.png" 
                     alt="Cebu Eastern College Seal" 
-                    className="w-10 h-10 object-contain rounded-full bg-white p-0.5 border border-slate-200 shrink-0 shadow-xs" 
+                    className="w-10 h-10 object-contain shrink-0 drop-shadow-xs" 
                   />
                   <div>
                     <div className="font-sans font-bold text-sm tracking-tight text-slate-900 leading-tight">
                       CEBU EASTERN COLLEGE
                     </div>
                     <div className="text-[10px] text-slate-500 uppercase tracking-wider leading-none mt-0.5 font-sans font-medium">
-                      University Information System
+                      School Portal System
                     </div>
                   </div>
                 </div>

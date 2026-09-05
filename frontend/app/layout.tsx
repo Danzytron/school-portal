@@ -129,9 +129,29 @@ export default function RootLayout({
     "alternateName": [
       "Cebu Eastern College School Portal",
       "Cebu CEC Portal",
-      "CEC Portal"
+      "CEC Portal",
+      "CEC School Portal"
     ],
     "url": "https://cebucecportal.site",
+    "description": "cebucecportal is the official Cebu Eastern College School Portal — providing online academic services for students, faculty, and administrators.",
+  };
+
+  const jsonLdWebPage = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "cebucecportal | Cebu Eastern College School Portal",
+    "description": "cebucecportal is the official Cebu Eastern College School Portal. Access student enrollment, academic grades, class schedules, faculty services, and announcements.",
+    "url": "https://cebucecportal.site",
+    "isPartOf": {
+      "@type": "WebSite",
+      "name": "cebucecportal",
+      "url": "https://cebucecportal.site"
+    },
+    "about": {
+      "@type": "EducationalOrganization",
+      "name": "Cebu Eastern College"
+    },
+    "inLanguage": "en"
   };
 
   return (
@@ -144,6 +164,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebSite) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebPage) }}
         />
       </head>
       <body className="font-sans bg-[#F8FAFC] text-slate-800 antialiased min-h-screen">

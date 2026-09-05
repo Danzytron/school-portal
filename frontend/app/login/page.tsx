@@ -25,49 +25,30 @@ export default function LoginPage() {
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [error, setError] = useState("");
-  const [showErrorModal, setShowErrorModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
 
-  const handleCloseErrorModal = () => {
-    setShowErrorModal(false);
-    setError("");
-    setTimeout(() => {
-      if (!email) {
-        emailInputRef.current?.focus();
-      } else {
-        passwordInputRef.current?.focus();
-      }
-    }, 60);
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+    if (error) setError("");
   };
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (showErrorModal && (e.key === "Escape" || e.key === "Enter")) {
-        e.preventDefault();
-        handleCloseErrorModal();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [showErrorModal, email]);
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    if (error) setError("");
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setShowErrorModal(false);
     setLoading(true);
     try {
       await login({ email: email.trim(), password });
     } catch (err: any) {
-      const msg = err.message || 
-        err.response?.data?.message || 
-        "The email or password you entered is incorrect. Please check your credentials and try again.";
-      setError(msg);
-      setShowErrorModal(true);
+      setError("The email or password you entered is incorrect.");
       setLoading(false);
     }
   };
@@ -76,7 +57,6 @@ export default function LoginPage() {
     setEmail(demoEmail);
     setPassword("Portal2025!");
     setError("");
-    setShowErrorModal(false);
   };
 
   return (
@@ -202,7 +182,7 @@ export default function LoginPage() {
                   {/* Floating Label Input: Email / Username */}
                   <div className="relative">
                     <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-slate-400 z-10 transition-colors">
-                      <User size={18} className={emailFocused ? 'text-[#1D4ED8]' : 'text-slate-400'} />
+                      <User size={18} className={error ? 'text-red-500' : (emailFocused ? 'text-[#1D4ED8]' : 'text-slate-400')} />
                     </div>
                     
                     <input
@@ -211,12 +191,14 @@ export default function LoginPage() {
                       name="email"
                       type="text"
                       className={`w-full h-12 pl-10 pr-3.5 bg-white border rounded-lg text-sm text-slate-900 focus:outline-none transition-all ${
-                        emailFocused 
-                          ? 'border-[#1D4ED8] ring-2 ring-[#1D4ED8]/15' 
-                          : 'border-slate-300 hover:border-slate-400'
+                        error
+                          ? 'border-red-500 ring-2 ring-red-500/15'
+                          : (emailFocused 
+                              ? 'border-[#1D4ED8] ring-2 ring-[#1D4ED8]/15' 
+                              : 'border-slate-300 hover:border-slate-400')
                       }`}
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={handleEmailChange}
                       onFocus={() => setEmailFocused(true)}
                       onBlur={() => setEmailFocused(false)}
                       required
@@ -227,8 +209,8 @@ export default function LoginPage() {
                       htmlFor="institutional-email"
                       className={`absolute transition-all duration-200 pointer-events-none ${
                         emailFocused || email
-                          ? '-top-2.5 left-8 bg-white px-1.5 text-xs font-bold ' + (emailFocused ? 'text-[#1D4ED8]' : 'text-slate-600')
-                          : 'left-10 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-normal'
+                          ? '-top-2.5 left-8 bg-white px-1.5 text-xs font-bold ' + (error ? 'text-red-600' : (emailFocused ? 'text-[#1D4ED8]' : 'text-slate-600'))
+                          : (error ? 'left-10 top-1/2 -translate-y-1/2 text-sm text-red-500 font-normal' : 'left-10 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-normal')
                       }`}
                     >
                       Institutional Email or User ID
@@ -238,7 +220,7 @@ export default function LoginPage() {
                   {/* Floating Label Input: Password */}
                   <div className="relative">
                     <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-slate-400 z-10 transition-colors">
-                      <Lock size={18} className={passwordFocused ? 'text-[#1D4ED8]' : 'text-slate-400'} />
+                      <Lock size={18} className={error ? 'text-red-500' : (passwordFocused ? 'text-[#1D4ED8]' : 'text-slate-400')} />
                     </div>
                     
                     <input
@@ -247,12 +229,14 @@ export default function LoginPage() {
                       name="password"
                       type={showPassword ? "text" : "password"}
                       className={`w-full h-12 pl-10 pr-10 bg-white border rounded-lg text-sm text-slate-900 focus:outline-none transition-all ${
-                        passwordFocused 
-                          ? 'border-[#1D4ED8] ring-2 ring-[#1D4ED8]/15' 
-                          : 'border-slate-300 hover:border-slate-400'
+                        error
+                          ? 'border-red-500 ring-2 ring-red-500/15'
+                          : (passwordFocused 
+                              ? 'border-[#1D4ED8] ring-2 ring-[#1D4ED8]/15' 
+                              : 'border-slate-300 hover:border-slate-400')
                       }`}
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={handlePasswordChange}
                       onFocus={() => setPasswordFocused(true)}
                       onBlur={() => setPasswordFocused(false)}
                       required
@@ -262,8 +246,8 @@ export default function LoginPage() {
                       htmlFor="security-password"
                       className={`absolute transition-all duration-200 pointer-events-none ${
                         passwordFocused || password
-                          ? '-top-2.5 left-8 bg-white px-1.5 text-xs font-bold ' + (passwordFocused ? 'text-[#1D4ED8]' : 'text-slate-600')
-                          : 'left-10 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-normal'
+                          ? '-top-2.5 left-8 bg-white px-1.5 text-xs font-bold ' + (error ? 'text-red-600' : (passwordFocused ? 'text-[#1D4ED8]' : 'text-slate-600'))
+                          : (error ? 'left-10 top-1/2 -translate-y-1/2 text-sm text-red-500 font-normal' : 'left-10 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-normal')
                       }`}
                     >
                       Security Password
@@ -279,6 +263,13 @@ export default function LoginPage() {
                       {showPassword ? <Eye size={17} /> : <EyeOff size={17} />}
                     </button>
                   </div>
+
+                  {/* Inline Error Message below Password Field */}
+                  {error && (
+                    <p className="text-xs text-red-600 font-medium text-left m-0 pt-0.5 animate-in fade-in duration-150 font-sans">
+                      {error}
+                    </p>
+                  )}
 
                   {/* Options Row: Remember & Forgot Password */}
                   <div className="flex items-center justify-between text-xs pt-0.5">
@@ -392,52 +383,6 @@ export default function LoginPage() {
           </div>
         </div>
       </footer>
-
-      {/* Native App-Style Mobile, Tablet & Desktop Centered Error Alert Modal */}
-      {showErrorModal && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs transition-opacity duration-200"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="login-error-modal-title"
-          aria-describedby="login-error-modal-description"
-        >
-          {/* Centered Alert Modal Card */}
-          <div 
-            className="w-[88%] max-w-[340px] sm:max-w-[370px] bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden transform transition-all text-center select-none animate-in fade-in zoom-in-95 duration-150"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Body Content */}
-            <div className="pt-6 pb-5 px-5 sm:px-6">
-              <h3 
-                id="login-error-modal-title" 
-                className="font-heading text-base sm:text-lg font-bold text-slate-900 tracking-tight m-0"
-              >
-                Login Failed
-              </h3>
-              
-              <p 
-                id="login-error-modal-description" 
-                className="text-xs sm:text-[13px] text-slate-600 leading-relaxed mt-2.5 mb-0 px-1 font-sans"
-              >
-                {error || "The email or password you entered is incorrect. Please check your credentials and try again."}
-              </p>
-            </div>
-
-            {/* Native App-Style Action Button & Divider */}
-            <div className="border-t border-slate-200/90 bg-white">
-              <button
-                type="button"
-                onClick={handleCloseErrorModal}
-                className="w-full py-3.5 px-4 text-sm font-bold text-[#1D4ED8] hover:bg-slate-50 active:bg-blue-50 transition-colors cursor-pointer font-sans select-none focus:outline-none"
-                autoFocus
-              >
-                Try Again
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );

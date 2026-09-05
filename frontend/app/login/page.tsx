@@ -22,6 +22,8 @@ export default function LoginPage() {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailFocused, setEmailFocused] = useState(false);
+  const [passwordFocused, setPasswordFocused] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -169,64 +171,89 @@ export default function LoginPage() {
                 )}
 
                 {/* Authentication Form */}
-                <form onSubmit={handleSubmit} className="space-y-4 font-sans">
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
-                      Institutional Email / User ID
+                <form onSubmit={handleSubmit} className="space-y-4 font-sans pt-1">
+                  
+                  {/* Floating Label Input: Email / Username */}
+                  <div className="relative">
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-slate-400 z-10 transition-colors">
+                      <User size={18} className={emailFocused ? 'text-[#1D4ED8]' : 'text-slate-400'} />
+                    </div>
+                    
+                    <input
+                      id="institutional-email"
+                      name="email"
+                      type="text"
+                      className={`w-full h-12 pl-10 pr-3.5 bg-white border rounded-lg text-sm text-slate-900 focus:outline-none transition-all ${
+                        emailFocused 
+                          ? 'border-[#1D4ED8] ring-2 ring-[#1D4ED8]/15' 
+                          : 'border-slate-300 hover:border-slate-400'
+                      }`}
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      onFocus={() => setEmailFocused(true)}
+                      onBlur={() => setEmailFocused(false)}
+                      required
+                      autoFocus
+                    />
+
+                    <label
+                      htmlFor="institutional-email"
+                      className={`absolute transition-all duration-200 pointer-events-none ${
+                        emailFocused || email
+                          ? '-top-2.5 left-8 bg-white px-1.5 text-xs font-bold ' + (emailFocused ? 'text-[#1D4ED8]' : 'text-slate-600')
+                          : 'left-10 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-normal'
+                      }`}
+                    >
+                      Institutional Email or User ID
                     </label>
-                    <div className="relative flex items-center">
-                      <div className="absolute left-3.5 flex items-center pointer-events-none text-slate-400">
-                        <User size={18} />
-                      </div>
-                      <input
-                        type="text"
-                        className="w-full h-11 pl-10 pr-3.5 bg-white border border-slate-300 rounded-md text-sm text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:border-[#1D4ED8] focus:ring-1 focus:ring-[#1D4ED8] transition-colors"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="ID Number or Email"
-                        required
-                        autoFocus
-                      />
-                    </div>
                   </div>
 
-                  <div>
-                    <div className="flex justify-between items-center mb-1.5">
-                      <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                        Password
-                      </label>
-                      <a 
-                        href="#" 
-                        onClick={(e) => { e.preventDefault(); alert('Please contact the Registrar IT Helpdesk (registrar@cebueasterncollege.edu.ph) to reset your password.'); }}
-                        className="text-[11px] text-[#1D4ED8] hover:text-[#1E40AF] hover:underline font-semibold"
-                      >
-                        Forgot Password?
-                      </a>
+                  {/* Floating Label Input: Password */}
+                  <div className="relative">
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-slate-400 z-10 transition-colors">
+                      <Lock size={18} className={passwordFocused ? 'text-[#1D4ED8]' : 'text-slate-400'} />
                     </div>
-                    <div className="relative flex items-center">
-                      <div className="absolute left-3.5 flex items-center pointer-events-none text-slate-400">
-                        <Lock size={18} />
-                      </div>
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        className="w-full h-11 pl-10 pr-10 bg-white border border-slate-300 rounded-md text-sm text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:border-[#1D4ED8] focus:ring-1 focus:ring-[#1D4ED8] transition-colors"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Password"
-                        required
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 text-slate-400 hover:text-slate-600 p-1 rounded transition-colors cursor-pointer"
-                        title={showPassword ? "Hide password" : "Show password"}
-                      >
-                        {showPassword ? <Eye size={17} /> : <EyeOff size={17} />}
-                      </button>
-                    </div>
+                    
+                    <input
+                      id="security-password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      className={`w-full h-12 pl-10 pr-10 bg-white border rounded-lg text-sm text-slate-900 focus:outline-none transition-all ${
+                        passwordFocused 
+                          ? 'border-[#1D4ED8] ring-2 ring-[#1D4ED8]/15' 
+                          : 'border-slate-300 hover:border-slate-400'
+                      }`}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      onFocus={() => setPasswordFocused(true)}
+                      onBlur={() => setPasswordFocused(false)}
+                      required
+                    />
+
+                    <label
+                      htmlFor="security-password"
+                      className={`absolute transition-all duration-200 pointer-events-none ${
+                        passwordFocused || password
+                          ? '-top-2.5 left-8 bg-white px-1.5 text-xs font-bold ' + (passwordFocused ? 'text-[#1D4ED8]' : 'text-slate-600')
+                          : 'left-10 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-normal'
+                      }`}
+                    >
+                      Security Password
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5 rounded-md hover:bg-slate-100 transition-colors cursor-pointer z-10"
+                      title={showPassword ? "Hide password" : "Show password"}
+                      tabIndex={-1}
+                    >
+                      {showPassword ? <Eye size={17} /> : <EyeOff size={17} />}
+                    </button>
                   </div>
 
-                  <div className="flex items-center text-xs pt-1">
+                  {/* Options Row: Remember & Forgot Password */}
+                  <div className="flex items-center justify-between text-xs pt-0.5">
                     <label className="flex items-center gap-2 text-slate-600 cursor-pointer select-none">
                       <input 
                         type="checkbox" 
@@ -235,6 +262,14 @@ export default function LoginPage() {
                       />
                       <span>Remember this workstation</span>
                     </label>
+
+                    <a 
+                      href="#" 
+                      onClick={(e) => { e.preventDefault(); alert('Please contact the Registrar IT Helpdesk (registrar@cebueasterncollege.edu.ph) to reset your password.'); }}
+                      className="text-[11px] text-[#1D4ED8] hover:text-[#1E40AF] hover:underline font-semibold"
+                    >
+                      Forgot Password?
+                    </a>
                   </div>
 
                   <button

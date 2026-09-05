@@ -18,7 +18,7 @@ export default function TeacherProfile() {
 
   const DEFAULT_FACULTY_PROFILE = {
     employeeId: 'FAC-2026-0814',
-    name: user?.name || 'Prof. Juan Dela Cruz',
+    name: user?.name || 'Prof. Arnel L. Villanueva',
     department: 'College of Computer Studies',
     specialization: 'Web Systems & Distributed Database Architecture',
     email: user?.email || 'teacher@schoolportal.test',

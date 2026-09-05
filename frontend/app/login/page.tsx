@@ -309,7 +309,7 @@ export default function LoginPage() {
                       <span>Verifying Credentials...</span>
                     ) : (
                       <>
-                        <span>Sign In to University Portal</span>
+                        <span>Sign In</span>
                         <ArrowRight size={14} />
                       </>
                     )}

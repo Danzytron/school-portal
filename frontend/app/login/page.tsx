@@ -120,7 +120,7 @@ export default function LoginPage() {
 
           {/* Right Column / Mobile Centered Authentication Card */}
           <div className="w-full lg:col-span-6 flex justify-center lg:justify-end">
-            <div className="w-full max-w-md bg-white border border-slate-200/90 rounded-xl shadow-lg lg:shadow-2xl overflow-hidden border-t-4 border-t-[#1D4ED8]">
+            <div className="w-full max-w-md bg-white border border-slate-200/90 rounded-md shadow-md lg:shadow-xl overflow-hidden border-t-4 border-t-[#1D4ED8]">
               
               <div className="p-5 sm:p-8">
                 
@@ -132,7 +132,7 @@ export default function LoginPage() {
                     className="w-10 h-10 object-contain rounded-full bg-white p-0.5 border border-slate-200 shrink-0 shadow-xs" 
                   />
                   <div>
-                    <div className="font-heading font-bold text-sm tracking-tight text-slate-900 leading-tight">
+                    <div className="font-sans font-bold text-sm tracking-tight text-slate-900 leading-tight">
                       CEBU EASTERN COLLEGE
                     </div>
                     <div className="text-[10px] text-slate-500 uppercase tracking-wider leading-none mt-0.5 font-sans font-medium">
@@ -143,16 +143,16 @@ export default function LoginPage() {
 
                 {/* DEMO NOTICE — Red-themed prominent disclaimer */}
                 <div className="mb-4 sm:mb-5 font-sans">
-                  <div className="bg-red-50/80 border border-red-200 rounded-lg px-3.5 py-3">
+                  <div className="bg-red-50/80 border border-red-200 rounded-md px-3.5 py-3">
                     <div className="flex items-start gap-2.5">
                       <div className="mt-[3px] shrink-0">
                         <Shield size={14} className="text-red-500" />
                       </div>
                       <div className="space-y-1.5">
-                        <p className="text-[10px] font-extrabold uppercase tracking-wider text-red-600 m-0 leading-none">
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-red-600 m-0 leading-none">
                           Demo Notice
                         </p>
-                        <p className="text-[10px] sm:text-[11px] text-red-700/90 leading-relaxed m-0">
+                        <p className="text-[10px] sm:text-[11px] text-red-700/90 leading-relaxed m-0 font-sans">
                           This prototype is for demo purposes only and is <span className="font-bold text-red-700">NOT the official CEC School Portal</span>. Demo accounts and data are simulated. Created by Roldan Jr.
                         </p>
                       </div>
@@ -162,10 +162,10 @@ export default function LoginPage() {
 
                 {/* Form Header */}
                 <div className="mb-5 sm:mb-6">
-                  <h3 className="font-heading text-xl sm:text-2xl font-bold text-slate-900 m-0 tracking-tight">
+                  <h3 className="font-sans text-2xl sm:text-3xl font-extrabold text-slate-900 m-0 tracking-tight leading-tight">
                     Sign In
                   </h3>
-                  <p className="text-xs text-slate-500 mt-1.5 font-sans leading-relaxed">
+                  <p className="text-xs sm:text-[13px] text-slate-600 mt-2 font-sans leading-relaxed">
                     Enter your registered university email or student ID to access your portal dashboard.
                   </p>
                 </div>
@@ -184,7 +184,7 @@ export default function LoginPage() {
                       id="institutional-email"
                       name="email"
                       type="text"
-                      className={`w-full h-12 pl-10 pr-3.5 bg-white border rounded-lg text-sm text-slate-900 focus:outline-none transition-all ${
+                      className={`w-full h-12 pl-10 pr-3.5 bg-white border rounded-md text-sm text-slate-900 focus:outline-none transition-all ${
                         error
                           ? 'border-red-500 ring-2 ring-red-500/15'
                           : (emailFocused 
@@ -203,8 +203,8 @@ export default function LoginPage() {
                       htmlFor="institutional-email"
                       className={`absolute transition-all duration-200 pointer-events-none ${
                         emailFocused || email
-                          ? '-top-2.5 left-8 bg-white px-1.5 text-xs font-bold ' + (error ? 'text-red-600' : (emailFocused ? 'text-[#1D4ED8]' : 'text-slate-600'))
-                          : (error ? 'left-10 top-1/2 -translate-y-1/2 text-sm text-red-500 font-normal' : 'left-10 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-normal')
+                          ? '-top-2.5 left-8 bg-white px-1.5 text-xs font-bold ' + (error ? 'text-red-600' : (emailFocused ? 'text-[#1D4ED8]' : 'text-slate-700'))
+                          : (error ? 'left-10 top-1/2 -translate-y-1/2 text-sm text-red-500 font-normal' : 'left-10 top-1/2 -translate-y-1/2 text-sm text-slate-500 font-normal')
                       }`}
                     >
                       Institutional Email or User ID
@@ -222,7 +222,7 @@ export default function LoginPage() {
                       id="security-password"
                       name="password"
                       type={showPassword ? "text" : "password"}
-                      className={`w-full h-12 pl-10 pr-10 bg-white border rounded-lg text-sm text-slate-900 focus:outline-none transition-all ${
+                      className={`w-full h-12 pl-10 pr-10 bg-white border rounded-md text-sm text-slate-900 focus:outline-none transition-all ${
                         error
                           ? 'border-red-500 ring-2 ring-red-500/15'
                           : (passwordFocused 
@@ -240,8 +240,8 @@ export default function LoginPage() {
                       htmlFor="security-password"
                       className={`absolute transition-all duration-200 pointer-events-none ${
                         passwordFocused || password
-                          ? '-top-2.5 left-8 bg-white px-1.5 text-xs font-bold ' + (error ? 'text-red-600' : (passwordFocused ? 'text-[#1D4ED8]' : 'text-slate-600'))
-                          : (error ? 'left-10 top-1/2 -translate-y-1/2 text-sm text-red-500 font-normal' : 'left-10 top-1/2 -translate-y-1/2 text-sm text-slate-400 font-normal')
+                          ? '-top-2.5 left-8 bg-white px-1.5 text-xs font-bold ' + (error ? 'text-red-600' : (passwordFocused ? 'text-[#1D4ED8]' : 'text-slate-700'))
+                          : (error ? 'left-10 top-1/2 -translate-y-1/2 text-sm text-red-500 font-normal' : 'left-10 top-1/2 -translate-y-1/2 text-sm text-slate-500 font-normal')
                       }`}
                     >
                       Security Password
@@ -250,7 +250,7 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5 rounded-md hover:bg-slate-100 transition-colors cursor-pointer z-10"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5 rounded hover:bg-slate-100 transition-colors cursor-pointer z-10"
                       title={showPassword ? "Hide password" : "Show password"}
                       tabIndex={-1}
                     >
@@ -271,15 +271,15 @@ export default function LoginPage() {
                       <input 
                         type="checkbox" 
                         defaultChecked
-                        className="rounded border-slate-300 text-[#1D4ED8] focus:ring-[#1D4ED8]/30" 
+                        className="rounded-[3px] border-slate-300 text-[#1D4ED8] focus:ring-[#1D4ED8]/30" 
                       />
-                      <span>Remember this workstation</span>
+                      <span className="text-slate-600 font-normal">Remember this workstation</span>
                     </label>
 
                     <a 
                       href="#" 
                       onClick={(e) => { e.preventDefault(); alert('Please contact the Registrar IT Helpdesk (registrar@cebueasterncollege.edu.ph) to reset your password.'); }}
-                      className="text-[11px] text-[#1D4ED8] hover:text-[#1E40AF] hover:underline font-semibold"
+                      className="text-xs text-[#1D4ED8] hover:text-[#1E40AF] hover:underline font-medium"
                     >
                       Forgot Password?
                     </a>
@@ -288,14 +288,14 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-[#1D4ED8] hover:bg-[#1E40AF] active:bg-[#172554] text-white py-2.5 sm:py-3 px-4 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors border border-[#1E40AF] shadow-2xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-3 font-sans min-h-[44px]"
+                    className="w-full bg-[#1D4ED8] hover:bg-[#1E40AF] active:bg-[#172554] text-white py-2.5 sm:py-3 px-4 rounded-md text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors border border-[#1E40AF] shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-3 font-sans min-h-[44px]"
                   >
                     {loading ? (
                       <span>Verifying Credentials...</span>
                     ) : (
                       <>
                         <span>Sign In</span>
-                        <ArrowRight size={14} />
+                        <ArrowRight size={15} />
                       </>
                     )}
                   </button>

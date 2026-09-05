@@ -23,14 +23,17 @@ class GradeController extends Controller
             'subject_id' => 'required|exists:subjects,id',
             'semester_id' => 'nullable|exists:semesters,id',
             'section_id' => 'nullable|exists:sections,id',
-            'teacher_id' => 'nullable|exists:teachers,id',
-            'midterm' => 'nullable|numeric',
-            'final' => 'nullable|numeric',
-            'remarks' => 'nullable|string',
+            'midterm' => 'nullable|numeric|min:1|max:5',
+            'final' => 'nullable|numeric|min:1|max:5',
+            'remarks' => 'nullable|string|max:255',
         ]);
 
-        $teacher = $request->user()->teacher;
-        if ($teacher) {
+        $user = $request->user();
+        if ($user->role === 'teacher') {
+            $teacher = $user->teacher;
+            if (!$teacher) {
+                return response()->json(['message' => 'Teacher profile not found'], 403);
+            }
             $validated['teacher_id'] = $teacher->id;
         }
 
@@ -47,7 +50,13 @@ class GradeController extends Controller
 
     public function classGrades(Request $request)
     {
+        $user = $request->user();
         $query = Grade::with(['student.user', 'subject']);
+
+        if ($user->role === 'teacher' && $user->teacher) {
+            $query->where('teacher_id', $user->teacher->id);
+        }
+
         if ($request->has('subject_id') && $request->subject_id) {
             $query->where('subject_id', $request->subject_id);
         }
@@ -61,17 +70,40 @@ class GradeController extends Controller
     public function update(Request $request, $id)
     {
         $grade = Grade::findOrFail($id);
-        $grade->update($request->only(['midterm', 'final', 'final_grade', 'remarks', 'is_submitted']));
+        $user = $request->user();
+
+        if ($user->role === 'teacher' && $user->teacher && $grade->teacher_id !== $user->teacher->id) {
+            return response()->json(['message' => 'Unauthorized: You can only edit grades for your assigned classes.'], 403);
+        }
+
+        $validated = $request->validate([
+            'midterm' => 'nullable|numeric|min:1|max:5',
+            'final' => 'nullable|numeric|min:1|max:5',
+            'final_grade' => 'nullable|numeric|min:1|max:5',
+            'remarks' => 'nullable|string|max:255',
+            'is_submitted' => 'nullable|boolean',
+        ]);
+
+        $grade->update($validated);
         return response()->json($grade);
     }
 
     public function submitFinal(Request $request)
     {
-        if ($request->has('subject_id') && $request->has('section_id')) {
-            Grade::where('subject_id', $request->subject_id)
-                ->where('section_id', $request->section_id)
-                ->update(['is_submitted' => true, 'submitted_at' => now()]);
+        $request->validate([
+            'subject_id' => 'required|exists:subjects,id',
+            'section_id' => 'required|exists:sections,id',
+        ]);
+
+        $user = $request->user();
+        $query = Grade::where('subject_id', $request->subject_id)
+            ->where('section_id', $request->section_id);
+
+        if ($user->role === 'teacher' && $user->teacher) {
+            $query->where('teacher_id', $user->teacher->id);
         }
+
+        $query->update(['is_submitted' => true, 'submitted_at' => now()]);
         return response()->json(['message' => 'Grades submitted successfully']);
     }
 

@@ -30,8 +30,8 @@ use App\Http\Controllers\Api\ReportController;
 |--------------------------------------------------------------------------
 */
 
-// Public routes
-Route::post('/login', [AuthController::class, 'login']);
+// Public routes (Rate limited to 5 requests per minute)
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
 // Protected routes
 Route::middleware(['auth:sanctum'])->group(function () {

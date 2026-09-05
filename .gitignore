@@ -5,9 +5,13 @@ out/
 build/
 dist/
 
-# Environment files
-.env*.local
+# Environment files & Secrets
 .env
+.env.*
+.env*.local
+**/.env
+**/.env.*
+**/.env*.local
 
 # PHP / Composer dependencies
 backend/vendor/

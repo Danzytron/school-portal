@@ -20,50 +20,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
 
-// Exact Authorized Demo Accounts & Passwords
-const AUTHORIZED_DEMO_ACCOUNTS: Record<
-  string, 
-  { password: string; redirect: string; user: User }
-> = {
-  'student@schoolportal.test': {
-    password: 'Portal2025!',
-    redirect: '/student/dashboard',
-    user: {
-      id: 3,
-      name: 'Roldan Jr. Delarmente',
-      email: 'student@schoolportal.test',
-      role: 'student',
-      is_active: true,
-      created_at: '2026-08-01T00:00:00.000Z'
-    }
-  },
-  'teacher@schoolportal.test': {
-    password: 'Portal2025!',
-    redirect: '/teacher/dashboard',
-    user: {
-      id: 2,
-      name: 'Prof. Justin Beiber',
-      email: 'teacher@schoolportal.test',
-      role: 'teacher',
-      is_active: true,
-      created_at: '2026-08-01T00:00:00.000Z'
-    }
-  },
-  'admin@schoolportal.test': {
-    password: 'Portal2025!',
-    redirect: '/admin/dashboard',
-    user: {
-      id: 1,
-      name: 'Registrar Administrator',
-      email: 'admin@schoolportal.test',
-      role: 'admin',
-      is_active: true,
-      created_at: '2026-08-01T00:00:00.000Z'
-    }
-  }
-};
-
-const GENERIC_INVALID_AUTH_MESSAGE = "Invalid email or password. Please check your credentials and try again.";
+const GENERIC_INVALID_AUTH_MESSAGE = "Invalid email or password.";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -102,45 +59,47 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       throw new Error(GENERIC_INVALID_AUTH_MESSAGE);
     }
 
+    // 1. Authenticate via secure Next.js server-side endpoint (which includes rate-limiting & HttpOnly cookies)
     try {
-      // 1. Try real backend API authentication if live server is reachable
-      const response = await api.post<AuthResponse>('/login', { email, password });
-      
-      if (response && response.token && response.user) {
-        setToken(response.token);
-        setUser(response.user);
-        localStorage.setItem('token', response.token);
-        localStorage.setItem('user', JSON.stringify(response.user));
-        
-        if (response.user.role === 'student') router.push('/student/dashboard');
-        else if (response.user.role === 'teacher') router.push('/teacher/dashboard');
-        else if (response.user.role === 'admin') router.push('/admin/dashboard');
-        return;
-      }
-      throw new Error(GENERIC_INVALID_AUTH_MESSAGE);
-    } catch (apiError: any) {
-      // 2. Strict Demo Credential Validation (Fallback when backend API is offline/standalone)
-      const matchedAccount = AUTHORIZED_DEMO_ACCOUNTS[email];
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-      // Validate exact email match and exact password match
-      if (!matchedAccount || matchedAccount.password !== password) {
-        throw new Error(GENERIC_INVALID_AUTH_MESSAGE);
+      const data = await res.json();
+
+      if (!res.ok || !data.user || !data.token) {
+        throw new Error(data.message || GENERIC_INVALID_AUTH_MESSAGE);
       }
 
-      // Successful demo authentication
-      const demoToken = `demo-auth-session-${Date.now()}`;
-      const authenticatedUser = matchedAccount.user;
+      setToken(data.token);
+      setUser(data.user);
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
 
-      setToken(demoToken);
-      setUser(authenticatedUser);
-      localStorage.setItem('token', demoToken);
-      localStorage.setItem('user', JSON.stringify(authenticatedUser));
-
-      router.push(matchedAccount.redirect);
+      if (data.redirect) {
+        router.push(data.redirect);
+      } else if (data.user.role === 'student') {
+        router.push('/student/dashboard');
+      } else if (data.user.role === 'teacher') {
+        router.push('/teacher/dashboard');
+      } else if (data.user.role === 'admin') {
+        router.push('/admin/dashboard');
+      }
+    } catch (err: any) {
+      throw new Error(err.message || GENERIC_INVALID_AUTH_MESSAGE);
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+    } catch {
+      // Ignore network errors on logout
+    }
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     setToken(null);

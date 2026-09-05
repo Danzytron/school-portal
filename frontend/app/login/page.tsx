@@ -48,7 +48,7 @@ export default function LoginPage() {
     try {
       await login({ email: email.trim(), password });
     } catch (err: any) {
-      setError("The email or password you entered is incorrect.");
+      setError(err.message || "The email or password you entered is incorrect.");
       setLoading(false);
     }
   };

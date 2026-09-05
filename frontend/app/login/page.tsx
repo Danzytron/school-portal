@@ -142,13 +142,8 @@ export default function LoginPage() {
                         <p className="text-[10px] font-extrabold uppercase tracking-wider text-red-600 m-0 leading-none">
                           Demo Notice
                         </p>
-                        <p className="text-[10px] sm:text-[11px] text-red-700/80 leading-relaxed m-0">
-                          This School Portal is a prototype created for testing and demonstration purposes only. It is{" "}
-                          <span className="font-bold text-red-700">NOT the official CEC School Portal</span>{" "}
-                          and is not affiliated with, endorsed by, or officially connected to CEC or its official systems.
-                        </p>
-                        <p className="text-[10px] sm:text-[11px] text-red-600/60 leading-relaxed m-0">
-                          Demo accounts and information are for testing purposes only. Created by Roldan Jr. for testing and demonstration purposes.
+                        <p className="text-[10px] sm:text-[11px] text-red-700/90 leading-relaxed m-0">
+                          This demo prototype is <span className="font-bold text-red-700">NOT the official CEC School Portal</span>. Accounts and data are for testing only. Created by Roldan Jr.
                         </p>
                       </div>
                     </div>

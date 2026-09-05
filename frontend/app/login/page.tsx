@@ -53,12 +53,6 @@ export default function LoginPage() {
     }
   };
 
-  const handleDemoFill = (demoEmail: string) => {
-    setEmail(demoEmail);
-    setPassword("Portal2025!");
-    setError("");
-  };
-
   return (
     <div className="relative min-h-screen w-full flex flex-col justify-between font-sans overflow-x-hidden bg-slate-100 lg:bg-transparent">
       
@@ -307,48 +301,8 @@ export default function LoginPage() {
                   </button>
                 </form>
 
-                {/* Quick Access Demo Accounts */}
-                <div className="mt-5 sm:mt-6 pt-4 sm:pt-5 border-t border-slate-100 font-sans">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                      Demo Account Credentials
-                    </span>
-                    <span className="text-[10px] text-slate-400 font-mono">Pass: Portal2025!</span>
-                  </div>
-                  
-                  <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-                    <button
-                      type="button"
-                      onClick={() => handleDemoFill("student@schoolportal.test")}
-                      className="p-1.5 sm:p-2 border border-slate-200 rounded-lg text-left hover:border-[#1D4ED8] hover:bg-blue-50/50 transition-all cursor-pointer group min-h-[44px]"
-                    >
-                      <span className="text-[11px] font-bold text-slate-800 block group-hover:text-[#1D4ED8]">Student</span>
-                      <span className="text-[9px] sm:text-[10px] text-slate-400 block truncate font-mono">student@...</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleDemoFill("teacher@schoolportal.test")}
-                      className="p-1.5 sm:p-2 border border-slate-200 rounded-lg text-left hover:border-[#1D4ED8] hover:bg-blue-50/50 transition-all cursor-pointer group min-h-[44px]"
-                    >
-                      <span className="text-[11px] font-bold text-slate-800 block group-hover:text-[#1D4ED8]">Faculty</span>
-                      <span className="text-[9px] sm:text-[10px] text-slate-400 block truncate font-mono">teacher@...</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => handleDemoFill("admin@schoolportal.test")}
-                      className="p-1.5 sm:p-2 border border-slate-200 rounded-lg text-left hover:border-[#1D4ED8] hover:bg-blue-50/50 transition-all cursor-pointer group min-h-[44px]"
-                    >
-                      <span className="text-[11px] font-bold text-slate-800 block group-hover:text-[#1D4ED8]">Admin</span>
-                      <span className="text-[9px] sm:text-[10px] text-slate-400 block truncate font-mono">admin@...</span>
-                    </button>
-                  </div>
-                </div>
-
-
                 {/* Card Institutional Footer */}
-                <div className="mt-4 sm:mt-5 pt-3 sm:pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-sans">
+                <div className="mt-5 sm:mt-6 pt-3 sm:pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-sans">
                   <span>
                     Need help?{" "}
                     <a 

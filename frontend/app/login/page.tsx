@@ -143,7 +143,7 @@ export default function LoginPage() {
                           Demo Notice
                         </p>
                         <p className="text-[10px] sm:text-[11px] text-red-700/90 leading-relaxed m-0">
-                          This demo prototype is <span className="font-bold text-red-700">NOT the official CEC School Portal</span>. Accounts and data are for testing only. Created by Roldan Jr.
+                          This prototype is for demo purposes only and is <span className="font-bold text-red-700">NOT the official CEC School Portal</span>. Demo accounts and data are simulated. Created by Roldan Jr.
                         </p>
                       </div>
                     </div>

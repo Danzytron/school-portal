@@ -120,7 +120,7 @@ export default function LoginPage() {
 
           {/* Right Column / Mobile Centered Authentication Card */}
           <div className="w-full lg:col-span-6 flex justify-center lg:justify-end">
-            <div className="w-full max-w-md bg-white border border-slate-200/90 rounded-md shadow-md lg:shadow-xl overflow-hidden border-t-4 border-t-[#1D4ED8]">
+            <div className="w-full max-w-md bg-white border border-slate-200/90 rounded-none shadow-md lg:shadow-xl overflow-hidden border-t-4 border-t-[#1D4ED8]">
               
               <div className="p-5 sm:p-8">
                 
@@ -143,7 +143,7 @@ export default function LoginPage() {
 
                 {/* DEMO NOTICE — Red-themed prominent disclaimer */}
                 <div className="mb-4 sm:mb-5 font-sans">
-                  <div className="bg-red-50/80 border border-red-200 rounded-md px-3.5 py-3">
+                  <div className="bg-red-50/80 border border-red-200 rounded-none px-3.5 py-3">
                     <div className="flex items-start gap-2.5">
                       <div className="mt-[3px] shrink-0">
                         <Shield size={14} className="text-red-500" />
@@ -184,7 +184,7 @@ export default function LoginPage() {
                       id="institutional-email"
                       name="email"
                       type="text"
-                      className={`w-full h-12 pl-10 pr-3.5 bg-white border rounded-md text-sm text-slate-900 focus:outline-none transition-all ${
+                      className={`w-full h-12 pl-10 pr-3.5 bg-white border rounded-none text-sm text-slate-900 focus:outline-none transition-all ${
                         error
                           ? 'border-red-500 ring-2 ring-red-500/15'
                           : (emailFocused 
@@ -222,7 +222,7 @@ export default function LoginPage() {
                       id="security-password"
                       name="password"
                       type={showPassword ? "text" : "password"}
-                      className={`w-full h-12 pl-10 pr-10 bg-white border rounded-md text-sm text-slate-900 focus:outline-none transition-all ${
+                      className={`w-full h-12 pl-10 pr-10 bg-white border rounded-none text-sm text-slate-900 focus:outline-none transition-all ${
                         error
                           ? 'border-red-500 ring-2 ring-red-500/15'
                           : (passwordFocused 
@@ -250,7 +250,7 @@ export default function LoginPage() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5 rounded hover:bg-slate-100 transition-colors cursor-pointer z-10"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5 rounded-none hover:bg-slate-100 transition-colors cursor-pointer z-10"
                       title={showPassword ? "Hide password" : "Show password"}
                       tabIndex={-1}
                     >
@@ -271,7 +271,7 @@ export default function LoginPage() {
                       <input 
                         type="checkbox" 
                         defaultChecked
-                        className="rounded-[3px] border-slate-300 text-[#1D4ED8] focus:ring-[#1D4ED8]/30" 
+                        className="rounded-none border-slate-300 text-[#1D4ED8] focus:ring-[#1D4ED8]/30" 
                       />
                       <span className="text-slate-600 font-normal">Remember this workstation</span>
                     </label>
@@ -288,7 +288,7 @@ export default function LoginPage() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-[#1D4ED8] hover:bg-[#1E40AF] active:bg-[#172554] text-white py-2.5 sm:py-3 px-4 rounded-md text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors border border-[#1E40AF] shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-3 font-sans min-h-[44px]"
+                    className="w-full bg-[#1D4ED8] hover:bg-[#1E40AF] active:bg-[#172554] text-white py-2.5 sm:py-3 px-4 rounded-none text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors border border-[#1E40AF] shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-3 font-sans min-h-[44px]"
                   >
                     {loading ? (
                       <span>Verifying Credentials...</span>

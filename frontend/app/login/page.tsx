@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/lib/auth";
 import { 
   Shield, 
@@ -25,21 +25,49 @@ export default function LoginPage() {
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [error, setError] = useState("");
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const passwordInputRef = useRef<HTMLInputElement>(null);
+
+  const handleCloseErrorModal = () => {
+    setShowErrorModal(false);
+    setError("");
+    setTimeout(() => {
+      if (!email) {
+        emailInputRef.current?.focus();
+      } else {
+        passwordInputRef.current?.focus();
+      }
+    }, 60);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (showErrorModal && (e.key === "Escape" || e.key === "Enter")) {
+        e.preventDefault();
+        handleCloseErrorModal();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showErrorModal, email]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setShowErrorModal(false);
     setLoading(true);
     try {
       await login({ email: email.trim(), password });
     } catch (err: any) {
-      setError(
-        err.message || 
+      const msg = err.message || 
         err.response?.data?.message || 
-        "Invalid email or password. Please check your credentials and try again."
-      );
+        "The email or password you entered is incorrect. Please check your credentials and try again.";
+      setError(msg);
+      setShowErrorModal(true);
       setLoading(false);
     }
   };
@@ -47,6 +75,8 @@ export default function LoginPage() {
   const handleDemoFill = (demoEmail: string) => {
     setEmail(demoEmail);
     setPassword("Portal2025!");
+    setError("");
+    setShowErrorModal(false);
   };
 
   return (
@@ -166,14 +196,6 @@ export default function LoginPage() {
                   </p>
                 </div>
 
-                {/* Error Banner */}
-                {error && (
-                  <div className="bg-rose-50 border border-rose-200 text-rose-800 px-3.5 py-2.5 rounded-lg text-xs mb-5 font-medium flex items-center gap-2">
-                    <Shield size={14} className="text-rose-600 shrink-0" />
-                    <span>{error}</span>
-                  </div>
-                )}
-
                 {/* Authentication Form */}
                 <form onSubmit={handleSubmit} className="space-y-4 font-sans pt-1">
                   
@@ -184,6 +206,7 @@ export default function LoginPage() {
                     </div>
                     
                     <input
+                      ref={emailInputRef}
                       id="institutional-email"
                       name="email"
                       type="text"
@@ -219,6 +242,7 @@ export default function LoginPage() {
                     </div>
                     
                     <input
+                      ref={passwordInputRef}
                       id="security-password"
                       name="password"
                       type={showPassword ? "text" : "password"}
@@ -368,6 +392,52 @@ export default function LoginPage() {
           </div>
         </div>
       </footer>
+
+      {/* Native App-Style Mobile, Tablet & Desktop Centered Error Alert Modal */}
+      {showErrorModal && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs transition-opacity duration-200"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="login-error-modal-title"
+          aria-describedby="login-error-modal-description"
+        >
+          {/* Centered Alert Modal Card */}
+          <div 
+            className="w-[88%] max-w-[340px] sm:max-w-[370px] bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden transform transition-all text-center select-none animate-in fade-in zoom-in-95 duration-150"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Body Content */}
+            <div className="pt-6 pb-5 px-5 sm:px-6">
+              <h3 
+                id="login-error-modal-title" 
+                className="font-heading text-base sm:text-lg font-bold text-slate-900 tracking-tight m-0"
+              >
+                Login Failed
+              </h3>
+              
+              <p 
+                id="login-error-modal-description" 
+                className="text-xs sm:text-[13px] text-slate-600 leading-relaxed mt-2.5 mb-0 px-1 font-sans"
+              >
+                {error || "The email or password you entered is incorrect. Please check your credentials and try again."}
+              </p>
+            </div>
+
+            {/* Native App-Style Action Button & Divider */}
+            <div className="border-t border-slate-200/90 bg-white">
+              <button
+                type="button"
+                onClick={handleCloseErrorModal}
+                className="w-full py-3.5 px-4 text-sm font-bold text-[#1D4ED8] hover:bg-slate-50 active:bg-blue-50 transition-colors cursor-pointer font-sans select-none focus:outline-none"
+                autoFocus
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

@@ -266,7 +266,7 @@ export default function LoginPage() {
 
                   {/* Inline Error Message below Password Field */}
                   {error && (
-                    <p className="text-xs text-red-600 font-medium text-left m-0 pt-0.5 animate-in fade-in duration-150 font-sans">
+                    <p className="-mt-2.5 mb-1 text-xs text-red-500 font-normal text-left animate-in fade-in duration-150 font-sans leading-relaxed">
                       {error}
                     </p>
                   )}

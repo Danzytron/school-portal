@@ -19,6 +19,14 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Cebu Eastern College | University Information System",
   description: "Official Cebu Eastern College Student, Faculty & Administrative Portal",
+  icons: {
+    icon: [
+      { url: "/cec-logo.jpg" },
+      { url: "/favicon.ico" }
+    ],
+    shortcut: "/cec-logo.jpg",
+    apple: "/cec-logo.jpg",
+  },
 };
 
 export default function RootLayout({

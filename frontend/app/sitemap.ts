@@ -1,18 +1,22 @@
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const baseUrl = "https://cebucecportal.site";
+  const lastModified = new Date();
+
   return [
     {
-      url: "https://cebucecportal.site",
-      lastModified: new Date(),
+      url: baseUrl,
+      lastModified,
       changeFrequency: "daily",
-      priority: 1,
+      priority: 1.0,
     },
     {
-      url: "https://cebucecportal.site/login",
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
+      url: `${baseUrl}/login`,
+      lastModified,
+      changeFrequency: "daily",
+      priority: 0.9,
     },
   ];
 }
+

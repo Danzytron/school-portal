@@ -99,7 +99,7 @@ export default function LoginPage() {
               <div>
                 <img 
                   src="/cec-logo.png" 
-                  alt="Cebu Eastern College" 
+                  alt="cebucecportal - Cebu Eastern College Official Seal and Logo" 
                   className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-xl shrink-0" 
                 />
               </div>
@@ -112,9 +112,14 @@ export default function LoginPage() {
                 </p>
               </div>
 
-              <h2 className="font-heading text-lg sm:text-xl font-bold text-white/90 pt-2 m-0 drop-shadow-xs">
-                Sign in to your account
-              </h2>
+              <div className="pt-2">
+                <h2 className="font-heading text-lg sm:text-xl font-bold text-white/90 m-0 drop-shadow-xs">
+                  Sign in to your account
+                </h2>
+                <p className="text-xs text-slate-300 mt-1 font-sans">
+                  Official online portal for Cebu Eastern College students, faculty, and academic staff.
+                </p>
+              </div>
             </div>
           </div>
 
@@ -128,7 +133,7 @@ export default function LoginPage() {
                 <div className="lg:hidden flex items-center gap-3 pb-4 mb-4 border-b border-slate-100">
                   <img 
                     src="/cec-logo.png" 
-                    alt="Cebu Eastern College Seal" 
+                    alt="cebucecportal - Cebu Eastern College Official Seal and Logo" 
                     className="w-10 h-10 object-contain shrink-0 drop-shadow-xs" 
                   />
                   <div>

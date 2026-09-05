@@ -19,21 +19,28 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   metadataBase: new URL("https://cebucecportal.site"),
   title: {
-    default: "CEC School Portal | Student, Faculty & Admin Portal",
-    template: "%s | CEC School Portal",
+    default: "cebucecportal | Cebu Eastern College School Portal",
+    template: "%s | cebucecportal - Cebu Eastern College",
   },
   description:
-    "Access the CEC School Portal for students, faculty, and administrators. Manage academic information, schedules, announcements, and other school-related services in one place.",
-  applicationName: "CEC School Portal",
-  authors: [{ name: "Cebu Eastern College" }],
+    "Official cebucecportal for Cebu Eastern College (CEC). Access the online school portal for student enrollment, academic grades, class schedules, faculty announcements, and university services.",
+  applicationName: "cebucecportal",
+  authors: [{ name: "Cebu Eastern College", url: "https://cebucecportal.site" }],
+  creator: "Cebu Eastern College",
+  publisher: "Cebu Eastern College",
   keywords: [
+    "cebucecportal",
+    "Cebu CEC Portal",
+    "Cebu Eastern College Portal",
+    "Cebu Eastern College School Portal",
+    "CEC Student Portal",
+    "cebucecportal.site",
     "CEC School Portal",
     "Cebu Eastern College",
-    "Student Portal",
-    "Faculty Portal",
-    "Admin Portal",
-    "Academic Portal",
-    "University Information System",
+    "CEC Portal",
+    "CEC Portal Login",
+    "Cebu CEC School Portal System",
+    "CEC Student Information System",
   ],
   alternates: {
     canonical: "https://cebucecportal.site",
@@ -42,33 +49,33 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://cebucecportal.site",
-    siteName: "CEC School Portal",
-    title: "CEC School Portal | Student, Faculty & Admin Portal",
+    siteName: "cebucecportal - Cebu Eastern College",
+    title: "cebucecportal | Cebu Eastern College School Portal",
     description:
-      "Access the CEC School Portal for students, faculty, and administrators. Manage academic information, schedules, announcements, and other school-related services in one place.",
+      "Access the official cebucecportal for Cebu Eastern College students, faculty, and administrators. Manage academic information, schedules, announcements, and school services in one place.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "CEC School Portal | Student, Faculty & Admin Portal",
+        alt: "cebucecportal - Cebu Eastern College School Portal",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "CEC School Portal | Student, Faculty & Admin Portal",
+    title: "cebucecportal | Cebu Eastern College School Portal",
     description:
-      "Access the CEC School Portal for students, faculty, and administrators. Manage academic information, schedules, announcements, and other school-related services in one place.",
+      "Official cebucecportal for Cebu Eastern College students, faculty, and administrators.",
     images: ["/og-image.png"],
   },
   icons: {
     icon: [
-      { url: "/cec-logo.jpg" },
+      { url: "/cec-logo.png" },
       { url: "/favicon.ico" }
     ],
-    shortcut: "/cec-logo.jpg",
-    apple: "/cec-logo.jpg",
+    shortcut: "/cec-logo.png",
+    apple: "/cec-logo.png",
   },
   robots: {
     index: true,
@@ -81,6 +88,9 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
+  },
   category: "education",
 };
 
@@ -89,8 +99,53 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLdOrg = {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "Cebu Eastern College",
+    "alternateName": [
+      "cebucecportal",
+      "Cebu CEC Portal",
+      "Cebu Eastern College Portal",
+      "Cebu Eastern College School Portal",
+      "CEC Student Portal",
+      "CEC Portal"
+    ],
+    "url": "https://cebucecportal.site",
+    "logo": "https://cebucecportal.site/cec-logo.png",
+    "description": "Official Cebu Eastern College School Portal (cebucecportal) providing online academic services, enrollment, grades, and schedules for students and faculty.",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Cebu City",
+      "addressRegion": "Cebu",
+      "addressCountry": "PH"
+    }
+  };
+
+  const jsonLdWebSite = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "cebucecportal",
+    "alternateName": [
+      "Cebu Eastern College School Portal",
+      "Cebu CEC Portal",
+      "CEC Portal"
+    ],
+    "url": "https://cebucecportal.site",
+  };
+
   return (
     <html lang="en" className={`${inter.variable} ${poppins.variable}`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrg) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebSite) }}
+        />
+      </head>
       <body className="font-sans bg-[#F8FAFC] text-slate-800 antialiased min-h-screen">
         <AuthProvider>
           {children}

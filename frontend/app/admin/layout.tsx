@@ -1,10 +1,9 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useAuth } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import LoadingState from '@/components/ui/LoadingState';
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
@@ -12,13 +11,15 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || user?.role !== 'admin')) {
+    if (!isLoading && (!isAuthenticated || !user)) {
       router.push('/login');
+    } else if (!isLoading && user && user.role !== 'admin') {
+      router.push('/unauthorized');
     }
   }, [isLoading, isAuthenticated, user, router]);
 
-  if (isLoading || !isAuthenticated || user?.role !== 'admin') {
-    return <LoadingState message="Verifying admin access..." />;
+  if (isLoading || !isAuthenticated || !user || user.role !== 'admin') {
+    return <LoadingState message="Verifying administrative access..." />;
   }
 
   return <DashboardLayout role="admin">{children}</DashboardLayout>;

@@ -33,9 +33,13 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      await login({ email, password });
+      await login({ email: email.trim(), password });
     } catch (err: any) {
-      setError(err.response?.data?.message || "Invalid institutional credentials. Please verify your student or faculty account.");
+      setError(
+        err.message || 
+        err.response?.data?.message || 
+        "Invalid email or password. Please check your credentials and try again."
+      );
       setLoading(false);
     }
   };

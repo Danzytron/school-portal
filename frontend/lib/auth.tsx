@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       } else if (input.includes('teacher') || input.includes('faculty')) {
         demoUser = {
           id: 2,
-          name: 'Prof. Arnel L. Villanueva',
+          name: 'Prof. Justin Beiber',
           email: 'teacher@schoolportal.test',
           role: 'teacher',
           is_active: true,

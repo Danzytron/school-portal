@@ -18,8 +18,8 @@ export default function TeacherProfile() {
 
   const DEFAULT_FACULTY_PROFILE = {
     employeeId: 'FAC-2026-0814',
-    name: user?.name || 'Prof. Arnel L. Villanueva',
-    department: 'College of Computer Studies',
+    name: user?.name || 'Prof. Justin Beiber',
+    department: 'College of Information Technology',
     specialization: 'Web Systems & Distributed Database Architecture',
     email: user?.email || 'teacher@schoolportal.test',
     contact: '+63 917 555 0192',
@@ -133,7 +133,7 @@ export default function TeacherProfile() {
         <div className="p-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-              <span className="text-[10px] text-slate-500 uppercase font-semibold block">Academic Department</span>
+              <span className="text-[10px] text-slate-500 uppercase font-semibold block">College</span>
               <span className="font-bold text-slate-900 mt-0.5 block">{prof.department}</span>
             </div>
             <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">

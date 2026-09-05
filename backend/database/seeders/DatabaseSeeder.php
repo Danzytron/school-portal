@@ -153,8 +153,8 @@ class DatabaseSeeder extends Seeder
         // ============================
         $teachers = [];
         $teacherData = [
-            ['name' => 'Juan Santos', 'email' => 'teacher@schoolportal.test', 'employee_id' => 'TCH-2025-001', 'department' => 'College of Computer Studies', 'specialization' => 'Software Development'],
-            ['name' => 'Ana Garcia', 'email' => 'agarcia@schoolportal.test', 'employee_id' => 'TCH-2025-002', 'department' => 'College of Computer Studies', 'specialization' => 'Database Systems'],
+            ['name' => 'Prof. Justin Beiber', 'email' => 'teacher@schoolportal.test', 'employee_id' => 'TCH-2025-001', 'department' => 'College of Information Technology', 'specialization' => 'Software Development'],
+            ['name' => 'Ana Garcia', 'email' => 'agarcia@schoolportal.test', 'employee_id' => 'TCH-2025-002', 'department' => 'College of Information Technology', 'specialization' => 'Database Systems'],
             ['name' => 'Pedro Cruz', 'email' => 'pcruz@schoolportal.test', 'employee_id' => 'TCH-2025-003', 'department' => 'College of Computer Studies', 'specialization' => 'Web Technologies'],
             ['name' => 'Elena Flores', 'email' => 'eflores@schoolportal.test', 'employee_id' => 'TCH-2025-004', 'department' => 'General Education', 'specialization' => 'Social Sciences'],
             ['name' => 'Ricardo Mendoza', 'email' => 'rmendoza@schoolportal.test', 'employee_id' => 'TCH-2025-005', 'department' => 'General Education', 'specialization' => 'Mathematics'],

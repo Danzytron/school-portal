@@ -169,7 +169,7 @@ export default function TeacherDashboard() {
   if (loading) return <LoadingState message="Loading faculty academic portal..." />;
 
   const facultyData = data || DEFAULT_TEACHER_DASHBOARD;
-  const facultyName = user?.name || 'Prof. Arnel L. Villanueva';
+  const facultyName = user?.name || 'Prof. Justin Beiber';
   const cleanDisplayName = facultyName.startsWith('Prof.') ? facultyName : `Prof. ${facultyName}`;
 
   return (
@@ -192,9 +192,7 @@ export default function TeacherDashboard() {
           </h1>
 
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-blue-100 font-medium">
-            <span className="text-white font-semibold">College of Computer Studies</span>
-            <span>•</span>
-            <span>Department of Information Technology</span>
+            <span className="text-white font-semibold">College of Information Technology</span>
             <span>•</span>
             <span>Assistant Professor II</span>
           </div>
@@ -507,8 +505,8 @@ export default function TeacherDashboard() {
                   <span className="font-bold text-slate-800 mt-0.5 block">Assistant Professor II</span>
                 </div>
                 <div className="p-2.5 bg-slate-50 rounded-lg border border-slate-200">
-                  <span className="text-[10px] text-slate-500 uppercase font-semibold block">College Dept</span>
-                  <span className="font-bold text-slate-800 mt-0.5 block">Computer Studies</span>
+                  <span className="text-[10px] text-slate-500 uppercase font-semibold block">College</span>
+                  <span className="font-bold text-slate-800 mt-0.5 block">Information Technology</span>
                 </div>
               </div>
             </div>

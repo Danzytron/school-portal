@@ -350,7 +350,7 @@ export default function TeacherSchedulePage() {
                 {selectedClass.subject?.name}
               </div>
               <div className="text-slate-600 text-xs mt-1">
-                College of Computer Studies • 3.0 Academic Units
+                College of Information Technology • 3.0 Academic Units
               </div>
             </div>
 

@@ -99,7 +99,7 @@ export default function LoginPageClient() {
               <div>
                 <img 
                   src="/cec-logo.png" 
-                  alt="cebucecportal - Cebu Eastern College Official Seal and Logo" 
+                  alt="Cebu Eastern College Official Seal and Logo" 
                   className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-xl shrink-0" 
                 />
               </div>
@@ -133,7 +133,7 @@ export default function LoginPageClient() {
                 <div className="lg:hidden flex items-center gap-3 pb-4 mb-4 border-b border-slate-100">
                   <img 
                     src="/cec-logo.png" 
-                    alt="cebucecportal - Cebu Eastern College Official Seal and Logo" 
+                    alt="Cebu Eastern College Seal" 
                     className="w-10 h-10 object-contain shrink-0 drop-shadow-xs" 
                   />
                   <div>
@@ -335,7 +335,7 @@ export default function LoginPageClient() {
       <footer className="relative z-10 w-full px-4 sm:px-8 lg:px-12 py-3 text-center text-xs text-slate-500 lg:text-slate-300 font-sans bg-white lg:bg-black/50 backdrop-blur-xs border-t border-slate-200 lg:border-white/10">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2">
           <div>
-            © 2026 <strong>cebucecportal</strong> — Cebu Eastern College School Portal Prototype. For demonstration purposes only.
+            © 2026 <strong>Cebu Eastern College</strong> — School Portal System Prototype. For demonstration purposes only.
           </div>
           <div className="text-[10px] sm:text-[11px] text-slate-400 lg:text-slate-400 font-sans">
             cebucecportal.site

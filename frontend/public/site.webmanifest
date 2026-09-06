@@ -1,7 +1,7 @@
-﻿{
-  "name": "cebucecportal | Cebu Eastern College School Portal",
-  "short_name": "cebucecportal",
-  "description": "Official Cebu Eastern College School Portal",
+{
+  "name": "Cebu Eastern College | School Portal",
+  "short_name": "Cebu Eastern College",
+  "description": "Cebu Eastern College Online School Portal",
   "icons": [
     {
       "src": "/favicon-16x16.png",

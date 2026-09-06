@@ -117,7 +117,7 @@ export default function LoginPageClient() {
                   Sign in to your account
                 </h2>
                 <p className="text-xs text-slate-300 mt-1 font-sans leading-relaxed">
-                  Cebu Eastern College (CEC) provides students, faculty, and academic staff with online access to enrollment, academic grades, class schedules, and university services through cebucecportal.
+                  Cebu Eastern College (CEC) provides students, faculty, and academic staff with online access to enrollment, academic grades, class schedules, and university services.
                 </p>
               </div>
             </div>

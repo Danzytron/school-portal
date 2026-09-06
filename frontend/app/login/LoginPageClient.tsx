@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/lib/auth";
 import { 
+  AlertCircle,
   Shield, 
   Lock, 
   User,
@@ -122,22 +123,13 @@ export default function LoginPageClient() {
                   </div>
                 </div>
 
-                {/* DEMO NOTICE — Red-themed prominent disclaimer */}
+                {/* DEMO NOTICE — Clean banner matching reference layout */}
                 <div className="mb-4 sm:mb-5 font-sans">
-                  <div className="bg-red-50/80 border border-red-200 rounded-none px-3.5 py-3">
-                    <div className="flex items-start gap-2.5">
-                      <div className="mt-[3px] shrink-0">
-                        <Shield size={14} className="text-red-500" />
-                      </div>
-                      <div className="space-y-1.5">
-                        <p className="text-[10px] font-bold uppercase tracking-wider text-red-600 m-0 leading-none">
-                          Demo Notice
-                        </p>
-                        <p className="text-[10px] sm:text-[11px] text-red-700/90 leading-relaxed m-0 font-sans">
-                          This prototype is for demo purposes only and is <span className="font-bold text-red-700">NOT the official CEC School Portal</span>. Demo accounts and data are simulated. Created by Roldan Jr.
-                        </p>
-                      </div>
-                    </div>
+                  <div className="bg-[#FFF1F2] border border-[#FECDD3] rounded-xl px-3.5 py-3 flex items-start gap-2.5 shadow-xs">
+                    <AlertCircle className="w-4 h-4 text-white fill-[#BE123C] shrink-0 mt-0.5" />
+                    <p className="text-xs sm:text-[12.5px] text-[#9F1239] leading-relaxed m-0 font-sans">
+                      This prototype is for demo purposes only and is <span className="font-semibold text-[#881337]">NOT the official CEC School Portal</span>. Demo accounts and data are simulated. Created by Roldan Jr.
+                    </p>
                   </div>
                 </div>
 

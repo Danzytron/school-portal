@@ -85,7 +85,7 @@ export default function LoginPageClient() {
                   CEBU EASTERN COLLEGE
                 </h1>
                 <p className="text-sm sm:text-base text-slate-200 font-medium tracking-wide m-0">
-                  School Portal System (CEC Portal)
+                  宿务东方学院
                 </p>
               </div>
 
@@ -118,7 +118,7 @@ export default function LoginPageClient() {
                       CEBU EASTERN COLLEGE
                     </div>
                     <div className="text-[10px] text-slate-500 uppercase tracking-wider leading-none mt-0.5 font-sans font-medium">
-                      School Portal System
+                      宿务东方学院
                     </div>
                   </div>
                 </div>

@@ -108,16 +108,16 @@ export default function LoginPageClient() {
                   CEBU EASTERN COLLEGE
                 </h1>
                 <p className="text-sm sm:text-base text-slate-200 font-medium tracking-wide m-0">
-                  School Portal System
+                  School Portal System (CEC Portal)
                 </p>
               </div>
 
-              <div className="pt-2">
+              <div className="pt-2 space-y-2">
                 <h2 className="font-heading text-lg sm:text-xl font-bold text-white/90 m-0 drop-shadow-xs">
                   Sign in to your account
                 </h2>
-                <p className="text-xs text-slate-300 mt-1 font-sans">
-                  Official online portal for Cebu Eastern College students, faculty, and academic staff.
+                <p className="text-xs text-slate-300 mt-1 font-sans leading-relaxed">
+                  Cebu Eastern College (CEC) provides students, faculty, and academic staff with online access to enrollment, academic grades, class schedules, and university services through cebucecportal.
                 </p>
               </div>
             </div>
@@ -335,7 +335,7 @@ export default function LoginPageClient() {
       <footer className="relative z-10 w-full px-4 sm:px-8 lg:px-12 py-3 text-center text-xs text-slate-500 lg:text-slate-300 font-sans bg-white lg:bg-black/50 backdrop-blur-xs border-t border-slate-200 lg:border-white/10">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2">
           <div>
-            © 2026 <strong>Cebu Eastern College</strong> — School Portal System Prototype. For demonstration purposes only.
+            © 2026 <strong>Cebu Eastern College (CEC)</strong> — CEC School Portal (cebucecportal). For demonstration purposes only.
           </div>
           <div className="text-[10px] sm:text-[11px] text-slate-400 lg:text-slate-400 font-sans">
             cebucecportal.site

@@ -65,32 +65,8 @@ export default function LoginPageClient() {
         <div className="absolute inset-0 bg-black/55"></div>
       </div>
 
-      {/* Top Slim Institutional Identification Bar */}
-      <header className="relative z-10 w-full px-4 sm:px-8 lg:px-12 py-3 sm:py-4 flex items-center justify-between text-slate-800 lg:text-white border-b border-slate-200 lg:border-white/10 bg-white lg:bg-black/30 backdrop-blur-xs">
-        <div className="flex items-center gap-2.5 sm:gap-3">
-          <img 
-            src="/cec-logo.png" 
-            alt="Cebu Eastern College Seal" 
-            className="w-7 h-7 sm:w-8 sm:h-8 object-contain shrink-0 drop-shadow-xs" 
-          />
-          <div>
-            <div className="font-heading font-bold text-xs sm:text-sm tracking-tight text-slate-900 lg:text-white leading-tight">
-              CEBU EASTERN COLLEGE
-            </div>
-            <div className="text-[9px] sm:text-[10px] text-slate-500 lg:text-slate-300 uppercase tracking-wider leading-none mt-0.5 font-sans font-medium">
-              OFFICE OF THE REGISTRAR & ACADEMIC SERVICES
-            </div>
-          </div>
-        </div>
-
-        <div className="hidden sm:flex items-center gap-2 text-xs text-slate-600 lg:text-white bg-slate-100 lg:bg-black/40 px-3 py-1 rounded-full border border-slate-200 lg:border-white/15">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 lg:bg-emerald-400"></span>
-          <span>A.Y. 2026–2027 • 1st Semester</span>
-        </div>
-      </header>
-
       {/* Main Responsive Layout: Two-Column Balance on Desktop; Focused Fluid Layout on Mobile */}
-      <main className="relative z-10 flex-1 flex items-center justify-center p-3 sm:p-6 lg:p-12 w-full">
+      <main className="relative z-10 flex-1 flex items-center justify-center p-3 sm:p-6 lg:p-12 w-full my-auto">
         <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* Left Column: University Branding (Desktop Only: hidden on mobile) */}
@@ -117,7 +93,7 @@ export default function LoginPageClient() {
                   Sign in to your account
                 </h2>
                 <p className="text-xs text-slate-300 mt-1 font-sans leading-relaxed">
-                  Cebu Eastern College (CEC) provides students, faculty, and academic staff with online access to enrollment, academic grades, class schedules, and university services.
+                  Cebu Eastern College Portal provides students, faculty, and academic staff with online access to enrollment, academic grades, class schedules, and other academic services.
                 </p>
               </div>
             </div>

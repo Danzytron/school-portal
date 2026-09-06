@@ -270,17 +270,8 @@ export default function LoginPageClient() {
                     </p>
                   )}
 
-                  {/* Options Row: Remember & Forgot Password */}
-                  <div className="flex items-center justify-between text-xs pt-0.5">
-                    <label className="flex items-center gap-2 text-slate-600 cursor-pointer select-none">
-                      <input 
-                        type="checkbox" 
-                        defaultChecked
-                        className="rounded-none border-slate-300 text-[#1D4ED8] focus:ring-[#1D4ED8]/30" 
-                      />
-                      <span className="text-slate-600 font-normal">Remember this workstation</span>
-                    </label>
-
+                  {/* Options Row: Forgot Password */}
+                  <div className="flex items-center justify-end text-xs pt-0.5">
                     <a 
                       href="#" 
                       onClick={(e) => { e.preventDefault(); alert('Please contact the Registrar IT Helpdesk (registrar@cebueasterncollege.edu.ph) to reset your password.'); }}
@@ -307,7 +298,7 @@ export default function LoginPageClient() {
                 </form>
 
                 {/* Card Institutional Footer */}
-                <div className="mt-5 sm:mt-6 pt-3 sm:pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-sans">
+                <div className="mt-5 sm:mt-6 pt-3 sm:pt-4 border-t border-slate-100 flex items-center justify-center text-xs text-slate-500 font-sans">
                   <span>
                     Need help?{" "}
                     <a 
@@ -316,11 +307,6 @@ export default function LoginPageClient() {
                     >
                       Helpdesk
                     </a>
-                  </span>
-
-                  <span className="flex items-center gap-1 text-slate-400 text-[11px]">
-                    <Building2 size={12} />
-                    <span>Cebu City</span>
                   </span>
                 </div>
 

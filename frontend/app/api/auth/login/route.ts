@@ -1,36 +1,36 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { verifyAndConsumeOtp } from '@/lib/serverOtpStore';
 
 // Rate Limiting Store: Map<IP, { count: number, resetAt: number }>
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const MAX_ATTEMPTS = 5;
+const MAX_ATTEMPTS = 10;
 const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 
-// Server-side Demo User Store (Kept strictly on the server, never bundled in client JS)
+// Server-side Registered Accounts
 const SERVER_ACCOUNTS: Record<
   string,
-  { passwordHash: string; salt: string; role: 'student' | 'teacher' | 'admin'; name: string; id: number; redirect: string }
+  { role: 'student' | 'teacher' | 'admin'; name: string; id: number; redirect: string }
 > = {
   'student@schoolportal.test': {
-    // SHA256 of "Portal2025!" with salt
-    passwordHash: crypto.createHash('sha256').update('cec_salt_2026:Portal2025!').digest('hex'),
-    salt: 'cec_salt_2026',
+    role: 'student',
+    name: 'Roldan Jr. Delarmente',
+    id: 3,
+    redirect: '/student/dashboard',
+  },
+  '2026-00001': {
     role: 'student',
     name: 'Roldan Jr. Delarmente',
     id: 3,
     redirect: '/student/dashboard',
   },
   'teacher@schoolportal.test': {
-    passwordHash: crypto.createHash('sha256').update('cec_salt_2026:Portal2025!').digest('hex'),
-    salt: 'cec_salt_2026',
     role: 'teacher',
     name: 'Prof. Justin Beiber',
     id: 2,
     redirect: '/teacher/dashboard',
   },
   'admin@schoolportal.test': {
-    passwordHash: crypto.createHash('sha256').update('cec_salt_2026:Portal2025!').digest('hex'),
-    salt: 'cec_salt_2026',
     role: 'admin',
     name: 'Registrar Administrator',
     id: 1,
@@ -55,18 +55,10 @@ function checkRateLimit(ip: string): { allowed: boolean; remaining: number } {
   return { allowed: true, remaining: MAX_ATTEMPTS - entry.count };
 }
 
-function verifyPassword(inputPassword: string, salt: string, expectedHash: string): boolean {
-  const inputHash = crypto.createHash('sha256').update(`${salt}:${inputPassword}`).digest('hex');
-  const bufferA = Buffer.from(inputHash, 'utf8');
-  const bufferB = Buffer.from(expectedHash, 'utf8');
-  if (bufferA.length !== bufferB.length) return false;
-  return crypto.timingSafeEqual(bufferA, bufferB);
-}
-
 export async function POST(request: NextRequest) {
   try {
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
-    
+
     // 1. Rate Limiting Check
     const rateLimit = checkRateLimit(ip);
     if (!rateLimit.allowed) {
@@ -89,12 +81,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Authenticate against Server Store
+    // 3. Find Matching Account
     const account = SERVER_ACCOUNTS[email];
-    const isPasswordValid = account ? verifyPassword(password, account.salt, account.passwordHash) : false;
+    if (!account) {
+      console.warn(`[SECURITY AUDIT] Unknown identifier login attempt: ${email} from IP: ${ip}`);
+      return NextResponse.json(
+        { message: 'Invalid email or password.' },
+        { status: 401 }
+      );
+    }
 
-    if (!account || !isPasswordValid) {
-      console.warn(`[SECURITY AUDIT] Failed login attempt for identifier: ${email} from IP: ${ip}`);
+    // 4. Authenticate using One-Time Password Store
+    const otpVerification = verifyAndConsumeOtp(password, email, ip);
+
+    if (!otpVerification.success) {
+      if (otpVerification.reason === 'ALREADY_USED') {
+        console.warn(`[SECURITY AUDIT] Reused OTP attempt for ${email} from IP: ${ip}`);
+        return NextResponse.json(
+          { message: 'This one-time password has already been used.' },
+          { status: 401 }
+        );
+      }
+
+      console.warn(`[SECURITY AUDIT] Invalid password attempt for ${email} from IP: ${ip}`);
       return NextResponse.json(
         { message: 'Invalid email or password.' },
         { status: 401 }
@@ -104,7 +113,7 @@ export async function POST(request: NextRequest) {
     // Reset rate limit on successful authentication
     rateLimitMap.delete(ip);
 
-    // 4. Generate Secure Session Token
+    // 5. Generate Secure Session Token
     const sessionToken = `cec_sec_${crypto.randomBytes(32).toString('hex')}`;
     const userPayload = {
       id: account.id,
@@ -115,14 +124,17 @@ export async function POST(request: NextRequest) {
       created_at: new Date().toISOString(),
     };
 
-    console.info(`[SECURITY AUDIT] Successful login for user: ${email} (Role: ${account.role}) from IP: ${ip}`);
+    console.info(
+      `[SECURITY AUDIT] Successful OTP login (${otpVerification.label}) for user: ${email} (Role: ${account.role}) from IP: ${ip}`
+    );
 
-    // 5. Construct Response & Set Secure HttpOnly Cookies
+    // 6. Construct Response & Set Secure HttpOnly Cookies
     const response = NextResponse.json({
       message: 'Login successful',
       user: userPayload,
       token: sessionToken,
       redirect: account.redirect,
+      otpUsed: otpVerification.label,
     });
 
     const isProduction = process.env.NODE_ENV === 'production';

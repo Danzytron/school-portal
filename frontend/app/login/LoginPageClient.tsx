@@ -62,8 +62,9 @@ export default function LoginPageClient() {
         className="hidden lg:block fixed inset-0 bg-cover bg-center bg-no-repeat z-0"
         style={{ backgroundImage: "url('/cec-campus.jpg')" }}
       >
-        {/* Pure neutral black overlay (no blueish tint) */}
-        <div className="absolute inset-0 bg-black/55"></div>
+        {/* Deep cinematic dark gradient overlay for enhanced readability and contrast */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/60"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/50"></div>
       </div>
 
       {/* Main Responsive Layout: Two-Column Balance on Desktop; Focused Fluid Layout on Mobile */}

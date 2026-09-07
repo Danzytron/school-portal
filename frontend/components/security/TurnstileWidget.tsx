@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useRef, useState, useImperativeHandle, forwardRef } from "react";
 
@@ -37,8 +37,8 @@ interface TurnstileWidgetProps {
   className?: string;
 }
 
-// Cloudflare official testing site key (Always passes in development/testing)
-const FALLBACK_TEST_SITE_KEY = "1x00000000000000000000AA";
+// Cloudflare official site key for cebucecportal.site
+const FALLBACK_SITE_KEY = "0x4AAAAAAEq6BIAOsz02RBTv";
 
 export const TurnstileWidget = forwardRef<TurnstileWidgetRef, TurnstileWidgetProps>(
   ({ onVerify, onExpire, onError, theme = "light", className = "" }, ref) => {
@@ -47,7 +47,7 @@ export const TurnstileWidget = forwardRef<TurnstileWidgetRef, TurnstileWidgetPro
     const [isLoaded, setIsLoaded] = useState(false);
 
     const siteKey =
-      process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY || FALLBACK_TEST_SITE_KEY;
+      process.env.NEXT_PUBLIC_CLOUDFLARE_TURNSTILE_SITE_KEY || FALLBACK_SITE_KEY;
 
     useImperativeHandle(ref, () => ({
       reset: () => {

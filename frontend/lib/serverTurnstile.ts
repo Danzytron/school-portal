@@ -1,13 +1,12 @@
-﻿/**
+/**
  * Server-side Cloudflare Turnstile Token Verification
  * Cebu Eastern College (CEC) School Portal Security Subsystem
  */
 
 const CLOUDFLARE_SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
-// Cloudflare official dummy testing secret key for development / testing:
-// '1x0000000000000000000000000000000AA' (Always passes)
-const FALLBACK_TEST_SECRET_KEY = '1x0000000000000000000000000000000AA';
+// Cloudflare official secret key for cebucecportal.site
+const FALLBACK_SECRET_KEY = '0x4AAAAAAEq6BIP2OcYXo80pxvItFX0zZqE';
 
 export interface TurnstileVerifyResult {
   success: boolean;
@@ -37,7 +36,7 @@ export async function verifyTurnstileToken(
   }
 
   const secretKey =
-    process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY?.trim() || FALLBACK_TEST_SECRET_KEY;
+    process.env.CLOUDFLARE_TURNSTILE_SECRET_KEY?.trim() || FALLBACK_SECRET_KEY;
 
   try {
     const formData = new URLSearchParams();

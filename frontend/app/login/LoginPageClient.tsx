@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useAuth } from "@/lib/auth";
 import { 
   AlertCircle,
@@ -44,6 +44,22 @@ export default function LoginPageClient() {
     setPassword(e.target.value);
     if (error) setError("");
   };
+
+  const handleTurnstileVerify = useCallback((token: string) => {
+    setTurnstileToken(token);
+    setError((prev) => (prev.includes("verification") ? "" : prev));
+  }, []);
+
+  const handleTurnstileExpire = useCallback(() => {
+    setTurnstileToken("");
+    setError("Security verification expired. Please verify again.");
+  }, []);
+
+  const handleTurnstileError = useCallback((errorCode: string) => {
+    setTurnstileToken("");
+    console.warn("[TURNSTILE] Login page error callback:", errorCode);
+    setError("Security verification could not be completed. Please refresh the page and try again.");
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -266,18 +282,9 @@ export default function LoginPageClient() {
                   <div className="flex items-center justify-center my-2 overflow-hidden">
                     <TurnstileWidget
                       ref={turnstileRef}
-                      onVerify={(token) => {
-                        setTurnstileToken(token);
-                        if (error) setError("");
-                      }}
-                      onExpire={() => {
-                        setTurnstileToken("");
-                        setError("Security verification expired. Please verify again.");
-                      }}
-                      onError={() => {
-                        setTurnstileToken("");
-                        setError("Cloudflare verification encountered an error. Retrying...");
-                      }}
+                      onVerify={handleTurnstileVerify}
+                      onExpire={handleTurnstileExpire}
+                      onError={handleTurnstileError}
                       theme="light"
                     />
                   </div>

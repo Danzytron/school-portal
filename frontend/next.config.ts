@@ -34,6 +34,7 @@ const securityHeaders = [
       "img-src 'self' data: blob: https://cebucecportal.site",
       "font-src 'self' data: https://fonts.gstatic.com",
       "frame-src 'self' https://challenges.cloudflare.com",
+      "child-src 'self' https://challenges.cloudflare.com",
       "connect-src 'self' http://localhost:8000 https://cebucecportal.site https://challenges.cloudflare.com",
       "frame-ancestors 'none'",
       "object-src 'none'",

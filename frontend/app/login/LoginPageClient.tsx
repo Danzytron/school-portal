@@ -262,30 +262,24 @@ export default function LoginPageClient() {
                     </a>
                   </div>
 
-                  {/* Cloudflare Turnstile Verification Widget */}
-                  <div className="pt-2 pb-1">
-                    <div className="bg-slate-50/80 border border-slate-200/80 rounded-lg p-2 flex flex-col items-center justify-center">
-                      <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium mb-1.5 self-start px-1">
-                        <Shield className="w-3.5 h-3.5 text-[#1D4ED8]" />
-                        <span>Cloudflare Security Verification</span>
-                      </div>
-                      <TurnstileWidget
-                        ref={turnstileRef}
-                        onVerify={(token) => {
-                          setTurnstileToken(token);
-                          if (error) setError("");
-                        }}
-                        onExpire={() => {
-                          setTurnstileToken("");
-                          setError("Security verification expired. Please verify again.");
-                        }}
-                        onError={() => {
-                          setTurnstileToken("");
-                          setError("Cloudflare verification encountered an error. Retrying...");
-                        }}
-                        theme="light"
-                      />
-                    </div>
+                  {/* Cloudflare Turnstile Verification Widget - Clean Original Layout */}
+                  <div className="flex items-center justify-center my-2 overflow-hidden">
+                    <TurnstileWidget
+                      ref={turnstileRef}
+                      onVerify={(token) => {
+                        setTurnstileToken(token);
+                        if (error) setError("");
+                      }}
+                      onExpire={() => {
+                        setTurnstileToken("");
+                        setError("Security verification expired. Please verify again.");
+                      }}
+                      onError={() => {
+                        setTurnstileToken("");
+                        setError("Cloudflare verification encountered an error. Retrying...");
+                      }}
+                      theme="light"
+                    />
                   </div>
 
                   <button
@@ -328,7 +322,7 @@ export default function LoginPageClient() {
       <footer className="relative z-10 w-full px-4 sm:px-8 lg:px-12 py-3 text-center text-xs text-slate-500 lg:text-slate-300 font-sans bg-white lg:bg-black/50 backdrop-blur-xs border-t border-slate-200 lg:border-white/10">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2">
           <div>
-            © 2026 <strong>Cebu Eastern College (CEC)</strong> — CEC School Portal (cebucecportal). For demonstration purposes only.
+            © 2026 <strong>Cebu Eastern College (CEC)</strong> — CEC School Portal.
           </div>
           <div className="text-[10px] sm:text-[11px] text-slate-400 lg:text-slate-400 font-sans">
             cebucecportal.site

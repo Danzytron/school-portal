@@ -61,12 +61,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     // 1. Authenticate via secure Next.js server-side endpoint (which includes rate-limiting & HttpOnly cookies)
     try {
+      const turnstileToken = credentials.turnstileToken || '';
+
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, turnstileToken }),
       });
 
       const data = await res.json();

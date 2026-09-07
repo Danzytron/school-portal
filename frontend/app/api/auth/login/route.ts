@@ -1,6 +1,7 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { verifyAndConsumeOtp } from '@/lib/serverOtpStore';
+import { verifyTurnstileToken } from '@/lib/serverTurnstile';
 
 // Rate Limiting Store: Map<IP, { count: number, resetAt: number }>
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
@@ -38,6 +39,23 @@ const SERVER_ACCOUNTS: Record<
   },
 };
 
+function getClientIp(request: NextRequest): string {
+  // Cloudflare provides the real visitor IP in 'cf-connecting-ip'
+  const cfIp = request.headers.get('cf-connecting-ip');
+  if (cfIp && cfIp.trim()) return cfIp.trim();
+
+  const realIp = request.headers.get('x-real-ip');
+  if (realIp && realIp.trim()) return realIp.trim();
+
+  const forwardedFor = request.headers.get('x-forwarded-for');
+  if (forwardedFor) {
+    const firstIp = forwardedFor.split(',')[0]?.trim();
+    if (firstIp) return firstIp;
+  }
+
+  return '127.0.0.1';
+}
+
 function checkRateLimit(ip: string): { allowed: boolean; remaining: number } {
   const now = Date.now();
   const entry = rateLimitMap.get(ip);
@@ -57,7 +75,7 @@ function checkRateLimit(ip: string): { allowed: boolean; remaining: number } {
 
 export async function POST(request: NextRequest) {
   try {
-    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || '127.0.0.1';
+    const ip = getClientIp(request);
 
     // 1. Rate Limiting Check
     const rateLimit = checkRateLimit(ip);
@@ -73,6 +91,19 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}));
     const email = typeof body.email === 'string' ? body.email.toLowerCase().trim() : '';
     const password = typeof body.password === 'string' ? body.password : '';
+    const turnstileToken = typeof body.turnstileToken === 'string' ? body.turnstileToken.trim() : '';
+
+    // 3. Cloudflare Turnstile Verification (Server-Side Enforcement)
+    const turnstileResult = await verifyTurnstileToken(turnstileToken, ip);
+    if (!turnstileResult.success) {
+      console.warn(
+        `[SECURITY AUDIT] Turnstile validation rejected for identifier '${email || 'anonymous'}' from IP: ${ip}. Reason: ${turnstileResult.errorCodes?.join(', ')}`
+      );
+      return NextResponse.json(
+        { message: turnstileResult.message || 'Security verification failed. Please try again.' },
+        { status: 403 }
+      );
+    }
 
     if (!email || !password || email.length > 255 || password.length > 255) {
       return NextResponse.json(
@@ -81,7 +112,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Find Matching Account
+    // 4. Find Matching Account
     const account = SERVER_ACCOUNTS[email];
     if (!account) {
       console.warn(`[SECURITY AUDIT] Unknown identifier login attempt: ${email} from IP: ${ip}`);
@@ -91,7 +122,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 4. Authenticate using One-Time Password Store
+    // 5. Authenticate using One-Time Password Store
     const otpVerification = verifyAndConsumeOtp(password, email, ip);
 
     if (!otpVerification.success) {

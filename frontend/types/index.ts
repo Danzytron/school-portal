@@ -1,6 +1,6 @@
 // User types
 export interface User { id: number; name: string; email: string; role: 'student' | 'teacher' | 'admin'; avatar?: string; is_active: boolean; created_at: string; }
-export interface LoginCredentials { email: string; password?: string; }
+export interface LoginCredentials { email: string; password?: string; turnstileToken?: string; }
 export interface AuthResponse { user: User; token: string; }
 
 // Student types

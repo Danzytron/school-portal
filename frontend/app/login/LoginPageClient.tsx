@@ -18,11 +18,13 @@ import {
   Info
 } from "lucide-react";
 import Link from "next/link";
+import { TurnstileWidget, TurnstileWidgetRef } from "@/components/security/TurnstileWidget";
 
 export default function LoginPageClient() {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
   const [emailFocused, setEmailFocused] = useState(false);
   const [passwordFocused, setPasswordFocused] = useState(false);
   const [error, setError] = useState("");
@@ -31,6 +33,7 @@ export default function LoginPageClient() {
 
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
+  const turnstileRef = useRef<TurnstileWidgetRef>(null);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -45,12 +48,21 @@ export default function LoginPageClient() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    if (!turnstileToken) {
+      setError("Please complete the Cloudflare security verification before signing in.");
+      return;
+    }
+
     setLoading(true);
     try {
-      await login({ email: email.trim(), password });
+      await login({ email: email.trim(), password, turnstileToken });
     } catch (err: any) {
       setError(err.message || "The email or password you entered is incorrect.");
       setLoading(false);
+      // Reset Turnstile token on failed attempt
+      setTurnstileToken("");
+      turnstileRef.current?.reset();
     }
   };
 
@@ -250,10 +262,36 @@ export default function LoginPageClient() {
                     </a>
                   </div>
 
+                  {/* Cloudflare Turnstile Verification Widget */}
+                  <div className="pt-2 pb-1">
+                    <div className="bg-slate-50/80 border border-slate-200/80 rounded-lg p-2 flex flex-col items-center justify-center">
+                      <div className="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium mb-1.5 self-start px-1">
+                        <Shield className="w-3.5 h-3.5 text-[#1D4ED8]" />
+                        <span>Cloudflare Security Verification</span>
+                      </div>
+                      <TurnstileWidget
+                        ref={turnstileRef}
+                        onVerify={(token) => {
+                          setTurnstileToken(token);
+                          if (error) setError("");
+                        }}
+                        onExpire={() => {
+                          setTurnstileToken("");
+                          setError("Security verification expired. Please verify again.");
+                        }}
+                        onError={() => {
+                          setTurnstileToken("");
+                          setError("Cloudflare verification encountered an error. Retrying...");
+                        }}
+                        theme="light"
+                      />
+                    </div>
+                  </div>
+
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-[#1D4ED8] hover:bg-[#1E40AF] active:bg-[#172554] text-white py-2.5 sm:py-3 px-4 rounded-lg text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors border border-[#1E40AF] shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-3 font-sans min-h-[44px]"
+                    className="w-full bg-[#1D4ED8] hover:bg-[#1E40AF] active:bg-[#172554] text-white py-2.5 sm:py-3 px-4 rounded-lg text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors border border-[#1E40AF] shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-2 font-sans min-h-[44px]"
                   >
                     {loading ? (
                       <span>Verifying Credentials...</span>

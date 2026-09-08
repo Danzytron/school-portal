@@ -84,27 +84,27 @@ export default function LoginPageClient() {
   };
 
   return (
-    <div className="relative min-h-screen w-full flex flex-col font-sans overflow-x-hidden bg-slate-50">
+    <div className="relative min-h-screen w-full flex flex-col font-sans overflow-x-hidden">
       
-      {/* Campus Background Image with Left-to-Right Blue-to-White Gradient Overlay */}
+      {/* Campus Background Image with Left-to-Right Blue-to-White Gradient Overlay - Visible on ALL devices */}
       <div 
         className="fixed inset-0 bg-cover bg-center bg-no-repeat z-0 pointer-events-none"
         style={{ backgroundImage: "url('/cec-campus.jpg')" }}
       >
-        {/* Base Gradient: Semi-transparent Blue on Left -> Smooth Transition -> Soft White on Right so Campus Image is Visible */}
+        {/* Base Left-to-Right Gradient: Dominant Blue on Left -> Smooth Transition -> Soft White on Right (Active on Mobile, Tablet & Desktop) */}
         <div 
-          className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-[#071F48]/80 via-[#0C2F6E]/72 via-38%-[#18499E]/64 via-65%-[#C8DCF8]/70 via-82%-[#F4F8FD]/84 to-[#FFFFFF]/90"
+          className="absolute inset-0 bg-gradient-to-r from-[#061B3E]/88 via-[#0C2F6E]/80 via-40%-[#18499E]/70 via-70%-[#C4DCF8]/75 to-[#FFFFFF]/88"
         />
         
-        {/* Left Radial Highlight Overlay for Text Legibility & Rich Academic Depth */}
-        <div className="hidden lg:block absolute inset-y-0 left-0 w-3/5 bg-[radial-gradient(ellipse_at_18%_42%,rgba(9,34,78,0.50),transparent_70%)]" />
+        {/* Ambient Radial Glow for Rich Blue Depth on ALL screens */}
+        <div className="absolute inset-y-0 left-0 w-full lg:w-3/5 bg-[radial-gradient(ellipse_at_15%_35%,rgba(29,78,216,0.45),transparent_75%)]" />
         
-        {/* Soft Ambient Depth Spheres */}
-        <div className="hidden lg:block absolute -top-32 -left-32 w-[520px] h-[520px] rounded-full bg-[#1E40AF]/20 blur-3xl" />
-        <div className="hidden lg:block absolute -bottom-32 left-[10%] w-[580px] h-[580px] rounded-full bg-[#071836]/30 blur-3xl" />
+        {/* Soft Ambient Depth Spheres on ALL screens */}
+        <div className="absolute -top-20 -left-20 sm:-top-32 sm:-left-32 w-72 sm:w-[520px] h-72 sm:h-[520px] rounded-full bg-[#1E40AF]/25 blur-2xl sm:blur-3xl" />
+        <div className="absolute -bottom-20 right-0 sm:-bottom-32 sm:left-[10%] w-72 sm:w-[580px] h-72 sm:h-[580px] rounded-full bg-[#071836]/30 blur-2xl sm:blur-3xl" />
 
-        {/* Subtle Watermark Seal on Left side (Original Colors, NOT inverted) */}
-        <div className="hidden lg:block absolute top-1/2 left-[5%] -translate-y-1/2 w-[560px] h-[560px] opacity-[0.14] select-none pointer-events-none">
+        {/* Subtle Watermark Seal on ALL devices (Original Colors, NOT inverted) */}
+        <div className="absolute top-[18%] lg:top-1/2 left-1/2 lg:left-[5%] -translate-x-1/2 lg:translate-x-0 -translate-y-1/2 w-[280px] h-[280px] sm:w-[420px] sm:h-[420px] lg:w-[560px] lg:h-[560px] opacity-[0.12] lg:opacity-[0.14] select-none pointer-events-none">
           <img 
             src="/cec-logo.png" 
             alt="Cebu Eastern College Seal Watermark" 

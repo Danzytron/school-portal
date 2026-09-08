@@ -86,21 +86,24 @@ export default function LoginPageClient() {
   return (
     <div className="relative min-h-screen w-full flex flex-col font-sans overflow-x-hidden bg-slate-50">
       
-      {/* Sophisticated Professional Left-to-Right Blue-to-White Background */}
-      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+      {/* Campus Background Image with Left-to-Right Blue-to-White Gradient Overlay */}
+      <div 
+        className="fixed inset-0 bg-cover bg-center bg-no-repeat z-0 pointer-events-none"
+        style={{ backgroundImage: "url('/cec-campus.jpg')" }}
+      >
         {/* Base Gradient: Dominant Institutional Blue on Left -> Smooth Transition -> Clean White on Right */}
         <div 
-          className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-[#09224E] via-[#0E3576] via-35%-[#1B4FA8] via-55%-[#8AAFE6]/45 via-75%-[#EAF1FB]/90 to-[#FFFFFF]"
+          className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-[#071F48]/94 via-[#0C2F6E]/90 via-38%-[#18499E]/84 via-62%-[#C8DCF8]/90 via-82%-[#F4F8FD]/98 to-[#FFFFFF]"
         />
         
         {/* Left Radial Highlight Overlay for Rich Academic Depth */}
-        <div className="hidden lg:block absolute inset-y-0 left-0 w-3/5 bg-[radial-gradient(ellipse_at_15%_40%,rgba(29,78,216,0.42),transparent_72%)]" />
+        <div className="hidden lg:block absolute inset-y-0 left-0 w-3/5 bg-[radial-gradient(ellipse_at_15%_40%,rgba(29,78,216,0.40),transparent_72%)]" />
         
         {/* Soft Ambient Depth Spheres */}
         <div className="hidden lg:block absolute -top-32 -left-32 w-[520px] h-[520px] rounded-full bg-[#1E40AF]/25 blur-3xl" />
         <div className="hidden lg:block absolute -bottom-32 left-[10%] w-[580px] h-[580px] rounded-full bg-[#071836]/40 blur-3xl" />
 
-        {/* Subtle Watermark Seal on Left side (matching reference institutional styling) */}
+        {/* Subtle Watermark Seal on Left side */}
         <div className="hidden lg:block absolute top-1/2 left-[5%] -translate-y-1/2 w-[560px] h-[560px] opacity-[0.055] select-none pointer-events-none">
           <img 
             src="/cec-logo.png" 
@@ -109,9 +112,6 @@ export default function LoginPageClient() {
             className="w-full h-full object-contain filter grayscale invert brightness-200" 
           />
         </div>
-
-        {/* Soft Transitional Accent Line between left and right */}
-        <div className="hidden lg:block absolute inset-y-0 left-[48%] w-[1px] bg-gradient-to-b from-transparent via-blue-300/25 to-transparent" />
       </div>
 
       {/* Main Responsive Layout: Two-Column Balance on Desktop; Focused Fluid Layout on Mobile */}

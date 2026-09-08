@@ -91,25 +91,25 @@ export default function LoginPageClient() {
         className="fixed inset-0 bg-cover bg-center bg-no-repeat z-0 pointer-events-none"
         style={{ backgroundImage: "url('/cec-campus.jpg')" }}
       >
-        {/* Base Gradient: Dominant Institutional Blue on Left -> Smooth Transition -> Clean White on Right */}
+        {/* Base Gradient: Semi-transparent Blue on Left -> Smooth Transition -> Soft White on Right so Campus Image is Visible */}
         <div 
-          className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-[#071F48]/94 via-[#0C2F6E]/90 via-38%-[#18499E]/84 via-62%-[#C8DCF8]/90 via-82%-[#F4F8FD]/98 to-[#FFFFFF]"
+          className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-[#071F48]/80 via-[#0C2F6E]/72 via-38%-[#18499E]/64 via-65%-[#C8DCF8]/70 via-82%-[#F4F8FD]/84 to-[#FFFFFF]/90"
         />
         
-        {/* Left Radial Highlight Overlay for Rich Academic Depth */}
-        <div className="hidden lg:block absolute inset-y-0 left-0 w-3/5 bg-[radial-gradient(ellipse_at_15%_40%,rgba(29,78,216,0.40),transparent_72%)]" />
+        {/* Left Radial Highlight Overlay for Text Legibility & Rich Academic Depth */}
+        <div className="hidden lg:block absolute inset-y-0 left-0 w-3/5 bg-[radial-gradient(ellipse_at_18%_42%,rgba(9,34,78,0.50),transparent_70%)]" />
         
         {/* Soft Ambient Depth Spheres */}
-        <div className="hidden lg:block absolute -top-32 -left-32 w-[520px] h-[520px] rounded-full bg-[#1E40AF]/25 blur-3xl" />
-        <div className="hidden lg:block absolute -bottom-32 left-[10%] w-[580px] h-[580px] rounded-full bg-[#071836]/40 blur-3xl" />
+        <div className="hidden lg:block absolute -top-32 -left-32 w-[520px] h-[520px] rounded-full bg-[#1E40AF]/20 blur-3xl" />
+        <div className="hidden lg:block absolute -bottom-32 left-[10%] w-[580px] h-[580px] rounded-full bg-[#071836]/30 blur-3xl" />
 
-        {/* Subtle Watermark Seal on Left side */}
-        <div className="hidden lg:block absolute top-1/2 left-[5%] -translate-y-1/2 w-[560px] h-[560px] opacity-[0.055] select-none pointer-events-none">
+        {/* Subtle Watermark Seal on Left side (Original Colors, NOT inverted) */}
+        <div className="hidden lg:block absolute top-1/2 left-[5%] -translate-y-1/2 w-[560px] h-[560px] opacity-[0.14] select-none pointer-events-none">
           <img 
             src="/cec-logo.png" 
-            alt="" 
+            alt="Cebu Eastern College Seal Watermark" 
             aria-hidden="true" 
-            className="w-full h-full object-contain filter grayscale invert brightness-200" 
+            className="w-full h-full object-contain" 
           />
         </div>
       </div>

@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { TurnstileWidget, TurnstileWidgetRef } from "@/components/security/TurnstileWidget";
+import { PublicFooter } from "@/components/layout/PublicFooter";
 
 export default function LoginPageClient() {
   const { login } = useAuth();
@@ -83,7 +84,7 @@ export default function LoginPageClient() {
   };
 
   return (
-    <div className="relative min-h-screen w-full flex flex-col justify-between font-sans overflow-x-hidden bg-slate-100 lg:bg-transparent">
+    <div className="relative min-h-screen w-full flex flex-col font-sans overflow-x-hidden bg-slate-100 lg:bg-transparent">
       
       {/* Full-Screen Campus Background Image - Visible on Desktop/Large screens only; Hidden on small screens */}
       <div 
@@ -96,7 +97,7 @@ export default function LoginPageClient() {
       </div>
 
       {/* Main Responsive Layout: Two-Column Balance on Desktop; Focused Fluid Layout on Mobile */}
-      <main className="relative z-10 flex-1 flex items-center justify-center p-3 sm:p-6 lg:p-12 w-full my-auto">
+      <main className="relative z-10 min-h-screen flex items-center justify-center p-3 sm:p-6 lg:p-12 w-full py-10 lg:py-16">
         <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* Left Column: University Branding (Desktop Only: hidden on mobile) */}
@@ -325,17 +326,8 @@ export default function LoginPageClient() {
         </div>
       </main>
 
-      {/* University Compliance Bottom Bar */}
-      <footer className="relative z-10 w-full px-4 sm:px-8 lg:px-12 py-3 text-center text-xs text-slate-500 lg:text-slate-300 font-sans bg-white lg:bg-black/50 backdrop-blur-xs border-t border-slate-200 lg:border-white/10">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-1.5 sm:gap-2">
-          <div>
-            © 2026 <strong>Cebu Eastern College (CEC)</strong> — CEC School Portal.
-          </div>
-          <div className="text-[10px] sm:text-[11px] text-slate-400 lg:text-slate-400 font-sans">
-            cebucecportal.site
-          </div>
-        </div>
-      </footer>
+      {/* Professional University Portal Footer */}
+      <PublicFooter />
 
     </div>
   );

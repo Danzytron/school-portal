@@ -84,50 +84,80 @@ export default function LoginPageClient() {
   };
 
   return (
-    <div className="relative min-h-screen w-full flex flex-col font-sans overflow-x-hidden bg-slate-100 lg:bg-transparent">
+    <div className="relative min-h-screen w-full flex flex-col font-sans overflow-x-hidden bg-slate-50">
       
-      {/* Full-Screen Campus Background Image - Visible on Desktop/Large screens only; Hidden on small screens */}
-      <div 
-        className="hidden lg:block fixed inset-0 bg-cover bg-center bg-no-repeat z-0"
-        style={{ backgroundImage: "url('/cec-campus.jpg')" }}
-      >
-        {/* Deep cinematic dark gradient overlay for enhanced readability and contrast */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/70 to-black/60"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/50"></div>
+      {/* Sophisticated Professional Left-to-Right Blue-to-White Background */}
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        {/* Base Gradient: Dominant Institutional Blue on Left -> Smooth Transition -> Clean White on Right */}
+        <div 
+          className="absolute inset-0 bg-gradient-to-b lg:bg-gradient-to-r from-[#09224E] via-[#0E3576] via-35%-[#1B4FA8] via-55%-[#8AAFE6]/45 via-75%-[#EAF1FB]/90 to-[#FFFFFF]"
+        />
+        
+        {/* Left Radial Highlight Overlay for Rich Academic Depth */}
+        <div className="hidden lg:block absolute inset-y-0 left-0 w-3/5 bg-[radial-gradient(ellipse_at_15%_40%,rgba(29,78,216,0.42),transparent_72%)]" />
+        
+        {/* Soft Ambient Depth Spheres */}
+        <div className="hidden lg:block absolute -top-32 -left-32 w-[520px] h-[520px] rounded-full bg-[#1E40AF]/25 blur-3xl" />
+        <div className="hidden lg:block absolute -bottom-32 left-[10%] w-[580px] h-[580px] rounded-full bg-[#071836]/40 blur-3xl" />
+
+        {/* Subtle Watermark Seal on Left side (matching reference institutional styling) */}
+        <div className="hidden lg:block absolute top-1/2 left-[5%] -translate-y-1/2 w-[560px] h-[560px] opacity-[0.055] select-none pointer-events-none">
+          <img 
+            src="/cec-logo.png" 
+            alt="" 
+            aria-hidden="true" 
+            className="w-full h-full object-contain filter grayscale invert brightness-200" 
+          />
+        </div>
+
+        {/* Soft Transitional Accent Line between left and right */}
+        <div className="hidden lg:block absolute inset-y-0 left-[48%] w-[1px] bg-gradient-to-b from-transparent via-blue-300/25 to-transparent" />
       </div>
 
       {/* Main Responsive Layout: Two-Column Balance on Desktop; Focused Fluid Layout on Mobile */}
       <main className="relative z-10 min-h-screen flex items-center justify-center p-3 sm:p-6 lg:p-12 w-full py-10 lg:py-16">
         <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
-          {/* Left Column: University Branding (Desktop Only: hidden on mobile) */}
-          <div className="hidden lg:block lg:col-span-6 text-white space-y-4 px-2 sm:px-4">
+          {/* Left Column: University Branding & Information (Desktop Only: hidden on mobile) */}
+          <div className="hidden lg:flex lg:col-span-6 flex-col justify-center text-white px-4 sm:px-6 lg:pr-8 select-none">
+            
+            {/* Primary Institutional Branding Block */}
             <div className="space-y-4">
-              <div>
+              <div className="inline-block">
                 <img 
                   src="/cec-logo.png" 
                   alt="Cebu Eastern College Official Seal and Logo" 
-                  className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-xl shrink-0" 
+                  className="w-20 h-20 xl:w-24 xl:h-24 object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.3)] shrink-0" 
                 />
               </div>
-              <div className="space-y-1">
-                <h1 className="font-heading font-extrabold text-2xl sm:text-4xl text-white tracking-tight leading-tight m-0 drop-shadow-sm">
+
+              {/* School Name & Subtitle */}
+              <div className="space-y-2">
+                <h1 className="font-heading font-black text-3xl sm:text-4xl xl:text-[40px] text-white tracking-tight leading-[1.14] drop-shadow-md m-0 uppercase">
                   CEBU EASTERN COLLEGE
                 </h1>
-                <p className="text-sm sm:text-base text-slate-200 font-medium tracking-wide m-0">
-                  School Portal System
-                </p>
-              </div>
-
-              <div className="pt-2 space-y-2">
-                <h2 className="font-heading text-lg sm:text-xl font-bold text-white/90 m-0 drop-shadow-xs">
-                  Sign in to your account
-                </h2>
-                <p className="text-xs text-slate-300 mt-1 font-sans leading-relaxed">
-                  Cebu Eastern College Portal provides students, faculty, and academic staff with online access to enrollment, academic grades, class schedules, and other academic services.
-                </p>
+                
+                <div className="flex items-center gap-2 text-blue-200/90 font-sans text-xs sm:text-sm font-semibold tracking-widest uppercase">
+                  <span className="inline-block w-2 h-2 rounded-full bg-blue-400"></span>
+                  <span>School Portal System</span>
+                </div>
               </div>
             </div>
+
+            {/* Elegant Subtle Separator Line to Establish Visual Hierarchy */}
+            <div className="my-7 w-16 h-[2px] bg-gradient-to-r from-blue-300/70 via-blue-400/40 to-transparent rounded-full"></div>
+
+            {/* Supporting Information Section */}
+            <div className="space-y-3">
+              <h2 className="font-heading text-lg sm:text-xl xl:text-[22px] font-bold text-white tracking-tight m-0 leading-snug">
+                Sign in to your account
+              </h2>
+
+              <p className="text-xs sm:text-[13.5px] text-blue-100/85 font-sans leading-relaxed max-w-md m-0 font-normal">
+                Cebu Eastern College Portal provides students, faculty, and academic staff with online access to enrollment, academic grades, class schedules, and other academic services.
+              </p>
+            </div>
+
           </div>
 
           {/* Right Column / Mobile Centered Authentication Card */}

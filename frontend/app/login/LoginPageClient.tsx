@@ -119,7 +119,7 @@ export default function LoginPageClient() {
         <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* Left Column: University Branding & Information (Desktop Only: hidden on mobile) */}
-          <div className="hidden lg:flex lg:col-span-6 flex-col justify-center text-white px-4 sm:px-6 lg:pr-8 select-none">
+          <div className="hidden lg:flex lg:col-span-6 flex-col justify-center text-white px-4 sm:px-6 lg:pr-8 select-text">
             
             {/* Primary Institutional Branding Block */}
             <div className="space-y-4">
@@ -127,33 +127,31 @@ export default function LoginPageClient() {
                 <img 
                   src="/cec-logo.png" 
                   alt="Cebu Eastern College Official Seal and Logo" 
-                  className="w-20 h-20 xl:w-24 xl:h-24 object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.3)] shrink-0" 
+                  className="w-20 h-20 xl:w-24 xl:h-24 object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.3)] shrink-0 select-none" 
+                  draggable={false}
                 />
               </div>
 
               {/* School Name & Subtitle */}
-              <div className="space-y-2">
-                <h1 className="font-heading font-black text-3xl sm:text-4xl xl:text-[40px] text-white tracking-tight leading-[1.14] drop-shadow-md m-0 uppercase">
+              <div className="space-y-2 select-text">
+                <h1 className="font-heading font-black text-3xl sm:text-4xl xl:text-[40px] text-white tracking-tight leading-[1.14] drop-shadow-md m-0 uppercase select-text">
                   CEBU EASTERN COLLEGE
                 </h1>
                 
-                <div className="flex items-center gap-2 text-blue-200/90 font-sans text-xs sm:text-sm font-semibold tracking-widest uppercase">
-                  <span className="inline-block w-2 h-2 rounded-full bg-blue-400"></span>
-                  <span>School Portal System</span>
+                <div className="flex items-center gap-2 text-blue-200/90 font-sans text-xs sm:text-sm font-semibold tracking-widest uppercase select-text">
+                  <span className="inline-block w-2 h-2 rounded-full bg-blue-400 shrink-0"></span>
+                  <span className="select-text">School Portal System</span>
                 </div>
               </div>
             </div>
 
-            {/* Elegant Subtle Separator Line to Establish Visual Hierarchy */}
-            <div className="my-7 w-16 h-[2px] bg-gradient-to-r from-blue-300/70 via-blue-400/40 to-transparent rounded-full"></div>
-
-            {/* Supporting Information Section */}
-            <div className="space-y-3">
-              <h2 className="font-heading text-lg sm:text-xl xl:text-[22px] font-bold text-white tracking-tight m-0 leading-snug">
+            {/* Supporting Information Section - cleanly spaced after subtitle without divider line */}
+            <div className="mt-8 space-y-3 select-text">
+              <h2 className="font-heading text-lg sm:text-xl xl:text-[22px] font-bold text-white tracking-tight m-0 leading-snug select-text">
                 Sign in to your account
               </h2>
 
-              <p className="text-xs sm:text-[13.5px] text-blue-100/85 font-sans leading-relaxed max-w-md m-0 font-normal">
+              <p className="text-xs sm:text-[13.5px] text-blue-100/85 font-sans leading-relaxed max-w-md m-0 font-normal select-text">
                 Cebu Eastern College Portal provides students, faculty, and academic staff with online access to enrollment, academic grades, class schedules, and other academic services.
               </p>
             </div>

@@ -138,9 +138,9 @@ export default function LoginPageClient() {
                   CEBU EASTERN COLLEGE
                 </h1>
                 
-                <div className="flex items-center gap-2 text-blue-200/90 font-sans text-xs sm:text-sm font-semibold tracking-widest uppercase select-text">
+                <div className="flex items-center gap-2 text-white font-sans text-xs sm:text-sm font-semibold tracking-widest uppercase select-text">
                   <span className="inline-block w-2 h-2 rounded-full bg-blue-400 shrink-0"></span>
-                  <span className="select-text">School Portal System</span>
+                  <span className="select-text text-white">Easternian School Portal System</span>
                 </div>
               </div>
             </div>
@@ -176,7 +176,7 @@ export default function LoginPageClient() {
                       CEBU EASTERN COLLEGE
                     </div>
                     <div className="text-[10px] text-slate-500 uppercase tracking-wider leading-none mt-0.5 font-sans font-medium">
-                      School Portal System
+                      Easternian School Portal System
                     </div>
                   </div>
                 </div>

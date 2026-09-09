@@ -84,7 +84,7 @@ export default function LoginPageClient() {
   };
 
   return (
-    <div className="relative min-h-screen w-full flex flex-col font-sans overflow-x-hidden">
+    <div className="relative min-h-screen w-full flex flex-col justify-between font-sans overflow-x-hidden">
       
       {/* Campus Background Image with Left-to-Right Blue-to-White Gradient Overlay - Visible on ALL devices */}
       <div 
@@ -115,7 +115,7 @@ export default function LoginPageClient() {
       </div>
 
       {/* Main Responsive Layout: Two-Column Balance on Desktop; Focused Fluid Layout on Mobile */}
-      <main className="relative z-10 min-h-screen flex items-center justify-center p-3 sm:p-6 lg:p-12 w-full py-10 lg:py-16">
+      <main className="relative z-10 flex-1 flex items-center justify-center p-3 sm:p-6 lg:p-12 w-full my-auto">
         <div className="w-full max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* Left Column: University Branding & Information (Desktop Only: hidden on mobile) */}

@@ -1,4 +1,4 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { PublicFooter } from "@/components/layout/PublicFooter";
@@ -87,7 +87,7 @@ export default function TermsOfUsePage() {
         </div>
       </main>
 
-      <PublicFooter />
+      <PublicFooter theme="light" />
     </div>
   );
 }

@@ -326,7 +326,7 @@ export default function LoginPageClient() {
                     className="w-full bg-[#1D4ED8] hover:bg-[#1E40AF] active:bg-[#172554] text-white py-2.5 sm:py-3 px-4 rounded-lg text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors border border-[#1E40AF] shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-2 font-sans min-h-[44px]"
                   >
                     {loading ? (
-                      <span>Verifying Credentials...</span>
+                      <span>Signing In...</span>
                     ) : (
                       <>
                         <span>Sign In</span>

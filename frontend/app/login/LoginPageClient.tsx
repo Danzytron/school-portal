@@ -202,87 +202,93 @@ export default function LoginPageClient() {
                 </div>
 
                 {/* Authentication Form */}
-                <form onSubmit={handleSubmit} className="space-y-4 font-sans pt-1">
+                <form onSubmit={handleSubmit} className="space-y-5 font-sans pt-2">
                   
-                  {/* Email / Student ID Field */}
-                  <div className="space-y-1.5 text-left">
+                  {/* Floating Label Input: Email / Username */}
+                  <div className="relative">
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-slate-400 z-10 transition-colors">
+                      <User size={18} className={error ? 'text-red-500' : (emailFocused ? 'text-[#1D4ED8]' : 'text-slate-400')} />
+                    </div>
+                    
+                    <input
+                      ref={emailInputRef}
+                      id="institutional-email"
+                      name="email"
+                      type="text"
+                      className={`w-full h-12 pl-10 pr-3.5 bg-white border rounded-lg text-sm text-slate-900 focus:outline-none transition-all placeholder:text-slate-400 ${
+                        error
+                          ? 'border-red-500 ring-2 ring-red-500/15'
+                          : (emailFocused 
+                              ? 'border-[#1D4ED8] ring-2 ring-[#1D4ED8]/15' 
+                              : 'border-slate-300 hover:border-slate-400')
+                      }`}
+                      value={email}
+                      onChange={handleEmailChange}
+                      onFocus={() => setEmailFocused(true)}
+                      onBlur={() => setEmailFocused(false)}
+                      placeholder={emailFocused ? "Enter your email or student ID" : ""}
+                      required
+                      autoFocus
+                    />
+
                     <label
                       htmlFor="institutional-email"
-                      className="block text-xs font-semibold text-slate-700 font-sans"
+                      className={`absolute transition-all duration-200 pointer-events-none select-none ${
+                        emailFocused || email
+                          ? '-top-5.5 left-0.5 text-xs font-semibold ' + (error ? 'text-red-600' : (emailFocused ? 'text-[#1D4ED8]' : 'text-slate-700'))
+                          : (error ? 'left-10 top-1/2 -translate-y-1/2 text-sm text-red-500 font-normal' : 'left-10 top-1/2 -translate-y-1/2 text-sm text-slate-500 font-normal')
+                      }`}
                     >
                       Email or Student ID
                     </label>
-                    <div className="relative">
-                      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-slate-400 z-10 transition-colors">
-                        <User size={18} className={error ? 'text-red-500' : (emailFocused ? 'text-[#1D4ED8]' : 'text-slate-400')} />
-                      </div>
-                      
-                      <input
-                        ref={emailInputRef}
-                        id="institutional-email"
-                        name="email"
-                        type="text"
-                        placeholder="Enter your email or student ID"
-                        className={`w-full h-12 pl-10 pr-3.5 bg-white border rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all ${
-                          error
-                            ? 'border-red-500 ring-2 ring-red-500/15'
-                            : (emailFocused 
-                                ? 'border-[#1D4ED8] ring-2 ring-[#1D4ED8]/15' 
-                                : 'border-slate-300 hover:border-slate-400')
-                        }`}
-                        value={email}
-                        onChange={handleEmailChange}
-                        onFocus={() => setEmailFocused(true)}
-                        onBlur={() => setEmailFocused(false)}
-                        required
-                        autoFocus
-                      />
-                    </div>
                   </div>
 
-                  {/* Password Field */}
-                  <div className="space-y-1.5 text-left">
+                  {/* Floating Label Input: Password */}
+                  <div className="relative">
+                    <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-slate-400 z-10 transition-colors">
+                      <Lock size={18} className={error ? 'text-red-500' : (passwordFocused ? 'text-[#1D4ED8]' : 'text-slate-400')} />
+                    </div>
+                    
+                    <input
+                      ref={passwordInputRef}
+                      id="security-password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      className={`w-full h-12 pl-10 pr-10 bg-white border rounded-lg text-sm text-slate-900 focus:outline-none transition-all placeholder:text-slate-400 ${
+                        error
+                          ? 'border-red-500 ring-2 ring-red-500/15'
+                          : (passwordFocused 
+                              ? 'border-[#1D4ED8] ring-2 ring-[#1D4ED8]/15' 
+                              : 'border-slate-300 hover:border-slate-400')
+                      }`}
+                      value={password}
+                      onChange={handlePasswordChange}
+                      onFocus={() => setPasswordFocused(true)}
+                      onBlur={() => setPasswordFocused(false)}
+                      placeholder={passwordFocused ? "Enter your password" : ""}
+                      required
+                    />
+
                     <label
                       htmlFor="security-password"
-                      className="block text-xs font-semibold text-slate-700 font-sans"
+                      className={`absolute transition-all duration-200 pointer-events-none select-none ${
+                        passwordFocused || password
+                          ? '-top-5.5 left-0.5 text-xs font-semibold ' + (error ? 'text-red-600' : (passwordFocused ? 'text-[#1D4ED8]' : 'text-slate-700'))
+                          : (error ? 'left-10 top-1/2 -translate-y-1/2 text-sm text-red-500 font-normal' : 'left-10 top-1/2 -translate-y-1/2 text-sm text-slate-500 font-normal')
+                      }`}
                     >
                       Password
                     </label>
-                    <div className="relative">
-                      <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-slate-400 z-10 transition-colors">
-                        <Lock size={18} className={error ? 'text-red-500' : (passwordFocused ? 'text-[#1D4ED8]' : 'text-slate-400')} />
-                      </div>
-                      
-                      <input
-                        ref={passwordInputRef}
-                        id="security-password"
-                        name="password"
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Enter your password"
-                        className={`w-full h-12 pl-10 pr-10 bg-white border rounded-lg text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all ${
-                          error
-                            ? 'border-red-500 ring-2 ring-red-500/15'
-                            : (passwordFocused 
-                                ? 'border-[#1D4ED8] ring-2 ring-[#1D4ED8]/15' 
-                                : 'border-slate-300 hover:border-slate-400')
-                        }`}
-                        value={password}
-                        onChange={handlePasswordChange}
-                        onFocus={() => setPasswordFocused(true)}
-                        onBlur={() => setPasswordFocused(false)}
-                        required
-                      />
 
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5 rounded-md hover:bg-slate-100 transition-colors cursor-pointer z-10"
-                        title={showPassword ? "Hide password" : "Show password"}
-                        tabIndex={-1}
-                      >
-                        {showPassword ? <Eye size={17} /> : <EyeOff size={17} />}
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5 rounded-md hover:bg-slate-100 transition-colors cursor-pointer z-10"
+                      title={showPassword ? "Hide password" : "Show password"}
+                      tabIndex={-1}
+                    >
+                      {showPassword ? <Eye size={17} /> : <EyeOff size={17} />}
+                    </button>
                   </div>
 
                   {/* Inline Error Message below Password Field */}

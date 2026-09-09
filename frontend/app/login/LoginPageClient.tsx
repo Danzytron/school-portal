@@ -197,7 +197,7 @@ export default function LoginPageClient() {
                     Sign In
                   </h3>
                   <p className="text-xs sm:text-[13px] text-slate-600 mt-2 font-sans leading-relaxed">
-                    Enter your registered university email or student ID to access your portal dashboard.
+                    Enter your registered email or student ID to access your portal dashboard.
                   </p>
                 </div>
 
@@ -226,6 +226,7 @@ export default function LoginPageClient() {
                       onChange={handleEmailChange}
                       onFocus={() => setEmailFocused(true)}
                       onBlur={() => setEmailFocused(false)}
+                      placeholder={emailFocused ? "Enter your email or student ID" : ""}
                       required
                       autoFocus
                     />
@@ -238,7 +239,7 @@ export default function LoginPageClient() {
                           : (error ? 'left-10 top-1/2 -translate-y-1/2 text-sm text-red-500 font-normal' : 'left-10 top-1/2 -translate-y-1/2 text-sm text-slate-500 font-normal')
                       }`}
                     >
-                      Institutional Email or User ID
+                      Email or Student ID
                     </label>
                   </div>
 
@@ -264,6 +265,7 @@ export default function LoginPageClient() {
                       onChange={handlePasswordChange}
                       onFocus={() => setPasswordFocused(true)}
                       onBlur={() => setPasswordFocused(false)}
+                      placeholder={passwordFocused ? "Enter your password" : ""}
                       required
                     />
 
@@ -275,7 +277,7 @@ export default function LoginPageClient() {
                           : (error ? 'left-10 top-1/2 -translate-y-1/2 text-sm text-red-500 font-normal' : 'left-10 top-1/2 -translate-y-1/2 text-sm text-slate-500 font-normal')
                       }`}
                     >
-                      Security Password
+                      Password
                     </label>
 
                     <button

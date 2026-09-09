@@ -202,7 +202,7 @@ export default function LoginPageClient() {
                 </div>
 
                 {/* Authentication Form */}
-                <form onSubmit={handleSubmit} className="space-y-5 font-sans pt-2">
+                <form onSubmit={handleSubmit} className="space-y-4 font-sans pt-1">
                   
                   {/* Floating Label Input: Email / Username */}
                   <div className="relative">
@@ -215,7 +215,7 @@ export default function LoginPageClient() {
                       id="institutional-email"
                       name="email"
                       type="text"
-                      className={`w-full h-12 pl-10 pr-3.5 bg-white border rounded-lg text-sm text-slate-900 focus:outline-none transition-all placeholder:text-slate-400 ${
+                      className={`w-full h-12 pl-10 pr-3.5 bg-white border rounded-lg text-sm text-slate-900 focus:outline-none transition-all ${
                         error
                           ? 'border-red-500 ring-2 ring-red-500/15'
                           : (emailFocused 
@@ -233,9 +233,9 @@ export default function LoginPageClient() {
 
                     <label
                       htmlFor="institutional-email"
-                      className={`absolute transition-all duration-200 pointer-events-none select-none ${
+                      className={`absolute transition-all duration-200 pointer-events-none ${
                         emailFocused || email
-                          ? '-top-5.5 left-0.5 text-xs font-semibold ' + (error ? 'text-red-600' : (emailFocused ? 'text-[#1D4ED8]' : 'text-slate-700'))
+                          ? '-top-2.5 left-8 bg-white px-1.5 text-xs font-bold ' + (error ? 'text-red-600' : (emailFocused ? 'text-[#1D4ED8]' : 'text-slate-700'))
                           : (error ? 'left-10 top-1/2 -translate-y-1/2 text-sm text-red-500 font-normal' : 'left-10 top-1/2 -translate-y-1/2 text-sm text-slate-500 font-normal')
                       }`}
                     >
@@ -254,7 +254,7 @@ export default function LoginPageClient() {
                       id="security-password"
                       name="password"
                       type={showPassword ? "text" : "password"}
-                      className={`w-full h-12 pl-10 pr-10 bg-white border rounded-lg text-sm text-slate-900 focus:outline-none transition-all placeholder:text-slate-400 ${
+                      className={`w-full h-12 pl-10 pr-10 bg-white border rounded-lg text-sm text-slate-900 focus:outline-none transition-all ${
                         error
                           ? 'border-red-500 ring-2 ring-red-500/15'
                           : (passwordFocused 
@@ -271,9 +271,9 @@ export default function LoginPageClient() {
 
                     <label
                       htmlFor="security-password"
-                      className={`absolute transition-all duration-200 pointer-events-none select-none ${
+                      className={`absolute transition-all duration-200 pointer-events-none ${
                         passwordFocused || password
-                          ? '-top-5.5 left-0.5 text-xs font-semibold ' + (error ? 'text-red-600' : (passwordFocused ? 'text-[#1D4ED8]' : 'text-slate-700'))
+                          ? '-top-2.5 left-8 bg-white px-1.5 text-xs font-bold ' + (error ? 'text-red-600' : (passwordFocused ? 'text-[#1D4ED8]' : 'text-slate-700'))
                           : (error ? 'left-10 top-1/2 -translate-y-1/2 text-sm text-red-500 font-normal' : 'left-10 top-1/2 -translate-y-1/2 text-sm text-slate-500 font-normal')
                       }`}
                     >

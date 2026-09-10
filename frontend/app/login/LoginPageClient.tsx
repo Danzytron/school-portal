@@ -86,22 +86,25 @@ export default function LoginPageClient() {
   return (
     <div className="relative min-h-screen w-full flex flex-col justify-between font-sans overflow-x-hidden bg-slate-50 lg:bg-transparent">
       
-      {/* Campus Background Image with Left-to-Right Blue-to-White Gradient Overlay - Visible on Desktop only */}
+      {/* Campus Background Image with All-Blue Institutional Gradient Overlay - Visible on Desktop only */}
       <div 
-        className="hidden lg:block fixed inset-0 bg-cover bg-center bg-no-repeat z-0 pointer-events-none"
+        className="hidden lg:block fixed inset-0 bg-[#061B3E] bg-cover bg-center bg-no-repeat z-0 pointer-events-none"
         style={{ backgroundImage: "url('/cec-campus.jpg')" }}
       >
-        {/* Base Left-to-Right Gradient: Dominant Blue on Left -> Smooth Transition -> Soft White on Right */}
+        {/* Base All-Blue Gradient: Deep Institutional Navy on Left -> Rich Royal/Sapphire Blue on Right */}
         <div 
-          className="absolute inset-0 bg-gradient-to-r from-[#061B3E]/88 via-[#0C2F6E]/80 via-40%-[#18499E]/70 via-70%-[#C4DCF8]/75 to-[#FFFFFF]/88"
+          className="absolute inset-0 bg-gradient-to-r from-[#061B3E]/94 via-[#0A2960]/90 via-50%-[#0E3A88]/88 to-[#164798]/90"
         />
         
         {/* Ambient Radial Glow for Rich Blue Depth */}
-        <div className="absolute inset-y-0 left-0 w-3/5 bg-[radial-gradient(ellipse_at_15%_35%,rgba(29,78,216,0.45),transparent_75%)]" />
+        <div className="absolute inset-y-0 left-0 w-3/5 bg-[radial-gradient(ellipse_at_15%_35%,rgba(29,78,216,0.4),transparent_75%)]" />
+        <div className="absolute inset-y-0 right-0 w-2/5 bg-[radial-gradient(ellipse_at_85%_65%,rgba(37,99,235,0.25),transparent_75%)]" />
         
-        {/* Soft Ambient Depth Spheres */}
-        <div className="absolute -top-32 -left-32 w-[520px] h-[520px] rounded-full bg-[#1E40AF]/25 blur-3xl" />
-        <div className="absolute -bottom-32 left-[10%] w-[580px] h-[580px] rounded-full bg-[#071836]/30 blur-3xl" />
+        {/* Soft Ambient Depth Spheres in Cohesive Blue Tones */}
+        <div className="absolute -top-32 -left-32 w-[520px] h-[520px] rounded-full bg-[#1E40AF]/30 blur-3xl" />
+        <div className="absolute -bottom-32 left-[10%] w-[580px] h-[580px] rounded-full bg-[#071836]/40 blur-3xl" />
+        <div className="absolute -top-24 -right-24 w-[480px] h-[480px] rounded-full bg-[#1E3A8A]/25 blur-3xl" />
+        <div className="absolute -bottom-32 right-[5%] w-[520px] h-[520px] rounded-full bg-[#1D4ED8]/20 blur-3xl" />
 
         {/* Subtle Watermark Seal on Left side (Original Colors, NOT inverted) */}
         <div className="absolute top-1/2 left-[5%] -translate-y-1/2 w-[560px] h-[560px] opacity-[0.14] select-none pointer-events-none">
@@ -160,7 +163,7 @@ export default function LoginPageClient() {
 
           {/* Right Column / Mobile Centered Authentication Card */}
           <div className="w-full lg:col-span-6 flex justify-center lg:justify-end">
-            <div className="w-full max-w-md bg-white border border-slate-200/90 rounded-xl shadow-md lg:shadow-xl overflow-hidden border-t-4 border-t-[#1D4ED8]">
+            <div className="w-full max-w-md bg-white border border-slate-200/90 rounded-xl shadow-md lg:shadow-2xl overflow-hidden border-t-4 border-t-[#1D4ED8]">
               
               <div className="p-5 sm:p-8">
                 

@@ -1,4 +1,4 @@
-﻿import crypto from 'crypto';
+import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
@@ -24,112 +24,112 @@ const INITIAL_HASHED_RECORDS: OtpRecord[] = [
   {
     id: 1,
     label: "OTP-01",
-    passwordHash: "5b596232230da3a79d34346eb41ef11df248107ef3f269a8e0f6b43d3b7bc1ca",
-    salt: "cec_otp_salt_1_744a539bc2eb6ecf",
+    passwordHash: "07d725e6e9fc39768235b257c4b55b3cd3b32fb9e833cdbb2ef8d0ab2dd873da",
+    salt: "cec_otp_salt_1_b1429fef022cc0cd",
     status: "AVAILABLE",
     usedAt: null,
     usedBy: null,
     usedIp: null,
-    createdAt: new Date().toISOString()
+    createdAt: "2026-09-10T22:35:53.574Z"
   },
   {
     id: 2,
     label: "OTP-02",
-    passwordHash: "7fe75825cfd4957e849ea2e0a2944b5b719485b0d62d29f8f2b7b51b32f2ecdf",
-    salt: "cec_otp_salt_2_96784d0b2f6ef329",
+    passwordHash: "205c89511e76c8f585f6470bc9491e9454ea608e12b41f1935dade8449da8a9d",
+    salt: "cec_otp_salt_2_079387b59230e551",
     status: "AVAILABLE",
     usedAt: null,
     usedBy: null,
     usedIp: null,
-    createdAt: new Date().toISOString()
+    createdAt: "2026-09-10T22:35:53.575Z"
   },
   {
     id: 3,
     label: "OTP-03",
-    passwordHash: "3f338d1e2e7b4cf03ebff8e1a8bb86259d682dd93d0bb2a8c3d9b04fc9f61b0a",
-    salt: "cec_otp_salt_3_b867c29e6be2069e",
+    passwordHash: "9635c43bb5438199009e6275091a31ee7b95c14af022dd78cef7d366a09cd344",
+    salt: "cec_otp_salt_3_a5b53e99425a1369",
     status: "AVAILABLE",
     usedAt: null,
     usedBy: null,
     usedIp: null,
-    createdAt: new Date().toISOString()
+    createdAt: "2026-09-10T22:35:53.575Z"
   },
   {
     id: 4,
     label: "OTP-04",
-    passwordHash: "542a2221b681f2162464731a590b84c798642730623c28c68832a819bdfbe2ff",
-    salt: "cec_otp_salt_4_3e6ffb9281a8c082",
+    passwordHash: "ce01caeb633b6f425317becafc6d07807bf71a60e7dd388ea78de63b462d4606",
+    salt: "cec_otp_salt_4_c2b06d247eeae65f",
     status: "AVAILABLE",
     usedAt: null,
     usedBy: null,
     usedIp: null,
-    createdAt: new Date().toISOString()
+    createdAt: "2026-09-10T22:35:53.575Z"
   },
   {
     id: 5,
     label: "OTP-05",
-    passwordHash: "c0ca5e60803c621e25e98586adfd4f9c5f854378f8cb64426511d7f6c770c0c6",
-    salt: "cec_otp_salt_5_85c95ef3998b3c8f",
+    passwordHash: "e6a7ecefa683b4e6282362cc44e008de556d47301703bfc24b0bf2a1f3b396ba",
+    salt: "cec_otp_salt_5_9142a0894af7fef3",
     status: "AVAILABLE",
     usedAt: null,
     usedBy: null,
     usedIp: null,
-    createdAt: new Date().toISOString()
+    createdAt: "2026-09-10T22:35:53.575Z"
   },
   {
     id: 6,
     label: "OTP-06",
-    passwordHash: "c0d38379ba9ee00df0b5dbdd7fe4e1da2c0ec7ecfeea6344d5c317ffce2ba6cb",
-    salt: "cec_otp_salt_6_ee3f7e53f1f72cf2",
+    passwordHash: "b690a25752e541a3441b4007fb72b31f5e5c7184b0d5977d1707afeef0547cb3",
+    salt: "cec_otp_salt_6_c3407736aca10ea5",
     status: "AVAILABLE",
     usedAt: null,
     usedBy: null,
     usedIp: null,
-    createdAt: new Date().toISOString()
+    createdAt: "2026-09-10T22:35:53.575Z"
   },
   {
     id: 7,
     label: "OTP-07",
-    passwordHash: "a68f6350d750c1842eb3519d14ec9e97f90f22d4f203893699c828fe6fbbcb6f",
-    salt: "cec_otp_salt_7_7e1634b8c6be3f0c",
+    passwordHash: "6697a6aaa1afe6d9ee8cb400db04e8011b45f58b934b7ee6eae04fd80e8e0df0",
+    salt: "cec_otp_salt_7_4d0404b8cdf2e236",
     status: "AVAILABLE",
     usedAt: null,
     usedBy: null,
     usedIp: null,
-    createdAt: new Date().toISOString()
+    createdAt: "2026-09-10T22:35:53.575Z"
   },
   {
     id: 8,
     label: "OTP-08",
-    passwordHash: "df2146ae9b5e52332dfa93e36e4f3a9a1d2938c5b96ee3dc7d8894df05be80f8",
-    salt: "cec_otp_salt_8_be6520f9a2d2a45a",
+    passwordHash: "df87094ae7292e995b16c8e80f3af1b29fbf91517e7d95536c17c66c793333b7",
+    salt: "cec_otp_salt_8_369332e2c85bd483",
     status: "AVAILABLE",
     usedAt: null,
     usedBy: null,
     usedIp: null,
-    createdAt: new Date().toISOString()
+    createdAt: "2026-09-10T22:35:53.575Z"
   },
   {
     id: 9,
     label: "OTP-09",
-    passwordHash: "7e502573ca0c5cb2ec73fa2ec6bf93d8b3684a0d9571e0655e1005a9c3132bc6",
-    salt: "cec_otp_salt_9_3ceb9f626ba0a324",
+    passwordHash: "4464563b618a20a18c4c1c5d59ee1cc81953b5e794d3a6a9b2e9252bb97d0b8a",
+    salt: "cec_otp_salt_9_a5113ea4c7e554ef",
     status: "AVAILABLE",
     usedAt: null,
     usedBy: null,
     usedIp: null,
-    createdAt: new Date().toISOString()
+    createdAt: "2026-09-10T22:35:53.575Z"
   },
   {
     id: 10,
     label: "OTP-10",
-    passwordHash: "b6f505e60803fc5389caee2efc530467cf395722a969b82ba63f03b8e7279cb6",
-    salt: "cec_otp_salt_10_593cb8f7d98399e5",
+    passwordHash: "82dabb7342fa754780a2c1b52458e3e35bea21e14759dcc9ece3b0a4057d5e97",
+    salt: "cec_otp_salt_10_7f0f8ab7cc7b0394",
     status: "AVAILABLE",
     usedAt: null,
     usedBy: null,
     usedIp: null,
-    createdAt: new Date().toISOString()
+    createdAt: "2026-09-10T22:35:53.575Z"
   }
 ];
 

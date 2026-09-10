@@ -32,7 +32,7 @@ export function PageHeader({ title, subtitle, description, badge, actions, actio
     const Icon = act.icon;
     const content = (
       <>
-        {Icon && <Icon size={13} className="mr-1" />}
+        {Icon && <Icon size={14} className="mr-1.5" />}
         <span>{act.label}</span>
       </>
     );
@@ -76,13 +76,20 @@ export function PageHeader({ title, subtitle, description, badge, actions, actio
   };
 
   return (
-    <div className={`flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-200 pb-2.5 mb-4 gap-2 ${className}`}>
+    <div className={`flex flex-col sm:flex-row sm:items-center justify-between border-b border-slate-200/90 pb-3.5 mb-6 gap-3 ${className}`}>
       <div>
-        <h1 className="text-base sm:text-lg font-semibold text-gray-900 m-0">
-          {title}
-        </h1>
+        <div className="flex items-center gap-2.5">
+          <h1 className="font-heading text-xl sm:text-2xl font-bold text-slate-900 tracking-tight m-0">
+            {title}
+          </h1>
+          {badge && (
+            <span className="bg-blue-50 text-[#1D4ED8] border border-blue-200 text-[10px] font-semibold px-2 py-0.5 rounded tracking-wide uppercase">
+              {badge}
+            </span>
+          )}
+        </div>
         {subText && (
-          <p className="text-xs text-gray-500 mt-0.5 m-0 leading-relaxed">
+          <p className="text-xs text-slate-600 mt-1 m-0 font-sans leading-relaxed">
             {subText}
           </p>
         )}

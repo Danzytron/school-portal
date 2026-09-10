@@ -56,7 +56,7 @@ export default function TeacherManagement() {
   return (
     <div className="space-y-4">
       <PageHeader title="Faculty & Staff Management" subtitle="Manage university teaching staff and department assignments" />
-      <div className="filter-bar">
+      <div className="bg-white p-3 border border-slate-200 rounded-md shadow-2xs flex justify-between items-center">
         <SearchBar value={search} onChange={setSearch} placeholder="Search by name or employee ID..." />
       </div>
       {loading ? <LoadingState message="Loading faculty directory..." /> : <DataTable columns={columns} data={filteredTeachers} />}

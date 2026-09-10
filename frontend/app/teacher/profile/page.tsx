@@ -6,7 +6,7 @@ import { useAuth } from '@/lib/auth';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { Toast } from '@/components/ui/Toast';
-import { User, Mail, Phone, Building2, Award, Shield, Edit2, Save } from 'lucide-react';
+import { Edit2, Save, X } from 'lucide-react';
 
 export default function TeacherProfile() {
   const { user } = useAuth();
@@ -64,103 +64,75 @@ export default function TeacherProfile() {
       await api.put('/teacher/profile', { contact_number: formData.contact });
       setProfile((prev: any) => ({ ...prev, ...formData }));
       setIsEditing(false);
-      setToast({ message: 'Faculty profile contact updated successfully.', type: 'success' });
+      setToast({ message: 'Profile updated successfully.', type: 'success' });
     } catch (error) {
       setProfile((prev: any) => ({ ...prev, ...formData }));
       setIsEditing(false);
-      setToast({ message: 'Faculty contact details saved locally.', type: 'success' });
+      setToast({ message: 'Contact details saved locally.', type: 'success' });
     }
   };
 
-  if (loading) return <LoadingState message="Loading faculty dossier..." />;
+  if (loading) return <LoadingState message="Loading profile..." />;
 
   const prof = profile || DEFAULT_FACULTY_PROFILE;
 
+  const InfoRow = ({ label, value }: { label: string; value: string | React.ReactNode }) => (
+    <div className="flex flex-col sm:flex-row sm:items-start py-2 border-b border-gray-100 last:border-0 text-xs gap-1">
+      <span className="sm:w-44 text-gray-500 shrink-0 text-[11px]">{label}</span>
+      <span className="text-gray-900 font-medium">{value}</span>
+    </div>
+  );
+
   return (
-    <div className="space-y-6 font-sans max-w-4xl">
+    <div className="space-y-4">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       
       <PageHeader 
-        title="Faculty Member Dossier" 
-        subtitle="Official instructional appointment records, departmental credentials, and institutional contact information."
-        badge="Faculty Registry"
+        title="Faculty Profile" 
+        subtitle="Departmental credentials and faculty contact information."
+        actions={
+          isEditing ? [
+            { label: "Cancel", onClick: () => setIsEditing(false), variant: "default" as const, icon: X },
+          ] : [
+            { label: "Edit Contact", onClick: () => setIsEditing(true), variant: "default" as const, icon: Edit2 }
+          ]
+        }
       />
       
-      {/* Identity Card */}
-      <div className="bg-white border border-slate-200/90 rounded-xl p-6 shadow-2xs flex flex-col sm:flex-row items-center sm:items-start gap-5">
-        <div className="w-20 h-20 rounded-xl bg-[#1E3A8A] text-white flex flex-col items-center justify-center font-heading font-bold text-2xl border border-blue-400/30 shadow-2xs shrink-0">
-          <span>{prof.name ? prof.name.charAt(0).toUpperCase() : 'T'}</span>
-          <span className="text-[9px] font-sans text-blue-200 tracking-wider uppercase font-semibold">FACULTY</span>
-        </div>
-
-        <div className="flex-1 text-center sm:text-left min-w-0">
-          <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
-            <span className="font-mono text-xs font-bold text-[#1D4ED8] bg-blue-50 px-2.5 py-0.5 rounded border border-blue-200">
-              {prof.employeeId}
-            </span>
-            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 uppercase">
-              {prof.status}
-            </span>
+      {/* Summary card */}
+      <div className="bg-white border border-gray-200 rounded p-4">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded bg-[#1D4ED8] text-white flex items-center justify-center font-bold text-sm shrink-0">
+            {prof.name ? prof.name.charAt(0).toUpperCase() : 'T'}
           </div>
-
-          <h2 className="font-heading text-xl sm:text-2xl font-bold text-slate-900 tracking-tight m-0">
-            {prof.name}
-          </h2>
-
-          <div className="text-xs text-slate-600 mt-1 flex flex-wrap items-center justify-center sm:justify-start gap-x-3 gap-y-1">
-            <span className="font-semibold text-slate-800">{prof.department}</span>
-            <span>•</span>
-            <span>{prof.rank}</span>
+          <div>
+            <div className="text-base font-semibold text-gray-900">{prof.name}</div>
+            <div className="text-xs text-gray-500">
+              {prof.employeeId} • {prof.department} • {prof.rank}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Profile Details Panel */}
-      <div className="panel">
-        <div className="panel-heading">
-          <span className="font-heading font-bold text-slate-900">Academic & Departmental Credentials</span>
-          {!isEditing && (
-            <button 
-              onClick={() => setIsEditing(true)}
-              className="btn-outline text-xs inline-flex items-center gap-1"
-            >
-              <Edit2 size={12} />
-              <span>Update Contact Details</span>
-            </button>
-          )}
+      <div className="bg-white border border-gray-200 rounded overflow-hidden">
+        <div className="bg-gray-50 border-b border-gray-200 px-4 py-2.5">
+          <span className="text-xs font-semibold text-gray-700">Academic & Faculty Information</span>
         </div>
 
-        <div className="p-5">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-              <span className="text-[10px] text-slate-500 uppercase font-semibold block">College</span>
-              <span className="font-bold text-slate-900 mt-0.5 block">{prof.department}</span>
-            </div>
-            <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-              <span className="text-[10px] text-slate-500 uppercase font-semibold block">Specialization Field</span>
-              <span className="font-bold text-slate-900 mt-0.5 block">{prof.specialization}</span>
-            </div>
-            <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-              <span className="text-[10px] text-slate-500 uppercase font-semibold block">Faculty Academic Rank</span>
-              <span className="font-bold text-slate-900 mt-0.5 block">{prof.rank}</span>
-            </div>
-            <div className="p-3 bg-slate-50 rounded-lg border border-slate-200">
-              <span className="text-[10px] text-slate-500 uppercase font-semibold block">Employment Status</span>
-              <span className="font-bold text-slate-900 mt-0.5 block">{prof.status}</span>
-            </div>
-          </div>
+        <div className="p-4">
+          <InfoRow label="Employee ID" value={<span className="font-mono">{prof.employeeId}</span>} />
+          <InfoRow label="Department" value={prof.department} />
+          <InfoRow label="Specialization" value={prof.specialization} />
+          <InfoRow label="Academic Rank" value={prof.rank} />
+          <InfoRow label="Employment Status" value={prof.status} />
 
-          <div className="mt-5 pt-5 border-t border-slate-200">
-            <h4 className="font-heading font-bold text-slate-900 text-xs uppercase tracking-wider mb-3">
-              Official Institutional Contact
-            </h4>
-
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <div className="text-xs font-semibold text-gray-700 mb-2">Contact Details</div>
+            
             {isEditing ? (
-              <form onSubmit={handleSave} className="space-y-4 max-w-md text-xs font-sans">
+              <form onSubmit={handleSave} className="space-y-3 max-w-md">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Institutional Email Address
-                  </label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Email</label>
                   <input
                     type="email"
                     className="form-control text-xs py-1.5"
@@ -169,11 +141,8 @@ export default function TeacherProfile() {
                     required
                   />
                 </div>
-
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Direct Contact Number
-                  </label>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">Contact Number</label>
                   <input
                     type="text"
                     className="form-control text-xs py-1.5"
@@ -182,42 +151,20 @@ export default function TeacherProfile() {
                     required
                   />
                 </div>
-
                 <div className="flex gap-2 pt-2">
-                  <button 
-                    type="button" 
-                    onClick={() => setIsEditing(false)} 
-                    className="btn-secondary"
-                  >
+                  <button type="button" onClick={() => setIsEditing(false)} className="btn-secondary">
                     Cancel
                   </button>
-                  <button 
-                    type="submit" 
-                    className="btn-primary flex items-center gap-1.5"
-                  >
-                    <Save size={13} />
-                    <span>Save Contact Changes</span>
+                  <button type="submit" className="btn-primary">
+                    Save Changes
                   </button>
                 </div>
               </form>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-center gap-3">
-                  <Mail size={16} className="text-[#1D4ED8] shrink-0" />
-                  <div>
-                    <span className="text-[10px] text-slate-500 uppercase font-semibold block">University Email</span>
-                    <span className="font-mono text-slate-900 font-medium">{prof.email}</span>
-                  </div>
-                </div>
-
-                <div className="p-3 bg-slate-50 rounded-lg border border-slate-200 flex items-center gap-3">
-                  <Phone size={16} className="text-[#1D4ED8] shrink-0" />
-                  <div>
-                    <span className="text-[10px] text-slate-500 uppercase font-semibold block">Mobile Contact</span>
-                    <span className="font-mono text-slate-900 font-medium">{prof.contact}</span>
-                  </div>
-                </div>
-              </div>
+              <>
+                <InfoRow label="Institutional Email" value={<span className="font-mono">{prof.email}</span>} />
+                <InfoRow label="Contact Number" value={<span className="font-mono">{prof.contact}</span>} />
+              </>
             )}
           </div>
         </div>

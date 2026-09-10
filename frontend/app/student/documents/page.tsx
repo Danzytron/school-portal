@@ -7,16 +7,8 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Modal } from '@/components/ui/Modal';
-import { 
-  FileText, 
-  Download, 
-  Clock, 
-  CheckCircle2, 
-  ShieldCheck, 
-  Send, 
-  Building2,
-  Plus
-} from 'lucide-react';
+import { StatusBadge } from '@/components/ui/StatusBadge';
+import { FileText, Download, Send, Plus } from 'lucide-react';
 
 interface DocumentRequest {
   id: string;
@@ -40,30 +32,9 @@ export default function StudentDocumentsPage() {
   const [requestSuccess, setRequestSuccess] = useState(false);
 
   const [requests, setRequests] = useState<DocumentRequest[]>([
-    {
-      id: 'DOC-2026-0814',
-      type: 'Official Transcript of Records (OTR)',
-      purpose: 'Board Examination Evaluation',
-      dateFiled: 'Aug 14, 2026',
-      status: 'ready',
-      copies: 2
-    },
-    {
-      id: 'DOC-2026-0902',
-      type: 'Certificate of Good Moral Character',
-      purpose: 'Company Internship Clearance',
-      dateFiled: 'Sep 02, 2026',
-      status: 'released',
-      copies: 1
-    },
-    {
-      id: 'DOC-2026-0925',
-      type: 'Certificate of Enrollment & General Weighted Average',
-      purpose: 'Scholarship Grant Renewal',
-      dateFiled: 'Sep 25, 2026',
-      status: 'assessing',
-      copies: 1
-    }
+    { id: 'DOC-2026-0814', type: 'Official Transcript of Records (OTR)', purpose: 'Board Examination Evaluation', dateFiled: 'Aug 14, 2026', status: 'ready', copies: 2 },
+    { id: 'DOC-2026-0902', type: 'Certificate of Good Moral Character', purpose: 'Company Internship Clearance', dateFiled: 'Sep 02, 2026', status: 'released', copies: 1 },
+    { id: 'DOC-2026-0925', type: 'Certificate of Enrollment & GWA', purpose: 'Scholarship Grant Renewal', dateFiled: 'Sep 25, 2026', status: 'assessing', copies: 1 }
   ]);
 
   useEffect(() => {
@@ -101,310 +72,163 @@ export default function StudentDocumentsPage() {
       status: 'pending',
       copies: 1
     };
-
     setRequests([newReq, ...requests]);
     setIsRequestModalOpen(false);
     setRequestSuccess(true);
     setTimeout(() => setRequestSuccess(false), 4000);
   };
 
-  const getStatusStepBadge = (status: DocumentRequest['status']) => {
-    if (status === 'released') {
-      return (
-        <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-semibold uppercase flex items-center gap-1">
-          <CheckCircle2 size={11} />
-          <span>Released</span>
-        </span>
-      );
-    }
-    if (status === 'ready') {
-      return (
-        <span className="bg-blue-50 text-[#1D4ED8] border border-blue-200 px-2 py-0.5 rounded text-[10px] font-semibold uppercase flex items-center gap-1">
-          <CheckCircle2 size={11} />
-          <span>Ready for Pickup</span>
-        </span>
-      );
-    }
-    if (status === 'assessing') {
-      return (
-        <span className="bg-amber-50 text-amber-800 border border-amber-200 px-2 py-0.5 rounded text-[10px] font-semibold uppercase flex items-center gap-1">
-          <Clock size={11} />
-          <span>Registrar Review</span>
-        </span>
-      );
-    }
-    return (
-      <span className="bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 rounded text-[10px] font-semibold uppercase flex items-center gap-1">
-        <Clock size={11} />
-        <span>Submitted</span>
-      </span>
-    );
+  const getStatusText = (status: DocumentRequest['status']) => {
+    const map: Record<string, string> = { released: 'Released', ready: 'Ready', assessing: 'Processing', pending: 'Pending' };
+    return map[status] || status;
   };
 
   const filteredDocs = selectedSubject === 'all' 
     ? documents 
     : documents.filter(d => d.subject_id?.toString() === selectedSubject);
 
-  if (loading) return <LoadingState message="Connecting to Registrar Document Archives..." />;
+  if (loading) return <LoadingState message="Loading documents..." />;
 
   return (
-    <div className="space-y-6 font-sans">
+    <div className="space-y-4">
       
-      {/* Page Header */}
       <PageHeader 
-        title="Registrar Document Services & Course Archives" 
-        subtitle="Official credential request tracker, authentic certification issuance, and course materials."
-        badge="Office of the University Registrar"
-        actions={[
-          {
-            label: "Request Official Document",
-            onClick: () => setIsRequestModalOpen(true),
-            variant: "primary",
-            icon: Plus
-          }
-        ]}
+        title="Documents" 
+        subtitle="Document requests and course materials."
+        actions={[{
+          label: "Request Document",
+          onClick: () => setIsRequestModalOpen(true),
+          variant: "primary" as const,
+          icon: Plus
+        }]}
       />
 
       {requestSuccess && (
-        <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-lg text-xs font-semibold flex items-center gap-2">
-          <CheckCircle2 size={16} />
-          <span>Your official document request has been logged successfully and forwarded to the Office of the University Registrar.</span>
+        <div className="bg-green-50 border border-green-200 text-green-800 px-3 py-2 rounded text-xs">
+          Document request submitted successfully.
         </div>
       )}
 
-      {/* 1. Official Credential Request Tracker */}
-      <div className="panel">
-        <div className="panel-heading">
-          <div className="flex items-center gap-2">
-            <ShieldCheck size={16} className="text-[#1D4ED8]" />
-            <span className="font-heading font-bold text-slate-900">Active Credential Request Tracker</span>
-          </div>
-          <span className="text-[11px] font-mono text-slate-500">Official Registrar Queue</span>
+      {/* Document Requests Table */}
+      <div className="bg-white border border-gray-200 rounded overflow-hidden">
+        <div className="bg-gray-50 border-b border-gray-200 px-3 py-2 text-xs font-semibold text-gray-700">
+          Document Requests
         </div>
-
-        <div className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="bg-slate-50/90 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
-                  <th className="px-4 py-3">Request Reference</th>
-                  <th className="px-4 py-3">Document Requested</th>
-                  <th className="px-4 py-3">Intended Purpose</th>
-                  <th className="px-4 py-3">Date Filed</th>
-                  <th className="px-4 py-3 text-center">Current Status</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-200 text-[11px] font-semibold text-gray-600 uppercase">
+                <th className="px-3 py-2">Reference</th>
+                <th className="px-3 py-2">Document</th>
+                <th className="px-3 py-2">Purpose</th>
+                <th className="px-3 py-2">Date Filed</th>
+                <th className="px-3 py-2 text-center">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {requests.map((req) => (
+                <tr key={req.id} className="border-b border-gray-100 hover:bg-gray-50">
+                  <td className="px-3 py-2 font-mono font-medium text-[#1D4ED8]">{req.id}</td>
+                  <td className="px-3 py-2 text-gray-900">{req.type}</td>
+                  <td className="px-3 py-2 text-gray-600 text-[11px]">{req.purpose}</td>
+                  <td className="px-3 py-2 text-gray-500 tabular-nums text-[11px]">{req.dateFiled}</td>
+                  <td className="px-3 py-2 text-center"><StatusBadge status={getStatusText(req.status)} /></td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-sans">
-                {requests.map((req) => (
-                  <tr key={req.id} className="hover:bg-blue-50/30 transition-colors">
-                    <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8] whitespace-nowrap">
-                      {req.id}
-                    </td>
-                    <td className="px-4 py-3 font-medium text-slate-900">
-                      {req.type}
-                    </td>
-                    <td className="px-4 py-3 text-slate-600 text-[11px]">
-                      {req.purpose}
-                    </td>
-                    <td className="px-4 py-3 font-mono text-slate-500 text-[11px]">
-                      {req.dateFiled}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      {getStatusStepBadge(req.status)}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      {req.status === 'ready' ? (
-                        <span className="text-[11px] font-semibold text-[#1D4ED8] bg-blue-50 px-2 py-1 rounded border border-blue-200">
-                          Claim at Window 2
-                        </span>
-                      ) : req.status === 'released' ? (
-                        <span className="text-[11px] text-slate-400">Completed</span>
-                      ) : (
-                        <span className="text-[11px] text-amber-700 font-medium">In Queue</span>
-                      )}
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Course Documents Table */}
+      <div className="bg-white border border-gray-200 rounded overflow-hidden">
+        <div className="bg-gray-50 border-b border-gray-200 px-3 py-2 flex items-center justify-between">
+          <span className="text-xs font-semibold text-gray-700">Course Materials</span>
+          <select
+            value={selectedSubject}
+            onChange={(e) => setSelectedSubject(e.target.value)}
+            className="form-control text-xs py-1 px-2 w-auto min-w-[160px]"
+          >
+            <option value="all">All Subjects</option>
+            {subjects.map((s) => (
+              <option key={s.id} value={s.id.toString()}>{s.code} - {s.name}</option>
+            ))}
+          </select>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-200 text-[11px] font-semibold text-gray-600 uppercase">
+                <th className="px-3 py-2">Title</th>
+                <th className="px-3 py-2">Subject</th>
+                <th className="px-3 py-2">Type</th>
+                <th className="px-3 py-2">Size</th>
+                <th className="px-3 py-2 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredDocs.length > 0 ? (
+                filteredDocs.map((doc) => (
+                  <tr key={doc.id} className="border-b border-gray-100 hover:bg-gray-50">
+                    <td className="px-3 py-2 text-gray-900">{doc.title}</td>
+                    <td className="px-3 py-2 text-gray-600 text-[11px]">{(doc as any).subject ? `${(doc as any).subject.code}` : '—'}</td>
+                    <td className="px-3 py-2 font-mono uppercase text-[10px] text-gray-500">{doc.file_type || 'PDF'}</td>
+                    <td className="px-3 py-2 text-gray-500 text-[11px]">2.4 MB</td>
+                    <td className="px-3 py-2 text-right">
+                      <button className="text-[#1D4ED8] hover:underline text-[11px] font-medium cursor-pointer inline-flex items-center gap-1" onClick={() => alert(`Downloading: ${doc.title}`)}>
+                        <Download size={11} /> Download
+                      </button>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                ))
+              ) : (
+                <>
+                  <tr className="border-b border-gray-100 hover:bg-gray-50">
+                    <td className="px-3 py-2 text-gray-900">Advanced Database Systems Syllabus</td>
+                    <td className="px-3 py-2 text-gray-600 text-[11px]">IT 311</td>
+                    <td className="px-3 py-2 font-mono uppercase text-[10px] text-gray-500">PDF</td>
+                    <td className="px-3 py-2 text-gray-500 text-[11px]">1.8 MB</td>
+                    <td className="px-3 py-2 text-right"><button className="text-[#1D4ED8] hover:underline text-[11px] font-medium cursor-pointer inline-flex items-center gap-1"><Download size={11} /> Download</button></td>
+                  </tr>
+                  <tr className="border-b border-gray-100 hover:bg-gray-50">
+                    <td className="px-3 py-2 text-gray-900">Web Systems Lab Manual</td>
+                    <td className="px-3 py-2 text-gray-600 text-[11px]">IT 312</td>
+                    <td className="px-3 py-2 font-mono uppercase text-[10px] text-gray-500">PDF</td>
+                    <td className="px-3 py-2 text-gray-500 text-[11px]">3.2 MB</td>
+                    <td className="px-3 py-2 text-right"><button className="text-[#1D4ED8] hover:underline text-[11px] font-medium cursor-pointer inline-flex items-center gap-1"><Download size={11} /> Download</button></td>
+                  </tr>
+                </>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      {/* 2. Downloadable Course Syllabi & Academic Resources */}
-      <div className="panel">
-        <div className="panel-heading">
-          <div className="flex items-center gap-2">
-            <FileText size={16} className="text-[#1D4ED8]" />
-            <span className="font-heading font-bold text-slate-900">Curriculum Syllabi & Learning Resources</span>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <select
-              value={selectedSubject}
-              onChange={(e) => setSelectedSubject(e.target.value)}
-              className="form-control text-xs py-1 px-2.5 min-w-[160px]"
-            >
-              <option value="all">All Enrolled Courses</option>
-              {subjects.map((s) => (
-                <option key={s.id} value={s.id.toString()}>
-                  {s.code} - {s.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        <div className="p-0">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="bg-slate-50/90 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
-                  <th className="px-4 py-3">Resource Title</th>
-                  <th className="px-4 py-3">Subject / Department</th>
-                  <th className="px-4 py-3">File Format</th>
-                  <th className="px-4 py-3 font-mono">Size</th>
-                  <th className="px-4 py-3 text-right">Download</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 font-sans">
-                {filteredDocs.length > 0 ? (
-                  filteredDocs.map((doc) => (
-                    <tr key={doc.id} className="hover:bg-blue-50/30 transition-colors">
-                      <td className="px-4 py-3 font-medium text-slate-900">
-                        <div className="flex items-center gap-2">
-                          <FileText size={15} className="text-[#1D4ED8]" />
-                          <span>{doc.title}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-slate-600 text-[11px]">
-                        {(doc as any).subject ? `${(doc as any).subject.code} - ${(doc as any).subject.name}` : 'IT Department Offering'}
-                      </td>
-                      <td className="px-4 py-3 font-mono uppercase text-[10px] text-slate-500">
-                        {doc.file_type || 'PDF'}
-                      </td>
-                      <td className="px-4 py-3 font-mono text-slate-500 text-[11px]">
-                        2.4 MB
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <button 
-                          className="btn-outline inline-flex items-center gap-1.5"
-                          onClick={() => alert(`Downloading official course syllabus: ${doc.title}`)}
-                        >
-                          <Download size={12} />
-                          <span>Download File</span>
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <>
-                    <tr className="hover:bg-blue-50/30">
-                      <td className="px-4 py-3 font-medium text-slate-900">
-                        <div className="flex items-center gap-2">
-                          <FileText size={15} className="text-[#1D4ED8]" />
-                          <span>IT 311 - Advanced Database Systems Official Course Syllabus</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-slate-600 text-[11px]">College of Computer Studies</td>
-                      <td className="px-4 py-3 font-mono uppercase text-[10px] text-slate-500">PDF Document</td>
-                      <td className="px-4 py-3 font-mono text-slate-500 text-[11px]">1.8 MB</td>
-                      <td className="px-4 py-3 text-right">
-                        <button className="btn-outline inline-flex items-center gap-1.5">
-                          <Download size={12} />
-                          <span>Download File</span>
-                        </button>
-                      </td>
-                    </tr>
-                    <tr className="hover:bg-blue-50/30">
-                      <td className="px-4 py-3 font-medium text-slate-900">
-                        <div className="flex items-center gap-2">
-                          <FileText size={15} className="text-[#1D4ED8]" />
-                          <span>IT 312 - Web Systems Laboratory Exercise Manual & Guidelines</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-slate-600 text-[11px]">College of Computer Studies</td>
-                      <td className="px-4 py-3 font-mono uppercase text-[10px] text-slate-500">PDF Document</td>
-                      <td className="px-4 py-3 font-mono text-slate-500 text-[11px]">3.2 MB</td>
-                      <td className="px-4 py-3 text-right">
-                        <button className="btn-outline inline-flex items-center gap-1.5">
-                          <Download size={12} />
-                          <span>Download File</span>
-                        </button>
-                      </td>
-                    </tr>
-                  </>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      {/* Official Request Modal Dialog */}
+      {/* Request Modal */}
       {isRequestModalOpen && (
-        <Modal
-          isOpen={true}
-          onClose={() => setIsRequestModalOpen(false)}
-          title="Filing of Official Document Request"
-        >
-          <form onSubmit={handleCreateRequest} className="space-y-4 text-xs font-sans">
-            <div className="bg-slate-50 p-3 rounded border border-slate-200 text-slate-600 leading-relaxed">
-              Requests are processed according to the official Citizen's Charter of the Office of the University Registrar. Regular credential requests require 3–5 working days for verification.
-            </div>
-
+        <Modal isOpen={true} onClose={() => setIsRequestModalOpen(false)} title="Request Document">
+          <form onSubmit={handleCreateRequest} className="space-y-4 text-xs">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                Document Classification
-              </label>
-              <select
-                value={requestType}
-                onChange={(e) => setRequestType(e.target.value)}
-                className="form-control"
-              >
+              <label className="block text-xs font-medium text-gray-700 mb-1">Document Type</label>
+              <select value={requestType} onChange={(e) => setRequestType(e.target.value)} className="form-control">
                 <option value="Official Transcript of Records (OTR)">Official Transcript of Records (OTR)</option>
                 <option value="Certificate of Good Moral Character">Certificate of Good Moral Character</option>
-                <option value="Certificate of Enrollment & General Weighted Average">Certificate of Enrollment & GWA</option>
+                <option value="Certificate of Enrollment & GWA">Certificate of Enrollment & GWA</option>
                 <option value="Certified True Copy of Grades">Certified True Copy of Grades</option>
-                <option value="Honorable Dismissal / Transfer Credential">Honorable Dismissal / Transfer Credential</option>
+                <option value="Honorable Dismissal / Transfer Credential">Honorable Dismissal</option>
               </select>
             </div>
-
             <div>
-              <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                Intended Purpose
-              </label>
-              <input
-                type="text"
-                value={requestPurpose}
-                onChange={(e) => setRequestPurpose(e.target.value)}
-                className="form-control"
-                placeholder="e.g. Scholarship Application, Employment, Board Examination"
-                required
-              />
+              <label className="block text-xs font-medium text-gray-700 mb-1">Purpose</label>
+              <input type="text" value={requestPurpose} onChange={(e) => setRequestPurpose(e.target.value)} className="form-control" placeholder="e.g. Employment, Scholarship" required />
             </div>
-
-            <div className="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-              <button
-                type="button"
-                onClick={() => setIsRequestModalOpen(false)}
-                className="btn-secondary"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="btn-primary flex items-center gap-1.5"
-              >
-                <Send size={13} />
-                <span>Submit Official Request</span>
-              </button>
+            <div className="pt-3 border-t border-gray-100 flex justify-end gap-2">
+              <button type="button" onClick={() => setIsRequestModalOpen(false)} className="btn-secondary">Cancel</button>
+              <button type="submit" className="btn-primary">Submit Request</button>
             </div>
           </form>
         </Modal>
       )}
-
     </div>
   );
 }

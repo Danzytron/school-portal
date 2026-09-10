@@ -5,7 +5,7 @@ import { api } from '@/lib/api';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { DataTable } from '@/components/ui/DataTable';
 import { LoadingState } from '@/components/ui/LoadingState';
-import { Users, Search, BookOpen, GraduationCap, Mail } from 'lucide-react';
+import { Search } from 'lucide-react';
 
 export default function TeacherStudents() {
   const [students, setStudents] = useState<any[]>([]);
@@ -96,25 +96,25 @@ export default function TeacherStudents() {
       header: 'Student ID',
       accessor: 'student_id_number',
       render: (row: any) => (
-        <span className="font-mono font-bold text-[#1D4ED8] bg-blue-50 px-2 py-0.5 rounded border border-blue-200 text-xs">
+        <span className="font-mono font-medium text-[#1D4ED8]">
           {row.student_id_number || '2026-00001'}
         </span>
       )
     },
     { 
-      header: 'Student Full Name',
+      header: 'Student Name',
       accessor: 'user.name',
       render: (row: any) => (
-        <span className="font-semibold text-slate-900">
+        <span className="text-gray-900 font-medium">
           {row.user?.name}
         </span>
       )
     },
     { 
-      header: 'Academic Program',
+      header: 'Program',
       accessor: 'course.code',
       render: (row: any) => (
-        <span className="text-slate-700 font-medium">
+        <span className="text-gray-700">
           {row.course?.code || 'BSIT'}
         </span>
       )
@@ -124,7 +124,7 @@ export default function TeacherStudents() {
       accessor: 'year_level',
       align: 'center' as const,
       render: (row: any) => (
-        <span className="font-mono text-slate-600">
+        <span className="text-gray-600">
           Year {row.year_level || 3}
         </span>
       )
@@ -133,16 +133,16 @@ export default function TeacherStudents() {
       header: 'Section',
       accessor: 'section.name',
       render: (row: any) => (
-        <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[11px] font-semibold">
+        <span className="text-gray-700 font-mono text-[11px]">
           {row.section?.name || 'BSIT 3-A'}
         </span>
       )
     },
     { 
-      header: 'Institutional Email',
+      header: 'Email',
       accessor: 'user.email',
       render: (row: any) => (
-        <span className="font-mono text-slate-500 text-[11px]">
+        <span className="font-mono text-gray-500 text-[11px]">
           {row.user?.email}
         </span>
       )
@@ -150,23 +150,20 @@ export default function TeacherStudents() {
   ];
 
   return (
-    <div className="space-y-6 font-sans">
+    <div className="space-y-4">
       <PageHeader 
-        title="Class Roster & Student Directory" 
-        subtitle="View officially validated students enrolled across your assigned course sections."
-        badge="Class Registry"
+        title="Student List" 
+        subtitle="Students enrolled across your assigned subjects."
       />
       
-      <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="filter-bar">
         <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-          <div className="w-full sm:w-64">
-            <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">
-              Filter by Course Subject
-            </label>
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-gray-600 font-medium whitespace-nowrap">Subject:</label>
             <select
               value={subjectId}
               onChange={(e) => setSubjectId(e.target.value)}
-              className="form-control text-xs font-semibold text-slate-900 py-1.5 px-3"
+              className="form-control py-1.5 px-2 text-xs w-auto min-w-[200px]"
             >
               <option value="">All Assigned Subjects</option>
               <option value="1">IT 312 - Advanced Web Systems</option>
@@ -175,46 +172,39 @@ export default function TeacherStudents() {
             </select>
           </div>
 
-          <div className="w-full sm:w-64">
-            <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">
-              Search by Student
-            </label>
-            <div className="relative">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Student ID or Name..."
-                className="form-control pl-8 text-xs py-1.5"
-              />
-            </div>
+          <div className="relative">
+            <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search student ID or name..."
+              className="form-control pl-7 text-xs py-1.5 w-60"
+            />
           </div>
         </div>
 
-        <div className="text-xs text-slate-500 font-medium self-end sm:self-center">
-          Validated Students: <strong className="text-slate-900 font-mono">{filteredStudents.length}</strong>
+        <div className="text-xs text-gray-500 sm:ml-auto">
+          Total: <strong className="text-gray-900">{filteredStudents.length} Students</strong>
         </div>
       </div>
 
-      <div className="panel">
-        <div className="panel-heading">
-          <span className="font-heading font-bold text-slate-900">Enrolled Student Roster</span>
-          <span className="text-[11px] font-mono text-slate-500">{filteredStudents.length} Students</span>
+      <div className="bg-white border border-gray-200 rounded overflow-hidden">
+        <div className="bg-gray-50 border-b border-gray-200 px-3 py-2 flex items-center justify-between">
+          <span className="text-xs font-semibold text-gray-700">Enrolled Students</span>
+          <span className="text-[11px] text-gray-500">{filteredStudents.length} Records</span>
         </div>
 
-        <div className="p-0">
-          {loading ? (
-            <div className="p-8"><LoadingState message="Compiling student directory..." /></div>
-          ) : (
-            <DataTable
-              columns={columns}
-              data={filteredStudents}
-              keyField="id"
-              emptyMessage="No students found matching the selected filters."
-            />
-          )}
-        </div>
+        {loading ? (
+          <div className="p-8"><LoadingState message="Loading students..." /></div>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={filteredStudents}
+            keyField="id"
+            emptyMessage="No students found matching the selected filters."
+          />
+        )}
       </div>
     </div>
   );

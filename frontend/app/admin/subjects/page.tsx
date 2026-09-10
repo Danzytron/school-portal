@@ -54,7 +54,7 @@ export default function SubjectManagement() {
   return (
     <div className="space-y-4">
       <PageHeader title="Subject Master Management" subtitle="Manage academic subject offerings, credit units, and course assignments" />
-      <div className="bg-white p-3 border border-slate-200 rounded-md shadow-2xs">
+      <div className="filter-bar">
         <SearchBar value={search} onChange={setSearch} placeholder="Search by subject code or name..." />
       </div>
       {loading ? <LoadingState message="Loading subjects..." /> : <DataTable columns={columns} data={filteredSubjects} />}

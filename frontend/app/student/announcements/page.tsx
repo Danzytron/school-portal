@@ -7,7 +7,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Pagination } from '@/components/ui/Pagination';
-import { Bell, ChevronDown, ChevronUp, User, Calendar, Megaphone, ShieldCheck } from 'lucide-react';
+import { Bell, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface DisplayAnnouncement extends Announcement {
   isRead?: boolean;
@@ -39,7 +39,7 @@ export default function StudentAnnouncementsPage() {
           setTotalPages(Math.ceil(data.length / perPage));
         }
       } catch (err: any) {
-        setError(err.message || 'Failed to load university bulletins');
+        setError(err.message || 'Failed to load announcements');
       } finally {
         setLoading(false);
       }
@@ -69,28 +69,26 @@ export default function StudentAnnouncementsPage() {
     }
   };
 
-  if (loading && announcements.length === 0) return <LoadingState message="Connecting to University Bulletin Archive..." />;
+  if (loading && announcements.length === 0) return <LoadingState message="Loading announcements..." />;
 
   return (
-    <div className="space-y-6 font-sans">
+    <div className="space-y-4">
       
-      {/* Page Header */}
       <PageHeader 
-        title="University Memoranda & Official Bulletins" 
-        subtitle="Important administrative announcements, academic advisories, and student affairs notices."
-        badge="Official University Communications"
+        title="Announcements" 
+        subtitle="Administrative announcements and advisories."
       />
 
       {error ? (
-        <EmptyState title="Error" description={error} icon={<Bell size={48} />} />
+        <EmptyState title="Error" description={error} icon={<Bell size={40} />} />
       ) : announcements.length === 0 ? (
         <EmptyState 
-          title="No Active University Bulletins" 
-          description="There are currently no announcements posted for your academic program." 
-          icon={<Bell size={48} className="text-slate-300" />} 
+          title="No Announcements" 
+          description="No announcements at this time." 
+          icon={<Bell size={40} className="text-gray-300" />} 
         />
       ) : (
-        <div className="space-y-3.5">
+        <div className="space-y-2">
           {announcements.map((ann) => {
             const isExpanded = expandedId === ann.id;
             const isUnread = ann.isRead === false || ann.isRead === undefined; 
@@ -98,65 +96,44 @@ export default function StudentAnnouncementsPage() {
             return (
               <div 
                 key={ann.id} 
-                className={`bg-white border rounded-lg shadow-2xs overflow-hidden transition-all ${
-                  isUnread ? 'border-[#1D4ED8]/60 border-l-4 border-l-[#1D4ED8]' : 'border-slate-200/90'
-                }`}
+                className={`bg-white border border-gray-200 rounded overflow-hidden ${isUnread ? 'border-l-2 border-l-[#1D4ED8]' : ''}`}
               >
                 <div 
-                  className={`p-4 sm:p-5 cursor-pointer hover:bg-slate-50/50 flex justify-between items-start gap-4 ${
-                    isExpanded ? 'bg-slate-50/40' : ''
-                  }`}
+                  className="px-4 py-3 cursor-pointer hover:bg-gray-50 flex justify-between items-start gap-3"
                   onClick={() => toggleExpand(ann.id)}
                 >
                   <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      <span className="text-[10px] font-semibold bg-blue-50 text-[#1D4ED8] border border-blue-200 px-2 py-0.5 rounded uppercase">
-                        Official Memorandum
+                    <div className="flex items-center gap-2 text-[11px] text-gray-400 mb-0.5">
+                      <span className="tabular-nums">
+                        {new Date(ann.published_at || ann.created_at).toLocaleDateString(undefined, { 
+                          year: 'numeric', month: 'short', day: 'numeric' 
+                        })}
                       </span>
                       {isUnread && (
-                        <span className="bg-[#1D4ED8] text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
-                          New Notice
-                        </span>
+                        <span className="bg-[#1D4ED8] text-white text-[9px] font-semibold px-1.5 py-0.5 rounded uppercase">New</span>
                       )}
-                      <span className="text-[11px] text-slate-400 font-mono flex items-center gap-1">
-                        <Calendar size={11} />
-                        <span>
-                          {new Date(ann.published_at || ann.created_at).toLocaleDateString(undefined, { 
-                            year: 'numeric', month: 'short', day: 'numeric' 
-                          })}
-                        </span>
-                      </span>
                     </div>
-
-                    <h3 className="font-heading text-base font-bold text-slate-900 m-0 leading-snug">
+                    <h3 className="text-sm font-semibold text-gray-900 m-0 leading-snug">
                       {ann.title}
                     </h3>
-
-                    <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-1">
-                      <span className="font-medium text-slate-700">Issued by: {ann.author?.name || 'Office of Academic Affairs'}</span>
+                    <div className="text-[11px] text-gray-500 mt-0.5">
+                      {ann.author?.name || 'Office of Academic Affairs'}
                     </div>
-                    
                     {!isExpanded && (
-                      <p className="text-xs text-slate-600 m-0 mt-2 line-clamp-2 leading-relaxed">
+                      <p className="text-xs text-gray-600 m-0 mt-1.5 line-clamp-2 leading-relaxed">
                         {ann.content}
                       </p>
                     )}
                   </div>
-
-                  <div className="text-slate-400 p-1 shrink-0">
-                    {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                  <div className="text-gray-400 shrink-0 mt-1">
+                    {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                   </div>
                 </div>
                 
                 {isExpanded && (
-                  <div className="p-5 pt-0 border-t border-slate-100 bg-white">
-                    <div className="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-wrap mt-4 font-sans border-l-2 border-[#1D4ED8] pl-4 py-1">
+                  <div className="px-4 pb-4 border-t border-gray-100">
+                    <div className="text-xs text-gray-800 leading-relaxed whitespace-pre-wrap mt-3">
                       {ann.content}
-                    </div>
-                    
-                    <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-                      <span>Office of the University Registrar • Official Record</span>
-                      <span>Verified Digital Release</span>
                     </div>
                   </div>
                 )}
@@ -165,7 +142,7 @@ export default function StudentAnnouncementsPage() {
           })}
           
           {totalPages > 1 && (
-            <div className="mt-6 flex justify-center">
+            <div className="mt-4 flex justify-center">
               <Pagination 
                 currentPage={currentPage}
                 totalPages={totalPages}
@@ -175,7 +152,6 @@ export default function StudentAnnouncementsPage() {
           )}
         </div>
       )}
-
     </div>
   );
 }

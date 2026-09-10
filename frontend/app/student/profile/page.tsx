@@ -6,22 +6,7 @@ import { Student } from '@/types';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { 
-  User, 
-  Edit2, 
-  Save, 
-  X, 
-  BookOpen, 
-  ShieldCheck, 
-  GraduationCap, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Calendar, 
-  FileText, 
-  Award,
-  Building2
-} from 'lucide-react';
+import { Edit2, Save, X, BookOpen } from 'lucide-react';
 import { Toast } from '@/components/ui/Toast';
 
 export default function StudentProfilePage() {
@@ -49,7 +34,7 @@ export default function StudentProfilePage() {
           address: studentData.address || 'Cebu City, Cebu, Philippines'
         });
       } catch (err: any) {
-        setError(err.message || 'Failed to load student profile');
+        setError(err.message || 'Failed to load profile');
       } finally {
         setLoading(false);
       }
@@ -65,7 +50,7 @@ export default function StudentProfilePage() {
         setStudent({ ...student, ...formData });
       }
       setIsEditing(false);
-      setToastMessage('Contact information successfully updated in university records.');
+      setToastMessage('Contact information updated.');
       setTimeout(() => setToastMessage(''), 4000);
     } catch (err: any) {
       setError(err.message || 'Failed to update profile');
@@ -74,319 +59,137 @@ export default function StudentProfilePage() {
     }
   };
 
-  if (loading) return <LoadingState message="Retrieving official student dossier..." />;
-  if (error && !student) return <EmptyState title="Error" description={error} icon={<BookOpen size={48} />} />;
-  if (!student) return <EmptyState title="No Profile Found" description="Could not load your permanent student record." />;
+  if (loading) return <LoadingState message="Loading profile..." />;
+  if (error && !student) return <EmptyState title="Error" description={error} icon={<BookOpen size={40} />} />;
+  if (!student) return <EmptyState title="No Profile" description="Could not load student record." />;
 
-  const initials = student.user?.name ? student.user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'RD';
+  const tabs = [
+    { key: 'personal' as const, label: 'Personal' },
+    { key: 'academic' as const, label: 'Academic' },
+    { key: 'contact' as const, label: 'Contact' },
+    { key: 'emergency' as const, label: 'Emergency' },
+  ];
+
+  const InfoRow = ({ label, value }: { label: string; value: string | React.ReactNode }) => (
+    <div className="flex flex-col sm:flex-row sm:items-start py-2 border-b border-gray-100 last:border-0 text-xs gap-1">
+      <span className="sm:w-44 text-gray-500 shrink-0 text-[11px]">{label}</span>
+      <span className="text-gray-900 font-medium">{value}</span>
+    </div>
+  );
 
   return (
-    <div className="space-y-6 font-sans">
+    <div className="space-y-4">
       
-      {/* Page Header */}
       <PageHeader 
-        title="Student Permanent Dossier & Registrar Records" 
-        subtitle="Official student academic registry, personal background, and certified contacts."
-        badge="Official Student Record"
+        title="Student Profile" 
+        subtitle="Personal and academic information."
         actions={
           isEditing ? [
-            {
-              label: "Cancel",
-              onClick: () => setIsEditing(false),
-              variant: "default",
-              icon: X
-            },
-            {
-              label: saving ? "Saving Records..." : "Save Changes",
-              onClick: handleSave,
-              variant: "primary",
-              icon: Save
-            }
+            { label: "Cancel", onClick: () => setIsEditing(false), variant: "default" as const, icon: X },
+            { label: saving ? "Saving..." : "Save", onClick: handleSave, variant: "primary" as const, icon: Save }
           ] : [
-            {
-              label: "Update Contact Info",
-              onClick: () => setIsEditing(true),
-              variant: "default",
-              icon: Edit2
-            }
+            { label: "Edit Contact", onClick: () => setIsEditing(true), variant: "default" as const, icon: Edit2 }
           ]
         }
       />
 
-      {toastMessage && (
-        <Toast 
-          message={toastMessage} 
-          type="success" 
-          onClose={() => setToastMessage('')} 
-        />
-      )}
+      {toastMessage && <Toast message={toastMessage} type="success" onClose={() => setToastMessage('')} />}
 
-      {/* 1. Official Student Identity Card */}
-      <div className="bg-white border border-slate-200/90 rounded-lg shadow-2xs overflow-hidden border-t-2 border-t-[#1D4ED8]">
-        <div className="p-6 flex flex-col sm:flex-row items-center sm:items-start gap-5">
-          <div className="w-20 h-20 rounded-xl bg-[#1E3A8A] text-white flex flex-col items-center justify-center font-heading font-bold text-2xl border border-blue-400/30 shadow-2xs shrink-0">
-            <span>{initials}</span>
-            <span className="text-[9px] font-sans text-blue-200 tracking-wider uppercase font-semibold">STUDENT</span>
+      {/* Student Summary */}
+      <div className="bg-white border border-gray-200 rounded p-4">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded bg-[#1D4ED8] text-white flex items-center justify-center font-bold text-sm shrink-0">
+            {student.user?.name ? student.user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'RD'}
           </div>
-
-          <div className="flex-1 text-center sm:text-left min-w-0">
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
-              <span className="font-mono text-xs font-bold text-[#1D4ED8] bg-blue-50 px-2.5 py-0.5 rounded border border-blue-200">
-                SN: {student.student_id_number || '2026-00001'}
-              </span>
-              <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 uppercase">
-                Validated Enrollee
-              </span>
-              <span className="text-[11px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200 uppercase">
-                Good Standing
-              </span>
-            </div>
-
-            <h2 className="font-heading text-xl sm:text-2xl font-bold text-slate-900 tracking-tight m-0">
-              {student.user?.name}
-            </h2>
-
-            <div className="flex flex-wrap items-center justify-center sm:justify-start gap-y-1 gap-x-2 text-xs text-slate-600 mt-1">
-              <span className="font-semibold text-slate-800">
-                {student.course?.name || 'Bachelor of Science in Information Technology'}
-              </span>
-              <span>•</span>
-              <span>Year Level {student.year_level || 3}</span>
-              <span>•</span>
-              <span>Section {student.section?.name || 'BSIT 3-A'}</span>
+          <div>
+            <div className="text-base font-semibold text-gray-900">{student.user?.name}</div>
+            <div className="text-xs text-gray-500">
+              {student.student_id_number || '2026-00001'} • {student.course?.name || 'BS Information Technology'} • Year {student.year_level || 3} • {student.section?.name || 'BSIT 3-A'}
             </div>
           </div>
-        </div>
-
-        {/* Tab Navigation Rail */}
-        <div className="bg-slate-50 border-t border-slate-200 px-4 sm:px-6 flex items-center gap-2 overflow-x-auto text-xs font-semibold">
-          <button
-            onClick={() => setActiveTab('personal')}
-            className={`py-3 px-3 border-b-2 transition-colors whitespace-nowrap cursor-pointer ${
-              activeTab === 'personal'
-                ? 'border-[#1D4ED8] text-[#1D4ED8]'
-                : 'border-transparent text-slate-500 hover:text-slate-900'
-            }`}
-          >
-            Personal Information
-          </button>
-
-          <button
-            onClick={() => setActiveTab('academic')}
-            className={`py-3 px-3 border-b-2 transition-colors whitespace-nowrap cursor-pointer ${
-              activeTab === 'academic'
-                ? 'border-[#1D4ED8] text-[#1D4ED8]'
-                : 'border-transparent text-slate-500 hover:text-slate-900'
-            }`}
-          >
-            Academic Program & Admission
-          </button>
-
-          <button
-            onClick={() => setActiveTab('contact')}
-            className={`py-3 px-3 border-b-2 transition-colors whitespace-nowrap cursor-pointer ${
-              activeTab === 'contact'
-                ? 'border-[#1D4ED8] text-[#1D4ED8]'
-                : 'border-transparent text-slate-500 hover:text-slate-900'
-            }`}
-          >
-            Residential & Contacts
-          </button>
-
-          <button
-            onClick={() => setActiveTab('emergency')}
-            className={`py-3 px-3 border-b-2 transition-colors whitespace-nowrap cursor-pointer ${
-              activeTab === 'emergency'
-                ? 'border-[#1D4ED8] text-[#1D4ED8]'
-                : 'border-transparent text-slate-500 hover:text-slate-900'
-            }`}
-          >
-            Emergency & Family Dossier
-          </button>
         </div>
       </div>
 
-      {/* Tab Panels */}
-      <div className="panel">
-        <div className="p-6">
-          
-          {/* Tab 1: Personal Information */}
+      {/* Tabs */}
+      <div className="bg-white border border-gray-200 rounded overflow-hidden">
+        <div className="border-b border-gray-200 px-3 flex gap-0 overflow-x-auto text-xs">
+          {tabs.map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`py-2.5 px-3 border-b-2 transition-colors whitespace-nowrap cursor-pointer font-medium ${
+                activeTab === tab.key
+                  ? 'border-[#1D4ED8] text-[#1D4ED8]'
+                  : 'border-transparent text-gray-500 hover:text-gray-900'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="p-4">
           {activeTab === 'personal' && (
-            <div className="space-y-4">
-              <h3 className="font-heading font-bold text-slate-900 text-sm mb-3">
-                Certified Civil & Demographic Registry
-              </h3>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-md">
-                  <span className="text-[10px] text-slate-500 font-semibold uppercase block">Official Full Name</span>
-                  <span className="font-bold text-slate-900 mt-0.5 block">{student.user?.name}</span>
-                </div>
-
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-md">
-                  <span className="text-[10px] text-slate-500 font-semibold uppercase block">Date of Birth</span>
-                  <span className="font-semibold text-slate-800 mt-0.5 block">
-                    {student.date_of_birth ? new Date(student.date_of_birth).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : 'October 14, 2004'}
-                  </span>
-                </div>
-
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-md">
-                  <span className="text-[10px] text-slate-500 font-semibold uppercase block">Citizenship / Nationality</span>
-                  <span className="font-semibold text-slate-800 mt-0.5 block">Filipino</span>
-                </div>
-
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-md">
-                  <span className="text-[10px] text-slate-500 font-semibold uppercase block">Civil Status</span>
-                  <span className="font-semibold text-slate-800 mt-0.5 block">Single</span>
-                </div>
-
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-md">
-                  <span className="text-[10px] text-slate-500 font-semibold uppercase block">Place of Birth</span>
-                  <span className="font-semibold text-slate-800 mt-0.5 block">Cebu City, Philippines</span>
-                </div>
-
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-md">
-                  <span className="text-[10px] text-slate-500 font-semibold uppercase block">Institutional Email</span>
-                  <span className="font-mono text-slate-800 mt-0.5 block">{student.user?.email}</span>
-                </div>
-              </div>
+            <div>
+              <InfoRow label="Full Name" value={student.user?.name} />
+              <InfoRow label="Date of Birth" value={student.date_of_birth ? new Date(student.date_of_birth).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : 'October 14, 2004'} />
+              <InfoRow label="Nationality" value="Filipino" />
+              <InfoRow label="Civil Status" value="Single" />
+              <InfoRow label="Place of Birth" value="Cebu City, Philippines" />
+              <InfoRow label="Email" value={<span className="font-mono">{student.user?.email}</span>} />
             </div>
           )}
 
-          {/* Tab 2: Academic Record & Admission */}
           {activeTab === 'academic' && (
-            <div className="space-y-4">
-              <h3 className="font-heading font-bold text-slate-900 text-sm mb-3">
-                Curricular Status & Admission History
-              </h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-md">
-                  <span className="text-[10px] text-slate-500 font-semibold uppercase block">Enrolled Program</span>
-                  <span className="font-heading font-bold text-slate-900 mt-0.5 block text-sm">
-                    {student.course?.name || 'Bachelor of Science in Information Technology'}
-                  </span>
-                  <span className="text-[11px] text-slate-500 mt-1 block">
-                    Curriculum Year: 2024–2028 • CHED CMO Approved
-                  </span>
-                </div>
-
-                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-md">
-                  <span className="text-[10px] text-slate-500 font-semibold uppercase block">Academic Department</span>
-                  <span className="font-heading font-bold text-slate-900 mt-0.5 block text-sm">
-                    College of Computer Studies
-                  </span>
-                  <span className="text-[11px] text-slate-500 mt-1 block">
-                    Dean: Dr. Elizabeth Lim, DIT
-                  </span>
-                </div>
-
-                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-md">
-                  <span className="text-[10px] text-slate-500 font-semibold uppercase block">Scholastic Standing</span>
-                  <span className="font-semibold text-emerald-700 mt-0.5 block">
-                    Regular Student • First Honors Dean's List
-                  </span>
-                  <span className="text-[11px] text-slate-500 mt-1 block">
-                    63.0 Academic Units Earned to Date
-                  </span>
-                </div>
-
-                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-md">
-                  <span className="text-[10px] text-slate-500 font-semibold uppercase block">Admission Credentials</span>
-                  <span className="font-semibold text-slate-800 mt-0.5 block">
-                    Complete Official Documents Submitted
-                  </span>
-                  <span className="text-[11px] text-slate-500 mt-1 block">
-                    PSA Birth Cert, Form 137/138, Good Moral, Medical
-                  </span>
-                </div>
-              </div>
+            <div>
+              <InfoRow label="Program" value={student.course?.name || 'Bachelor of Science in Information Technology'} />
+              <InfoRow label="Department" value="College of Computer Studies" />
+              <InfoRow label="Year Level" value={`Year ${student.year_level || 3}`} />
+              <InfoRow label="Section" value={student.section?.name || 'BSIT 3-A'} />
+              <InfoRow label="Student ID" value={<span className="font-mono">{student.student_id_number || '2026-00001'}</span>} />
+              <InfoRow label="Standing" value="Regular" />
+              <InfoRow label="Units Earned" value="63.0" />
             </div>
           )}
 
-          {/* Tab 3: Residential & Contacts */}
           {activeTab === 'contact' && (
-            <div className="space-y-4">
-              <h3 className="font-heading font-bold text-slate-900 text-sm mb-3">
-                Official Registered Addresses & Communication
-              </h3>
-
+            <div>
               {isEditing ? (
-                <div className="space-y-4 max-w-xl">
+                <div className="space-y-3 max-w-md">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                      Contact Telephone / Mobile Number
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.contact_number}
-                      onChange={(e) => setFormData({ ...formData, contact_number: e.target.value })}
-                      className="form-control"
-                      placeholder="+63 9XX XXX XXXX"
-                    />
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Contact Number</label>
+                    <input type="text" value={formData.contact_number} onChange={(e) => setFormData({ ...formData, contact_number: e.target.value })} className="form-control" placeholder="+63 9XX XXX XXXX" />
                   </div>
-
                   <div>
-                    <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1">
-                      Permanent Residential Address
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={formData.address}
-                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                      className="form-control"
-                      placeholder="Street, Barangay, City, Province, Postal Code"
-                    />
+                    <label className="block text-xs font-medium text-gray-700 mb-1">Address</label>
+                    <textarea rows={3} value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="form-control" placeholder="Street, City, Province" />
                   </div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                  <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-md">
-                    <span className="text-[10px] text-slate-500 font-semibold uppercase block">Permanent Home Address</span>
-                    <span className="font-semibold text-slate-800 mt-1 block leading-relaxed">
-                      {formData.address || 'Cebu City, Cebu, Philippines'}
-                    </span>
-                  </div>
-
-                  <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-md">
-                    <span className="text-[10px] text-slate-500 font-semibold uppercase block">Registered Mobile Number</span>
-                    <span className="font-mono font-bold text-slate-900 mt-1 block">
-                      {formData.contact_number || '+63 917 123 4567'}
-                    </span>
-                  </div>
+                <div>
+                  <InfoRow label="Address" value={formData.address || 'Cebu City, Cebu, Philippines'} />
+                  <InfoRow label="Contact Number" value={<span className="font-mono">{formData.contact_number || '+63 917 123 4567'}</span>} />
                 </div>
               )}
             </div>
           )}
 
-          {/* Tab 4: Emergency & Family Dossier */}
           {activeTab === 'emergency' && (
-            <div className="space-y-4">
-              <h3 className="font-heading font-bold text-slate-900 text-sm mb-3">
-                Emergency Contacts & Parent / Guardian Dossier
-              </h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-md">
-                  <span className="text-[10px] text-slate-500 font-semibold uppercase block">Primary Emergency Contact</span>
-                  <span className="font-heading font-bold text-slate-900 mt-0.5 block text-sm">Elena V. Cruz</span>
-                  <span className="text-[11px] text-slate-600 mt-0.5 block">Relationship: Mother</span>
-                  <span className="font-mono text-slate-700 mt-1 block font-medium">+63 918 987 6543</span>
-                </div>
-
-                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-md">
-                  <span className="text-[10px] text-slate-500 font-semibold uppercase block">Secondary Contact</span>
-                  <span className="font-heading font-bold text-slate-900 mt-0.5 block text-sm">Roberto M. Cruz</span>
-                  <span className="text-[11px] text-slate-600 mt-0.5 block">Relationship: Father</span>
-                  <span className="font-mono text-slate-700 mt-1 block font-medium">+63 920 555 4321</span>
-                </div>
+            <div>
+              <div className="text-xs font-semibold text-gray-700 mb-2">Primary Contact</div>
+              <InfoRow label="Name" value="Elena V. Cruz" />
+              <InfoRow label="Relationship" value="Mother" />
+              <InfoRow label="Phone" value={<span className="font-mono">+63 918 987 6543</span>} />
+              <div className="mt-4 pt-3 border-t border-gray-200">
+                <div className="text-xs font-semibold text-gray-700 mb-2">Secondary Contact</div>
+                <InfoRow label="Name" value="Roberto M. Cruz" />
+                <InfoRow label="Relationship" value="Father" />
+                <InfoRow label="Phone" value={<span className="font-mono">+63 920 555 4321</span>} />
               </div>
             </div>
           )}
-
         </div>
       </div>
-
     </div>
   );
 }

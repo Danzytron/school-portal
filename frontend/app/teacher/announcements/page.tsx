@@ -8,7 +8,8 @@ import { LoadingState } from '@/components/ui/LoadingState';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Toast } from '@/components/ui/Toast';
-import { Megaphone, Plus, Edit2, Trash2, Users, Send } from 'lucide-react';
+import { StatusBadge } from '@/components/ui/StatusBadge';
+import { Plus } from 'lucide-react';
 
 export default function TeacherAnnouncements() {
   const [announcements, setAnnouncements] = useState<any[]>([]);
@@ -105,33 +106,33 @@ export default function TeacherAnnouncements() {
 
   const columns = [
     { 
-      header: 'Announcement Headline',
+      header: 'Title & Content',
       accessor: 'title',
       render: (row: any) => (
         <div>
-          <span className="font-heading font-bold text-slate-900 block text-xs">
+          <span className="font-medium text-gray-900 block text-xs">
             {row.title}
           </span>
-          <span className="text-slate-500 text-[11px] line-clamp-1 mt-0.5">
+          <span className="text-gray-500 text-[11px] line-clamp-1 mt-0.5">
             {row.content}
           </span>
         </div>
       )
     },
     { 
-      header: 'Target Audience',
+      header: 'Audience',
       accessor: 'audience',
       render: (row: any) => (
-        <span className="bg-blue-50 text-[#1D4ED8] border border-blue-200 px-2 py-0.5 rounded text-[10px] font-semibold">
+        <span className="text-gray-700 text-[11px]">
           {row.audience || 'All Students'}
         </span>
       )
     },
     { 
-      header: 'Date Broadcasted',
+      header: 'Date',
       accessor: 'published_at',
       render: (row: any) => (
-        <span className="font-mono text-slate-600 text-[11px]">
+        <span className="text-gray-600 tabular-nums text-[11px]">
           {row.published_at || 'Recent'}
         </span>
       )
@@ -140,9 +141,7 @@ export default function TeacherAnnouncements() {
       header: 'Status',
       accessor: 'status',
       render: (row: any) => (
-        <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-semibold uppercase">
-          {row.status || 'Published'}
-        </span>
+        <StatusBadge status={row.status || 'Published'} />
       )
     },
     {
@@ -150,20 +149,19 @@ export default function TeacherAnnouncements() {
       accessor: 'id',
       align: 'right' as const,
       render: (row: any) => (
-        <div className="flex items-center justify-end gap-1.5">
+        <div className="flex items-center justify-end gap-2 text-[11px]">
           <button 
             onClick={() => { setSelectedId(row.id); setFormData({ title: row.title, content: row.content, audience: row.audience || 'All Students' }); setModalOpen(true); }}
-            className="btn-outline text-xs inline-flex items-center gap-1"
+            className="text-[#1D4ED8] hover:underline cursor-pointer"
           >
-            <Edit2 size={11} />
-            <span>Edit</span>
+            Edit
           </button>
+          <span className="text-gray-300">|</span>
           <button 
             onClick={() => { setSelectedId(row.id); setConfirmOpen(true); }}
-            className="btn-danger text-xs inline-flex items-center gap-1"
+            className="text-red-600 hover:underline cursor-pointer"
           >
-            <Trash2 size={11} />
-            <span>Delete</span>
+            Delete
           </button>
         </div>
       )
@@ -171,13 +169,12 @@ export default function TeacherAnnouncements() {
   ];
 
   return (
-    <div className="space-y-6 font-sans">
+    <div className="space-y-4">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       
       <PageHeader 
-        title="Class Announcements & Advisories" 
-        subtitle="Broadcast important reminders, laboratory instructions, and examination updates to your students."
-        badge="Faculty Broadcast"
+        title="Announcements" 
+        subtitle="Manage class advisories and bulletins."
         actions={[
           {
             label: "Create Announcement",
@@ -188,80 +185,75 @@ export default function TeacherAnnouncements() {
         ]}
       />
 
-      <div className="panel">
-        <div className="panel-heading">
-          <div className="flex items-center gap-2">
-            <Megaphone size={16} className="text-[#1D4ED8]" />
-            <span className="font-heading font-bold text-slate-900">Broadcast Bulletins</span>
-          </div>
-          <span className="text-[11px] font-mono text-slate-500">{announcements.length} Published Notices</span>
+      <div className="bg-white border border-gray-200 rounded overflow-hidden">
+        <div className="bg-gray-50 border-b border-gray-200 px-3 py-2 flex items-center justify-between">
+          <span className="text-xs font-semibold text-gray-700">Class Notices</span>
+          <span className="text-[11px] text-gray-500">{announcements.length} Bulletins</span>
         </div>
 
-        <div className="p-0">
-          {loading ? (
-            <div className="p-8"><LoadingState message="Loading announcements..." /></div>
-          ) : (
-            <DataTable 
-              columns={columns} 
-              data={announcements} 
-              keyField="id"
-              emptyMessage="No announcements found." 
-            />
-          )}
-        </div>
+        {loading ? (
+          <div className="p-8"><LoadingState message="Loading announcements..." /></div>
+        ) : (
+          <DataTable 
+            columns={columns} 
+            data={announcements} 
+            keyField="id"
+            emptyMessage="No announcements found." 
+          />
+        )}
       </div>
 
       {modalOpen && (
         <Modal 
           isOpen={true}
-          title={selectedId ? "Edit Class Announcement" : "Draft New Class Announcement"} 
+          title={selectedId ? "Edit Announcement" : "New Announcement"} 
           onClose={() => setModalOpen(false)}
         >
-          <form onSubmit={handleSave} className="space-y-4 text-xs font-sans">
+          <form onSubmit={handleSave} className="space-y-3 text-xs">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Announcement Title
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Title
               </label>
               <input 
                 type="text"
                 value={formData.title} 
                 onChange={(e) => setFormData({...formData, title: e.target.value})} 
-                placeholder="e.g. Schedule for Final Exam Review"
+                placeholder="e.g. Midterm Examination Schedule"
                 className="form-control text-xs py-1.5"
                 required 
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Target Audience
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Audience
               </label>
               <select 
                 value={formData.audience} 
                 onChange={(e) => setFormData({...formData, audience: e.target.value})} 
-                className="form-control text-xs font-semibold text-slate-900 py-1.5"
+                className="form-control text-xs py-1.5"
               >
-                <option value="All Students">All Enrolled Students in My Classes</option>
-                <option value="BSIT 3-A Only">BSIT 3-A Students Only</option>
-                <option value="BSIT 3-B Only">BSIT 3-B Students Only</option>
-                <option value="BSCS 3-A Only">BSCS 3-A Students Only</option>
+                <option value="All Students">All Enrolled Students</option>
+                <option value="BSIT 3-A Only">BSIT 3-A Only</option>
+                <option value="BSIT 3-B Only">BSIT 3-B Only</option>
+                <option value="BSCS 3-A Only">BSCS 3-A Only</option>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Detailed Message Content
+              <label className="block text-xs font-medium text-gray-700 mb-1">
+                Content
               </label>
               <textarea 
-                className="form-control text-xs p-2.5 h-28"
-                placeholder="Write the full advisory text here..."
+                className="form-control text-xs p-2 h-24"
+                placeholder="Write announcement text..."
                 value={formData.content}
                 onChange={(e) => setFormData({...formData, content: e.target.value})}
                 required
               />
             </div>
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+            <div className="flex justify-end gap-2 pt-3 border-t border-gray-100">
               <button 
                 type="button" 
                 onClick={() => setModalOpen(false)} 
@@ -271,10 +263,9 @@ export default function TeacherAnnouncements() {
               </button>
               <button 
                 type="submit" 
-                className="btn-primary flex items-center gap-1.5"
+                className="btn-primary"
               >
-                <Send size={12} />
-                <span>Publish Announcement</span>
+                Save Announcement
               </button>
             </div>
           </form>
@@ -285,7 +276,7 @@ export default function TeacherAnnouncements() {
         <ConfirmDialog
           isOpen={true}
           title="Delete Announcement"
-          message="Are you sure you want to remove this announcement? It will no longer be visible on student dashboards."
+          message="Are you sure you want to remove this announcement?"
           onConfirm={handleDelete}
           onCancel={() => setConfirmOpen(false)}
         />

@@ -6,7 +6,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Toast } from '@/components/ui/Toast';
-import { GraduationCap, Save, CheckCircle2, AlertCircle, BookOpen } from 'lucide-react';
+import { Save, CheckCircle2 } from 'lucide-react';
 
 export default function TeacherGrades() {
   const [subjectId, setSubjectId] = useState('1');
@@ -129,25 +129,23 @@ export default function TeacherGrades() {
   };
 
   return (
-    <div className="space-y-6 font-sans">
+    <div className="space-y-4">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       
       <PageHeader 
-        title="Scholastic Grade Management" 
-        subtitle="Encode, evaluate, and officially submit term grades to the Office of the University Registrar."
-        badge="Official Faculty Evaluation"
+        title="Grade Management" 
+        subtitle="Encode and submit student term grades."
       />
       
-      <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-2xs flex flex-wrap gap-4 items-center justify-between">
-        <div className="flex flex-wrap items-center gap-4">
-          <div className="w-64">
-            <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">
-              Course Offering
-            </label>
+      {/* Filter Bar */}
+      <div className="filter-bar">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-gray-600 font-medium whitespace-nowrap">Subject:</label>
             <select
               value={subjectId}
               onChange={(e) => setSubjectId(e.target.value)}
-              className="form-control text-xs font-semibold text-slate-900 py-1.5"
+              className="form-control py-1.5 px-2 text-xs w-auto min-w-[200px]"
             >
               <option value="1">IT 312 - Advanced Web Systems</option>
               <option value="2">IT 311 - Advanced Database Systems</option>
@@ -155,14 +153,12 @@ export default function TeacherGrades() {
             </select>
           </div>
 
-          <div className="w-48">
-            <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">
-              Class Section
-            </label>
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-gray-600 font-medium whitespace-nowrap">Section:</label>
             <select
               value={sectionId}
               onChange={(e) => setSectionId(e.target.value)}
-              className="form-control text-xs font-semibold text-slate-900 py-1.5"
+              className="form-control py-1.5 px-2 text-xs w-auto min-w-[160px]"
             >
               <option value="1">Section BSIT 3-A</option>
               <option value="2">Section BSIT 3-B</option>
@@ -171,126 +167,117 @@ export default function TeacherGrades() {
           </div>
         </div>
 
-        <div className="text-xs text-slate-500">
-          Grading Scale: <span className="font-mono font-bold text-slate-800">1.00 - 5.00 (CHED Standard)</span>
+        <div className="text-xs text-gray-500 sm:ml-auto">
+          Scale: <span className="font-mono text-gray-800">1.00 – 5.00</span>
         </div>
       </div>
 
-      <div className="panel">
-        <div className="panel-heading">
-          <div className="flex items-center gap-2">
-            <GraduationCap size={16} className="text-[#1D4ED8]" />
-            <span className="font-heading font-bold text-slate-900">Student Grade Roster</span>
-          </div>
-          <span className="text-[11px] font-mono text-slate-500">{students.length} Students Encoded</span>
+      <div className="bg-white border border-gray-200 rounded overflow-hidden">
+        <div className="bg-gray-50 border-b border-gray-200 px-3 py-2 flex items-center justify-between">
+          <span className="text-xs font-semibold text-gray-700">Class Grade Sheet</span>
+          <span className="text-[11px] text-gray-500">{students.length} Students</span>
         </div>
 
-        <div className="p-0">
-          {loading ? (
-            <div className="p-8"><LoadingState message="Loading class grade roster..." /></div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-xs text-left">
-                  <thead>
-                    <tr className="bg-slate-50/90 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
-                      <th className="px-4 py-3 border-r border-slate-200">Student ID</th>
-                      <th className="px-4 py-3 border-r border-slate-200">Student Full Name</th>
-                      <th className="px-4 py-3 text-center border-r border-slate-200 w-32 font-mono">Midterm Rating</th>
-                      <th className="px-4 py-3 text-center border-r border-slate-200 w-32 font-mono">Final Rating</th>
-                      <th className="px-4 py-3 text-center border-r border-slate-200 w-28 font-mono">Final Grade</th>
-                      <th className="px-4 py-3 text-center w-28">Remarks</th>
+        {loading ? (
+          <div className="p-8"><LoadingState message="Loading grades..." /></div>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-xs text-left">
+                <thead>
+                  <tr className="bg-gray-50 border-b border-gray-200 text-[11px] font-semibold text-gray-600 uppercase">
+                    <th className="px-3 py-2 border-r border-gray-200">Student ID</th>
+                    <th className="px-3 py-2 border-r border-gray-200">Student Name</th>
+                    <th className="px-3 py-2 text-center border-r border-gray-200 w-28">Midterm</th>
+                    <th className="px-3 py-2 text-center border-r border-gray-200 w-28">Final</th>
+                    <th className="px-3 py-2 text-center border-r border-gray-200 w-28">Rating</th>
+                    <th className="px-3 py-2 text-center w-24">Remarks</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {students.map((student) => (
+                    <tr key={student.id} className="hover:bg-gray-50">
+                      <td className="px-3 py-2 border-r border-gray-100 font-mono font-medium text-[#1D4ED8]">
+                        {student.studentId}
+                      </td>
+                      <td className="px-3 py-2 border-r border-gray-100 text-gray-900">
+                        {student.name}
+                      </td>
+                      <td className="px-3 py-2 text-center border-r border-gray-100">
+                        <input
+                          type="number"
+                          step="0.25"
+                          min="1.00"
+                          max="5.00"
+                          className="w-16 py-1 px-1.5 border border-gray-300 rounded text-center text-xs font-mono focus:border-[#1D4ED8] focus:outline-none"
+                          value={student.midterm || ''}
+                          onChange={(e) => handleGradeChange(student.id, 'midterm', e.target.value)}
+                          disabled={student.status === 'Submitted'}
+                        />
+                      </td>
+                      <td className="px-3 py-2 text-center border-r border-gray-100">
+                        <input
+                          type="number"
+                          step="0.25"
+                          min="1.00"
+                          max="5.00"
+                          className="w-16 py-1 px-1.5 border border-gray-300 rounded text-center text-xs font-mono focus:border-[#1D4ED8] focus:outline-none"
+                          value={student.final || ''}
+                          onChange={(e) => handleGradeChange(student.id, 'final', e.target.value)}
+                          disabled={student.status === 'Submitted'}
+                        />
+                      </td>
+                      <td className="px-3 py-2 border-r border-gray-100 text-center font-mono font-bold text-gray-900 bg-gray-50/50">
+                        {student.finalGrade || '—'}
+                      </td>
+                      <td className="px-3 py-2 text-center">
+                        {parseFloat(student.finalGrade) <= 3.0 ? (
+                          <span className="text-green-700 text-[11px] font-medium">Passed</span>
+                        ) : student.finalGrade ? (
+                          <span className="text-red-600 text-[11px] font-medium">Failed</span>
+                        ) : (
+                          <span className="text-gray-400 text-[11px]">—</span>
+                        )}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-sans">
-                    {students.map((student) => (
-                      <tr key={student.id} className="hover:bg-slate-50/50 transition-colors">
-                        <td className="px-4 py-2.5 border-r border-slate-100 font-mono font-bold text-[#1D4ED8]">
-                          {student.studentId}
-                        </td>
-                        <td className="px-4 py-2.5 border-r border-slate-100 font-medium text-slate-900">
-                          {student.name}
-                        </td>
-                        <td className="px-4 py-2 text-center border-r border-slate-100">
-                          <input
-                            type="number"
-                            step="0.25"
-                            min="1.00"
-                            max="5.00"
-                            className="w-20 p-1 border border-slate-300 rounded text-center text-xs font-mono focus:border-[#1D4ED8] focus:outline-none"
-                            value={student.midterm || ''}
-                            onChange={(e) => handleGradeChange(student.id, 'midterm', e.target.value)}
-                            disabled={student.status === 'Submitted'}
-                          />
-                        </td>
-                        <td className="px-4 py-2 text-center border-r border-slate-100">
-                          <input
-                            type="number"
-                            step="0.25"
-                            min="1.00"
-                            max="5.00"
-                            className="w-20 p-1 border border-slate-300 rounded text-center text-xs font-mono focus:border-[#1D4ED8] focus:outline-none"
-                            value={student.final || ''}
-                            onChange={(e) => handleGradeChange(student.id, 'final', e.target.value)}
-                            disabled={student.status === 'Submitted'}
-                          />
-                        </td>
-                        <td className="px-4 py-2.5 border-r border-slate-100 text-center font-mono font-bold text-slate-900 bg-slate-50/40">
-                          {student.finalGrade || '—'}
-                        </td>
-                        <td className="px-4 py-2.5 text-center">
-                          {parseFloat(student.finalGrade) <= 3.0 ? (
-                            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase">
-                              PASSED
-                            </span>
-                          ) : student.finalGrade ? (
-                            <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase">
-                              FAILED
-                            </span>
-                          ) : (
-                            <span className="text-slate-400 font-mono text-[11px]">—</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
 
-              <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                <span className="text-slate-500 font-sans">
-                  Ensure all midterm and final marks are verified prior to submitting final registrar entries.
-                </span>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={handleSaveAll}
-                    className="btn-secondary flex items-center gap-1.5"
-                  >
-                    <Save size={13} />
-                    <span>Save Draft</span>
-                  </button>
-                  <button
-                    onClick={() => setShowConfirm(true)}
-                    className="btn-primary flex items-center gap-1.5"
-                  >
-                    <CheckCircle2 size={13} />
-                    <span>Submit to Registrar</span>
-                  </button>
-                </div>
+            <div className="p-3 bg-gray-50 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+              <span className="text-gray-500">
+                Confirm all grades before submitting to the Registrar.
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleSaveAll}
+                  className="btn-secondary flex items-center gap-1 text-xs py-1.5 px-3"
+                >
+                  <Save size={13} />
+                  <span>Save Draft</span>
+                </button>
+                <button
+                  onClick={() => setShowConfirm(true)}
+                  className="btn-primary flex items-center gap-1 text-xs py-1.5 px-3"
+                >
+                  <CheckCircle2 size={13} />
+                  <span>Submit to Registrar</span>
+                </button>
               </div>
-            </>
-          )}
-        </div>
+            </div>
+          </>
+        )}
       </div>
 
       {showConfirm && (
         <ConfirmDialog
           isOpen={true}
-          title="Submit Official Term Grades"
-          message="Are you sure you want to submit these grades to the Office of the University Registrar? Once submitted, official transcripts will be locked for editing."
+          title="Submit Official Grades"
+          message="Are you sure you want to submit these grades to the Registrar? Once submitted, records will be locked."
           onConfirm={handleSubmit}
           onCancel={() => setShowConfirm(false)}
-          confirmText="Yes, Submit to Registrar"
+          confirmText="Submit"
           cancelText="Cancel"
         />
       )}

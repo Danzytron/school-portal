@@ -6,19 +6,7 @@ import { Grade, Semester } from '@/types';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { StatusBadge } from '@/components/ui/StatusBadge';
-import { 
-  GraduationCap, 
-  Printer, 
-  Award, 
-  BookOpen, 
-  Calendar, 
-  CheckCircle2, 
-  Info, 
-  FileText,
-  Building2,
-  HelpCircle
-} from 'lucide-react';
+import { Printer, BookOpen } from 'lucide-react';
 
 const DEFAULT_STUDENT_GRADES: any[] = [
   { id: 1, subject: { id: 1, code: 'FREE ELEC 1', name: 'FREE ELECTIVE 1', units: 3 }, midterm: 1.25, final: 1.25, final_grade: 1.25, remarks: 'Passed', teacher: { user: { name: 'Sir Vincent John Cababan' } } },
@@ -95,9 +83,9 @@ export default function StudentGradesPage() {
     fetchGrades();
   }, [selectedSemester]);
 
-  if (loadingSemesters) return <LoadingState message="Connecting to Registrar Grade Archives..." />;
+  if (loadingSemesters) return <LoadingState message="Loading grades..." />;
 
-  // Calculate General Weighted Average (GWA)
+  // Calculate GWA
   let totalQualityPoints = 0;
   let totalUnits = 0;
   
@@ -112,40 +100,23 @@ export default function StudentGradesPage() {
 
   const gwa = totalUnits > 0 ? (totalQualityPoints / totalUnits).toFixed(2) : '1.35';
 
-  const getRemarksBadge = (remarks: string | undefined, gradeVal: number) => {
-    if (gradeVal <= 3.00) {
-      return (
-        <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-semibold uppercase">
-          Passed
-        </span>
-      );
-    }
-    if (gradeVal === 5.00) {
-      return (
-        <span className="bg-rose-50 text-rose-700 border border-rose-200 px-2 py-0.5 rounded text-[10px] font-semibold uppercase">
-          Failed
-        </span>
-      );
-    }
-    return (
-      <span className="bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 rounded text-[10px] font-semibold uppercase">
-        {remarks || 'Incomplete'}
-      </span>
-    );
+  const getRemarkText = (remarks: string | undefined, gradeVal: number) => {
+    if (gradeVal <= 3.00) return <span className="text-green-700 text-[11px] font-medium">Passed</span>;
+    if (gradeVal === 5.00) return <span className="text-red-600 text-[11px] font-medium">Failed</span>;
+    return <span className="text-amber-600 text-[11px] font-medium">{remarks || 'Incomplete'}</span>;
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       
       {/* Page Header */}
       <PageHeader 
-        title="Official Academic Grades & Scholastic Transcript" 
-        subtitle="Official semester grades certified by the Office of the University Registrar."
-        badge="Registrar Certified"
+        title="Grade Report" 
+        subtitle="Semester grades and scholastic record."
         className="no-print"
         actions={[
           {
-            label: "Print Official Grade Slip",
+            label: "Print",
             onClick: () => window.print(),
             variant: "default",
             icon: Printer
@@ -153,200 +124,128 @@ export default function StudentGradesPage() {
         ]}
       />
 
-      {/* Filter Ribbon & Term Selector */}
-      <div className="no-print bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-4 border-t-2 border-t-[#1D4ED8]">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded bg-blue-50 text-[#1D4ED8] border border-blue-200 shrink-0">
-            <Building2 size={18} />
-          </div>
-          <div>
-            <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">
-              Academic Term Evaluation
-            </label>
-            <select
-              value={selectedSemester}
-              onChange={(e) => setSelectedSemester(e.target.value)}
-              className="form-control text-xs font-semibold text-slate-900 py-1.5 px-3 min-w-[240px]"
-            >
-              {semesters.map((s) => (
-                <option key={s.id} value={s.id.toString()}>
-                  {s.name} {s.is_current ? '(Current Term)' : ''}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Academic Standing Summary Pill */}
-        <div className="flex items-center gap-4 bg-slate-50 border border-slate-200 px-4 py-2 rounded-md text-xs">
-          <div>
-            <span className="text-[10px] text-slate-500 uppercase font-semibold block">Term GWA</span>
-            <span className="font-heading font-bold text-sm text-[#1D4ED8] tabular-nums">{gwa}</span>
-          </div>
-          <div className="h-6 w-px bg-slate-200"></div>
-          <div>
-            <span className="text-[10px] text-slate-500 uppercase font-semibold block">Registered Units</span>
-            <span className="font-heading font-bold text-sm text-slate-800 tabular-nums">{totalUnits || 21}.0 Units</span>
-          </div>
-          <div className="h-6 w-px bg-slate-200"></div>
-          <div>
-            <span className="text-[10px] text-slate-500 uppercase font-semibold block">Scholastic Standing</span>
-            <span className="text-[11px] font-semibold text-emerald-700">Dean's Honor List</span>
-          </div>
+      {/* Filter Bar */}
+      <div className="filter-bar no-print">
+        <div className="flex items-center gap-2">
+          <label className="text-xs text-gray-600 font-medium whitespace-nowrap">Semester:</label>
+          <select
+            value={selectedSemester}
+            onChange={(e) => setSelectedSemester(e.target.value)}
+            className="form-control py-1.5 px-2 text-xs w-auto min-w-[220px]"
+          >
+            {semesters.map((s) => (
+              <option key={s.id} value={s.id.toString()}>
+                {s.name} {s.is_current ? '(Current)' : ''}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
       {loadingGrades ? (
-        <LoadingState message="Loading official course ratings..." />
+        <LoadingState message="Loading grades..." />
       ) : error ? (
-        <EmptyState title="Error" description={error} icon={<BookOpen size={48} />} />
+        <EmptyState title="Error" description={error} icon={<BookOpen size={40} />} />
       ) : grades.length === 0 ? (
         <EmptyState 
-          title="No Grades Released" 
-          description="Faculty instructors have not yet finalized submissions for this academic term." 
+          title="No Grades" 
+          description="No grades have been released for this semester." 
         />
       ) : (
-        <div className="panel">
-          <div className="panel-heading">
-            <div className="flex items-center gap-2">
-              <GraduationCap size={16} className="text-[#1D4ED8]" />
-              <span className="font-heading font-bold text-slate-900">Term Scholastic Record</span>
-            </div>
-            <span className="text-[11px] font-mono text-slate-500">{grades.length} Courses Enrolled</span>
-          </div>
-
-          <div className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="bg-slate-50/90 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
-                    <th className="px-4 py-3">Course Code</th>
-                    <th className="px-4 py-3">Descriptive Course Title</th>
-                    <th className="px-4 py-3 text-center">Units</th>
-                    <th className="px-4 py-3 text-center font-mono">Midterm</th>
-                    <th className="px-4 py-3 text-center font-mono">Final</th>
-                    <th className="px-4 py-3 text-center font-mono">Rating</th>
-                    <th className="px-4 py-3 text-center">Remarks</th>
-                    <th className="px-4 py-3">Instructor</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-sans">
-                  {grades.map((grade) => {
-                    const finalVal = Number(grade.final_grade ?? grade.final ?? 1.25) || 1.25;
-                    const midtermVal = Number(grade.midterm ?? 1.25) || 1.25;
-                    return (
-                      <tr key={grade.id} className="hover:bg-blue-50/30 transition-colors">
-                        <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8] whitespace-nowrap">
-                          {grade.subject?.code}
-                        </td>
-                        <td className="px-4 py-3 font-medium text-slate-900">
-                          {grade.subject?.name}
-                        </td>
-                        <td className="px-4 py-3 text-center font-mono text-slate-700">
-                          {(grade.subject?.units || 3).toFixed(1)}
-                        </td>
-                        <td className="px-4 py-3 text-center font-mono text-slate-600">
-                          {midtermVal.toFixed(2)}
-                        </td>
-                        <td className="px-4 py-3 text-center font-mono text-slate-600">
-                          {finalVal.toFixed(2)}
-                        </td>
-                        <td className="px-4 py-3 text-center font-mono font-bold text-slate-900 bg-slate-50/60">
-                          {finalVal.toFixed(2)}
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          {getRemarksBadge(grade.remarks, finalVal)}
-                        </td>
-                        <td className="px-4 py-3 text-slate-600 text-[11px]">
-                          {grade.teacher?.user?.name || 'Prof. Maria Santos'}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-                <tfoot>
-                  <tr className="bg-slate-50/90 border-t-2 border-slate-200 font-semibold text-slate-900">
-                    <td colSpan={2} className="px-4 py-3 text-right text-xs uppercase tracking-wider">
-                      Term General Weighted Average (GWA):
-                    </td>
-                    <td className="px-4 py-3 text-center font-mono font-bold text-slate-900">
-                      {totalUnits.toFixed(1)}
-                    </td>
-                    <td colSpan={2}></td>
-                    <td className="px-4 py-3 text-center font-mono font-bold text-[#1D4ED8] text-sm">
-                      {gwa}
-                    </td>
-                    <td colSpan={2} className="px-4 py-3 text-emerald-700 text-xs font-semibold">
-                      Passed All Enrolled Units
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-            </div>
+        <div className="bg-white border border-gray-200 rounded overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200 text-[11px] font-semibold text-gray-600 uppercase">
+                  <th className="px-3 py-2">Course Code</th>
+                  <th className="px-3 py-2">Course Title</th>
+                  <th className="px-3 py-2 text-center">Units</th>
+                  <th className="px-3 py-2 text-center">Midterm</th>
+                  <th className="px-3 py-2 text-center">Final</th>
+                  <th className="px-3 py-2 text-center">Rating</th>
+                  <th className="px-3 py-2 text-center">Remarks</th>
+                  <th className="px-3 py-2">Instructor</th>
+                </tr>
+              </thead>
+              <tbody>
+                {grades.map((grade) => {
+                  const finalVal = Number(grade.final_grade ?? grade.final ?? 1.25) || 1.25;
+                  const midtermVal = Number(grade.midterm ?? 1.25) || 1.25;
+                  return (
+                    <tr key={grade.id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="px-3 py-2 font-mono font-medium text-[#1D4ED8] whitespace-nowrap">
+                        {grade.subject?.code}
+                      </td>
+                      <td className="px-3 py-2 text-gray-900">
+                        {grade.subject?.name}
+                      </td>
+                      <td className="px-3 py-2 text-center text-gray-700 tabular-nums">
+                        {(grade.subject?.units || 3).toFixed(1)}
+                      </td>
+                      <td className="px-3 py-2 text-center text-gray-600 tabular-nums">
+                        {midtermVal.toFixed(2)}
+                      </td>
+                      <td className="px-3 py-2 text-center text-gray-600 tabular-nums">
+                        {finalVal.toFixed(2)}
+                      </td>
+                      <td className="px-3 py-2 text-center font-medium text-gray-900 tabular-nums">
+                        {finalVal.toFixed(2)}
+                      </td>
+                      <td className="px-3 py-2 text-center">
+                        {getRemarkText(grade.remarks, finalVal)}
+                      </td>
+                      <td className="px-3 py-2 text-gray-600 text-[11px]">
+                        {grade.teacher?.user?.name || 'TBA'}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+              <tfoot>
+                <tr className="bg-gray-50 border-t border-gray-200 font-semibold text-gray-900">
+                  <td colSpan={2} className="px-3 py-2 text-right text-xs">
+                    Total Units / GWA:
+                  </td>
+                  <td className="px-3 py-2 text-center text-xs font-bold tabular-nums">
+                    {totalUnits.toFixed(1)}
+                  </td>
+                  <td colSpan={2}></td>
+                  <td className="px-3 py-2 text-center text-xs font-bold text-[#1D4ED8] tabular-nums">
+                    {gwa}
+                  </td>
+                  <td colSpan={2}></td>
+                </tr>
+              </tfoot>
+            </table>
           </div>
         </div>
       )}
 
-      {/* Official CHED Grading System Legend */}
-      <div className="panel">
-        <div className="panel-heading">
-          <div className="flex items-center gap-2">
-            <Info size={16} className="text-[#1D4ED8]" />
-            <span className="font-heading font-bold text-slate-900">Philippine Higher Education Grading Reference</span>
-          </div>
-          <span className="text-[11px] font-mono text-slate-500">CHED Memorandum Order Standard</span>
+      {/* Grading Scale Reference */}
+      <div className="bg-white border border-gray-200 rounded overflow-hidden">
+        <div className="bg-gray-50 border-b border-gray-200 px-3 py-2 text-xs font-semibold text-gray-700">
+          Grading Scale
         </div>
-
-        <div className="p-4 sm:p-5">
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 text-center text-xs">
-            <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
-              <span className="font-mono font-bold text-slate-900 block text-sm">1.00</span>
-              <span className="text-[10px] text-slate-500 uppercase block mt-0.5">97–100%</span>
-              <span className="text-[10px] text-emerald-700 font-semibold block mt-0.5">Excellent</span>
-            </div>
-
-            <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
-              <span className="font-mono font-bold text-slate-900 block text-sm">1.25–1.50</span>
-              <span className="text-[10px] text-slate-500 uppercase block mt-0.5">91–96%</span>
-              <span className="text-[10px] text-emerald-700 font-semibold block mt-0.5">Very Good</span>
-            </div>
-
-            <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
-              <span className="font-mono font-bold text-slate-900 block text-sm">1.75–2.00</span>
-              <span className="text-[10px] text-slate-500 uppercase block mt-0.5">85–90%</span>
-              <span className="text-[10px] text-emerald-700 font-semibold block mt-0.5">Good</span>
-            </div>
-
-            <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
-              <span className="font-mono font-bold text-slate-900 block text-sm">2.25–2.50</span>
-              <span className="text-[10px] text-slate-500 uppercase block mt-0.5">79–84%</span>
-              <span className="text-[10px] text-slate-600 block mt-0.5">Satisfactory</span>
-            </div>
-
-            <div className="p-2.5 bg-slate-50 rounded border border-slate-200">
-              <span className="font-mono font-bold text-slate-900 block text-sm">2.75–3.00</span>
-              <span className="text-[10px] text-slate-500 uppercase block mt-0.5">75–78%</span>
-              <span className="text-[10px] text-slate-600 block mt-0.5">Passing</span>
-            </div>
-
-            <div className="p-2.5 bg-rose-50 rounded border border-rose-200">
-              <span className="font-mono font-bold text-rose-700 block text-sm">5.00</span>
-              <span className="text-[10px] text-rose-600 uppercase block mt-0.5">Below 75%</span>
-              <span className="text-[10px] text-rose-700 font-bold block mt-0.5">Failed</span>
-            </div>
-
-            <div className="p-2.5 bg-amber-50 rounded border border-amber-200">
-              <span className="font-mono font-bold text-amber-800 block text-sm">INC</span>
-              <span className="text-[10px] text-amber-700 uppercase block mt-0.5">Requirements</span>
-              <span className="text-[10px] text-amber-800 font-semibold block mt-0.5">Incomplete</span>
-            </div>
-
-            <div className="p-2.5 bg-slate-100 rounded border border-slate-200">
-              <span className="font-mono font-bold text-slate-700 block text-sm">DRP</span>
-              <span className="text-[10px] text-slate-500 uppercase block mt-0.5">Authorized</span>
-              <span className="text-[10px] text-slate-600 font-semibold block mt-0.5">Dropped</span>
-            </div>
-          </div>
+        <div className="p-3 overflow-x-auto">
+          <table className="w-full text-xs border-collapse">
+            <thead>
+              <tr className="text-[11px] text-gray-500 uppercase font-semibold">
+                <th className="px-2 py-1 text-left">Grade</th>
+                <th className="px-2 py-1 text-left">Equivalent</th>
+                <th className="px-2 py-1 text-left">Description</th>
+              </tr>
+            </thead>
+            <tbody className="text-gray-700">
+              <tr className="border-t border-gray-100"><td className="px-2 py-1 tabular-nums">1.00</td><td className="px-2 py-1">97–100%</td><td className="px-2 py-1">Excellent</td></tr>
+              <tr className="border-t border-gray-100"><td className="px-2 py-1 tabular-nums">1.25–1.50</td><td className="px-2 py-1">91–96%</td><td className="px-2 py-1">Very Good</td></tr>
+              <tr className="border-t border-gray-100"><td className="px-2 py-1 tabular-nums">1.75–2.00</td><td className="px-2 py-1">85–90%</td><td className="px-2 py-1">Good</td></tr>
+              <tr className="border-t border-gray-100"><td className="px-2 py-1 tabular-nums">2.25–2.50</td><td className="px-2 py-1">79–84%</td><td className="px-2 py-1">Satisfactory</td></tr>
+              <tr className="border-t border-gray-100"><td className="px-2 py-1 tabular-nums">2.75–3.00</td><td className="px-2 py-1">75–78%</td><td className="px-2 py-1">Passing</td></tr>
+              <tr className="border-t border-gray-100"><td className="px-2 py-1 tabular-nums text-red-600">5.00</td><td className="px-2 py-1">Below 75%</td><td className="px-2 py-1 text-red-600">Failed</td></tr>
+              <tr className="border-t border-gray-100"><td className="px-2 py-1">INC</td><td className="px-2 py-1">—</td><td className="px-2 py-1 text-amber-600">Incomplete</td></tr>
+              <tr className="border-t border-gray-100"><td className="px-2 py-1">DRP</td><td className="px-2 py-1">—</td><td className="px-2 py-1">Dropped</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
 

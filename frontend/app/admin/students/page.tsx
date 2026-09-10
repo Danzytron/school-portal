@@ -73,8 +73,8 @@ export default function StudentManagement() {
         action={{ label: 'Add Student', onClick: () => { setEditingStudent(null); setShowModal(true); } }} 
       />
       
-      <div className="bg-white p-3 border border-gray-300 flex justify-between items-center">
-        <div className="flex gap-2 w-2/3">
+      <div className="filter-bar">
+        <div className="flex flex-wrap items-center gap-2">
           <SearchBar value={search} onChange={setSearch} placeholder="Search students..." />
           <FormSelect options={[{value: '', label: 'All Courses'}, {value: 'BSCS', label: 'BSCS'}]} value="" onChange={() => {}} />
         </div>

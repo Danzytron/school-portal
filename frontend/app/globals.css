@@ -63,6 +63,21 @@
   font-family: var(--font-sans);
 }
 
+/* Authenticated Portal Institutional Scope */
+.portal-root {
+  font-family: var(--font-sans);
+}
+
+.portal-root h1,
+.portal-root h2,
+.portal-root h3,
+.portal-root h4,
+.portal-root h5,
+.portal-root h6,
+.portal-root .font-heading {
+  font-family: var(--font-sans) !important;
+}
+
 @layer components {
   /* Institutional Panel / Card (4–8px radius, crisp 1px border) */
   .panel {

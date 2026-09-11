@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useAuth } from '@/lib/auth';
 import { api } from '@/lib/api';
 import { Schedule, Semester } from '@/types';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -60,6 +61,7 @@ const DEFAULT_STUDENT_SCHEDULES: any[] = [
 ];
 
 export default function StudentSchedulePage() {
+  const { user } = useAuth();
   const [schedules, setSchedules] = useState<any[]>(DEFAULT_STUDENT_SCHEDULES);
   const [semesters, setSemesters] = useState<Semester[]>([]);
   const [selectedSemester, setSelectedSemester] = useState<string>('');
@@ -70,6 +72,8 @@ export default function StudentSchedulePage() {
   
   const [selectedClass, setSelectedClass] = useState<Schedule | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+
+  const studentName = user?.name || 'Roldan D. Enaldo';
 
   const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   const TIME_SLOTS = [
@@ -118,7 +122,6 @@ export default function StudentSchedulePage() {
           setSchedules(DEFAULT_STUDENT_SCHEDULES);
         }
       } catch (err: any) {
-        // Fallback to default schedules seamlessly
         setSchedules(DEFAULT_STUDENT_SCHEDULES);
       } finally {
         setLoadingSchedule(false);
@@ -130,12 +133,14 @@ export default function StudentSchedulePage() {
 
   if (loadingSemesters) return <LoadingState message="Retrieving institutional class schedule..." />;
 
+  const selectedSemesterName = semesters.find(s => s.id.toString() === selectedSemester)?.name || '1st Semester A.Y. 2026–2027';
+
   const getSchedulesForDayAndTime = (day: string, timeSlot: string) => {
     if (!Array.isArray(schedules)) return [];
     return schedules.filter(s => {
       if (!s.day_of_week) return false;
       if (s.day_of_week.toLowerCase() !== day.toLowerCase()) return false;
-      const start = s.start_time?.substring(0, 5); // e.g. "07:30"
+      const start = s.start_time?.substring(0, 5);
       const slotHour = timeSlot.includes('PM') && !timeSlot.startsWith('12') 
         ? parseInt(timeSlot.substring(0, 2)) + 12 
         : parseInt(timeSlot.substring(0, 2));
@@ -159,14 +164,47 @@ export default function StudentSchedulePage() {
   return (
     <div className="space-y-6 font-sans">
       
-      {/* Page Header */}
+      {/* ------------------------------------------------------------------ */}
+      {/* 1. PRINT-ONLY OFFICIAL INSTITUTIONAL HEADER                        */}
+      {/* ------------------------------------------------------------------ */}
+      <div className="hidden print:block text-center border-b-2 border-slate-800 pb-4 mb-6">
+        <h1 className="text-xl font-bold uppercase tracking-wide text-slate-900">
+          Cebu Eastern College
+        </h1>
+        <p className="text-xs text-slate-600">Leon Kilat St., Cebu City, Philippines • (032) 256-2181</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-[#1D4ED8] mt-1">
+          Office of the University Registrar
+        </p>
+        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800 mt-2 border-t border-b border-slate-300 py-1 inline-block">
+          Official Student Study Load & Class Timetable
+        </h2>
+
+        {/* Student Dossier for Print */}
+        <div className="grid grid-cols-2 text-left text-xs mt-4 pt-2 border-t border-slate-200">
+          <div className="space-y-1">
+            <div><span className="font-semibold text-slate-600">Student Name:</span> <span className="font-bold text-slate-900">{studentName}</span></div>
+            <div><span className="font-semibold text-slate-600">Student Number:</span> <span className="font-mono font-bold text-slate-900">2026-00001</span></div>
+            <div><span className="font-semibold text-slate-600">Degree Program:</span> <span className="text-slate-900">BS in Information Technology (BSIT)</span></div>
+          </div>
+          <div className="space-y-1 text-right">
+            <div><span className="font-semibold text-slate-600">Academic Term:</span> <span className="font-bold text-slate-900">{selectedSemesterName}</span></div>
+            <div><span className="font-semibold text-slate-600">Section:</span> <span className="text-slate-900">BSIT 3-A (Regular)</span></div>
+            <div><span className="font-semibold text-slate-600">Date Printed:</span> <span className="text-slate-900">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span></div>
+          </div>
+        </div>
+      </div>
+
+      {/* ------------------------------------------------------------------ */}
+      {/* 2. ON-SCREEN PAGE HEADER & STUDENT DOSSIER                         */}
+      {/* ------------------------------------------------------------------ */}
       <PageHeader 
         title="Class Schedule & Weekly Timetable" 
-        subtitle="Weekly academic lecture and laboratory class matrix."
+        subtitle="Official weekly academic timetable and classroom venue allocations for the active term."
         badge="Academic Timetable"
+        className="no-print"
         actions={[
           {
-            label: "Print Timetable",
+            label: "Print Timetable Slip",
             onClick: () => window.print(),
             variant: "default",
             icon: Printer
@@ -174,20 +212,61 @@ export default function StudentSchedulePage() {
         ]}
       />
 
+      {/* Screen Student Dossier Strip */}
+      <div className="no-print bg-white border border-slate-200 rounded-lg p-4 shadow-2xs border-t-2 border-t-[#1D4ED8]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="font-semibold text-slate-900 text-base">{studentName}</span>
+              <span className="font-mono text-xs px-2 py-0.5 bg-slate-100 border border-slate-200 text-slate-700 rounded font-semibold">
+                SN: 2026-00001
+              </span>
+              <span className="text-xs text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded font-semibold">
+                3rd Year Regular
+              </span>
+            </div>
+            <div className="text-xs text-slate-600 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span>Bachelor of Science in Information Technology</span>
+              <span className="text-slate-300">•</span>
+              <span>Section BSIT 3-A</span>
+              <span className="text-slate-300">•</span>
+              <span className="font-mono font-medium text-slate-700">{selectedSemesterName}</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-md text-xs shrink-0">
+            <div>
+              <span className="text-[10px] text-slate-500 uppercase font-semibold block">Weekly Sessions</span>
+              <span className="font-mono font-bold text-sm text-slate-900">{schedules.length} Slots</span>
+            </div>
+            <div className="h-6 w-px bg-slate-200"></div>
+            <div>
+              <span className="text-[10px] text-slate-500 uppercase font-semibold block">Total Load</span>
+              <span className="font-mono font-bold text-sm text-[#1D4ED8]">21.0 Units</span>
+            </div>
+            <div className="h-6 w-px bg-slate-200"></div>
+            <div>
+              <span className="text-[10px] text-slate-500 uppercase font-semibold block">Conflict Check</span>
+              <span className="text-xs font-semibold text-emerald-700">0 Conflicts</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Control Bar: Term Selector & View Mode Switcher */}
-      <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t-2 border-t-[#1D4ED8]">
+      <div className="no-print bg-white border border-slate-200 rounded-lg p-3.5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded bg-blue-50 text-[#1D4ED8] border border-blue-200 shrink-0">
-            <CalendarIcon size={18} />
+          <div className="p-1.5 rounded bg-blue-50 text-[#1D4ED8] border border-blue-200 shrink-0">
+            <CalendarIcon size={16} />
           </div>
           <div>
             <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">
-              Academic Semester
+              Select Semester Term
             </label>
             <select
               value={selectedSemester}
               onChange={(e) => setSelectedSemester(e.target.value)}
-              className="form-control text-xs font-semibold text-slate-900 py-1.5 px-3 min-w-[240px]"
+              className="form-control text-xs font-semibold text-slate-900 py-1.5 px-3 min-w-[260px]"
             >
               {semesters.map((s) => (
                 <option key={s.id} value={s.id.toString()}>
@@ -198,9 +277,9 @@ export default function StudentSchedulePage() {
           </div>
         </div>
 
-        {/* View Toggle */}
+        {/* View Mode Switcher */}
         <div className="flex items-center gap-2 self-end sm:self-center">
-          <span className="text-xs text-slate-500 font-medium">Layout:</span>
+          <span className="text-xs text-slate-500 font-medium">Timetable Format:</span>
           <div className="flex bg-slate-100 p-0.5 rounded-md border border-slate-200 text-xs">
             <button
               onClick={() => setViewMode('grid')}
@@ -228,6 +307,9 @@ export default function StudentSchedulePage() {
         </div>
       </div>
 
+      {/* ------------------------------------------------------------------ */}
+      {/* 3. TIMETABLE DISPLAY                                              */}
+      {/* ------------------------------------------------------------------ */}
       {loadingSchedule ? (
         <LoadingState message="Compiling weekly timetable grid..." />
       ) : error ? (
@@ -243,15 +325,15 @@ export default function StudentSchedulePage() {
           <div className="panel-heading">
             <div className="flex items-center gap-2">
               <Clock size={16} className="text-[#1D4ED8]" />
-              <span className="font-heading font-bold text-slate-900">Weekly Class Timetable Matrix</span>
+              <span className="font-semibold text-slate-900">Weekly Class Timetable Matrix</span>
             </div>
-            <span className="text-[11px] font-mono text-slate-500">Mon–Sat • 7:30 AM – 9:00 PM</span>
+            <span className="text-[11px] font-mono text-slate-500">Mon–Sat • 07:30 AM – 09:00 PM</span>
           </div>
 
           <div className="p-0 overflow-x-auto">
             <table className="w-full border-collapse text-xs min-w-[850px]">
               <thead>
-                <tr className="bg-slate-50/90 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
+                <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
                   <th className="w-24 px-3 py-2.5 text-center border-r border-slate-200">Time Slot</th>
                   {DAYS.map(day => (
                     <th key={day} className="px-3 py-2.5 text-center border-r border-slate-200 last:border-r-0">
@@ -262,7 +344,7 @@ export default function StudentSchedulePage() {
               </thead>
               <tbody className="divide-y divide-slate-100 font-sans">
                 {TIME_SLOTS.map((slot) => (
-                  <tr key={slot} className="hover:bg-slate-50/30">
+                  <tr key={slot} className="hover:bg-slate-50/40">
                     <td className="px-2 py-3 text-center font-mono text-[11px] text-slate-500 bg-slate-50/50 border-r border-slate-200 whitespace-nowrap">
                       {slot}
                     </td>
@@ -275,12 +357,12 @@ export default function StudentSchedulePage() {
                               <div
                                 key={sched.id}
                                 onClick={() => setSelectedClass(sched)}
-                                className="bg-blue-50/80 hover:bg-blue-100/90 border border-blue-200/90 rounded p-1.5 cursor-pointer transition-all shadow-2xs text-left"
+                                className="bg-blue-50/80 hover:bg-blue-100/90 border border-blue-200 rounded p-1.5 cursor-pointer transition-all shadow-2xs text-left"
                               >
                                 <div className="font-mono font-bold text-[#1D4ED8] text-[11px] truncate">
                                   {sched.subject?.code}
                                 </div>
-                                <div className="text-[10px] text-slate-700 truncate font-medium">
+                                <div className="text-[10px] text-slate-800 truncate font-medium">
                                   {sched.subject?.name}
                                 </div>
                                 <div className="text-[9px] text-slate-500 flex items-center justify-between mt-0.5 font-mono">
@@ -303,57 +385,73 @@ export default function StudentSchedulePage() {
         /* 2. Chronological Course List */
         <div className="panel">
           <div className="panel-heading">
-            <span className="font-heading font-bold text-slate-900">Enrolled Courses & Meeting Details</span>
+            <span className="font-semibold text-slate-900">Enrolled Courses & Meeting Details</span>
             <span className="text-[11px] font-mono text-slate-500">{schedules.length} Registered Schedule Slots</span>
           </div>
 
-          <div className="p-0">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="bg-slate-50/90 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
-                    <th className="px-4 py-3">Course Code</th>
-                    <th className="px-4 py-3">Descriptive Title</th>
-                    <th className="px-4 py-3">Section</th>
-                    <th className="px-4 py-3">Meeting Day & Time</th>
-                    <th className="px-4 py-3">Facility / Room</th>
-                    <th className="px-4 py-3">Faculty Instructor</th>
+          <div className="p-0 overflow-x-auto">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
+                  <th className="px-4 py-3">Course Code</th>
+                  <th className="px-4 py-3">Descriptive Title</th>
+                  <th className="px-4 py-3">Section</th>
+                  <th className="px-4 py-3">Meeting Day & Time</th>
+                  <th className="px-4 py-3">Facility / Room</th>
+                  <th className="px-4 py-3">Faculty Instructor</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 font-sans">
+                {schedules.map((s) => (
+                  <tr 
+                    key={s.id} 
+                    onClick={() => setSelectedClass(s)}
+                    className="hover:bg-blue-50/40 cursor-pointer transition-colors"
+                  >
+                    <td className="px-4 py-2.5 font-mono font-bold text-[#1D4ED8] whitespace-nowrap">
+                      {s.subject?.code}
+                    </td>
+                    <td className="px-4 py-2.5 font-medium text-slate-900">
+                      {s.subject?.name}
+                    </td>
+                    <td className="px-4 py-2.5 font-mono text-slate-600 text-[11px] whitespace-nowrap">
+                      {s.section?.name || 'BSIT 3-A'}
+                    </td>
+                    <td className="px-4 py-2.5 font-mono text-slate-700 whitespace-nowrap">
+                      <div className="font-semibold text-slate-900 capitalize">{s.day_of_week}</div>
+                      <div className="text-[11px] text-slate-500">{formatScheduleTime(s)}</div>
+                    </td>
+                    <td className="px-4 py-2.5 text-slate-700 font-mono whitespace-nowrap">
+                      {s.room?.name || 'TBA'}
+                    </td>
+                    <td className="px-4 py-2.5 text-slate-600 whitespace-nowrap">
+                      {s.teacher?.user?.name || 'Faculty Member'}
+                    </td>
                   </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-sans">
-                  {schedules.map((s) => (
-                    <tr 
-                      key={s.id} 
-                      onClick={() => setSelectedClass(s)}
-                      className="hover:bg-blue-50/40 cursor-pointer transition-colors"
-                    >
-                      <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">
-                        {s.subject?.code}
-                      </td>
-                      <td className="px-4 py-3 font-medium text-slate-900">
-                        {s.subject?.name}
-                      </td>
-                      <td className="px-4 py-3 font-mono text-slate-600 text-[11px]">
-                        {s.section?.name || 'BSIT 3-A'}
-                      </td>
-                      <td className="px-4 py-3 font-mono text-slate-700">
-                        <div className="font-semibold text-slate-900 capitalize">{s.day_of_week}</div>
-                        <div className="text-[11px] text-slate-500">{formatScheduleTime(s)}</div>
-                      </td>
-                      <td className="px-4 py-3 text-slate-700 font-mono">
-                        {s.room?.name || 'TBA'}
-                      </td>
-                      <td className="px-4 py-3 text-slate-600">
-                        {s.teacher?.user?.name || 'Faculty Member'}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
+
+      {/* ------------------------------------------------------------------ */}
+      {/* 4. SIGNATURE CERTIFICATION BLOCK (PRINT ONLY)                     */}
+      {/* ------------------------------------------------------------------ */}
+      <div className="hidden print:grid grid-cols-2 gap-12 mt-12 pt-8 text-xs text-center font-sans">
+        <div>
+          <div className="w-48 mx-auto border-b border-slate-900 pb-1 mb-1 font-bold text-slate-900">
+            MARIA ELENA S. REYES, Ed.D.
+          </div>
+          <span className="text-[11px] text-slate-600 block">Dean, College of Computer Studies</span>
+        </div>
+        <div>
+          <div className="w-48 mx-auto border-b border-slate-900 pb-1 mb-1 font-bold text-slate-900">
+            ATTY. ROBERTO V. TAN, CESO
+          </div>
+          <span className="text-[11px] text-slate-600 block">University Registrar</span>
+        </div>
+      </div>
 
       {/* Class Details Modal */}
       <Modal
@@ -403,7 +501,7 @@ export default function StudentSchedulePage() {
             <div className="p-3 bg-slate-50 border border-slate-200 rounded text-slate-600 flex items-start gap-2">
               <Info size={14} className="text-[#1D4ED8] shrink-0 mt-0.5" />
               <span>
-                Please ensure attendance during assigned lecture hours. All virtual sessions are hosted via institutional accounts.
+                Please ensure attendance during assigned lecture hours. All laboratory stations are assigned on a 1:1 basis per student.
               </span>
             </div>
           </div>

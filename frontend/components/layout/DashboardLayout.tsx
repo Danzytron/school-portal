@@ -32,7 +32,7 @@ export function DashboardLayout({
 
   return (
     <ProtectedRoute allowedRoles={effectiveRoles}>
-      <div className="min-h-screen bg-[#F8FAFC] overflow-x-hidden">
+      <div className="portal-root min-h-screen bg-[#F8FAFC] overflow-x-hidden text-slate-800">
         <Navbar onMenuToggle={() => setSidebarOpen(!sidebarOpen)} />
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         
@@ -45,8 +45,8 @@ export function DashboardLayout({
           />
         )}
 
-        <main className="pt-[60px] lg:ml-[240px] transition-all duration-200 min-h-screen flex flex-col font-sans w-full lg:w-[calc(100%-240px)] min-w-0">
-          <div className="p-3.5 sm:p-5 lg:p-7 max-w-7xl w-full mx-auto flex-1 min-w-0">
+        <main className="pt-[56px] lg:ml-[240px] transition-all duration-200 min-h-screen flex flex-col font-sans w-full lg:w-[calc(100%-240px)] min-w-0">
+          <div className="p-3.5 sm:p-5 lg:p-6 max-w-7xl w-full mx-auto flex-1 min-w-0">
             <Breadcrumb />
             <div className="min-w-0">
               {children}

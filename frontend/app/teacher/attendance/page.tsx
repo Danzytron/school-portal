@@ -15,7 +15,7 @@ export default function TeacherAttendance() {
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null);
 
-  const DEFAULT_ATTENDANCE_LIST = [
+  const DEFAULT_ATTENDANCE_ROSTER = [
     { id: 1, studentId: '2026-00001', name: 'Alex Cruz', status: 'present', remarks: '' },
     { id: 2, studentId: '2026-00002', name: 'Bea Patricia Santos', status: 'present', remarks: '' },
     { id: 3, studentId: '2026-00003', name: 'Carlo D. Reyes', status: 'late', remarks: 'Arrived 15m after roll call' },
@@ -37,11 +37,11 @@ export default function TeacherAttendance() {
       if (Array.isArray(data) && data.length > 0) {
         setStudents(data);
       } else {
-        setStudents(DEFAULT_ATTENDANCE_LIST);
+        setStudents(DEFAULT_ATTENDANCE_ROSTER);
       }
     } catch (error) {
       console.error('Error fetching attendance', error);
-      setStudents(DEFAULT_ATTENDANCE_LIST);
+      setStudents(DEFAULT_ATTENDANCE_ROSTER);
     } finally {
       setLoading(false);
     }

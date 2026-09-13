@@ -152,7 +152,7 @@ export default function TeacherStudents() {
   return (
     <div className="space-y-6 font-sans">
       <PageHeader 
-        title="Class List & Student Directory" 
+        title="Class Roster & Student Directory" 
         subtitle="View officially validated students enrolled across your assigned course sections."
         badge="Class Registry"
       />
@@ -199,7 +199,7 @@ export default function TeacherStudents() {
 
       <div className="panel">
         <div className="panel-heading">
-          <span className="font-heading font-bold text-slate-900">Class List</span>
+          <span className="font-heading font-bold text-slate-900">Enrolled Student Roster</span>
           <span className="text-[11px] font-mono text-slate-500">{filteredStudents.length} Students</span>
         </div>
 

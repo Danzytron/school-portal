@@ -101,7 +101,7 @@ export function Sidebar({
           items: [
             { href: "/teacher/schedule", label: "Faculty Schedule", icon: Calendar },
             { href: "/teacher/subjects", label: "Assigned Courses", icon: BookOpen },
-            { href: "/teacher/students", label: "Class List", icon: Users },
+            { href: "/teacher/students", label: "Student Roster", icon: Users },
             { href: "/teacher/grades", label: "Grade Submissions", icon: GraduationCap },
             { href: "/teacher/attendance", label: "Daily Attendance", icon: ClipboardList },
             { href: "/teacher/documents", label: "Course Syllabi & Docs", icon: FolderOpen },

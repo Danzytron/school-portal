@@ -180,14 +180,14 @@ export default function TeacherGrades() {
         <div className="panel-heading">
           <div className="flex items-center gap-2">
             <GraduationCap size={16} className="text-[#1D4ED8]" />
-            <span className="font-heading font-bold text-slate-900">Student Grade List</span>
+            <span className="font-heading font-bold text-slate-900">Student Grade Roster</span>
           </div>
           <span className="text-[11px] font-mono text-slate-500">{students.length} Students Encoded</span>
         </div>
 
         <div className="p-0">
           {loading ? (
-            <div className="p-8"><LoadingState message="Loading student grade list..." /></div>
+            <div className="p-8"><LoadingState message="Loading class grade roster..." /></div>
           ) : (
             <>
               <div className="overflow-x-auto">

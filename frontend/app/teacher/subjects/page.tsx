@@ -125,7 +125,7 @@ export default function TeacherSubjects() {
           className="btn-outline text-xs inline-flex items-center gap-1"
         >
           <Users size={12} />
-          <span>Class Roster</span>
+          <span>Class List</span>
         </Link>
       )
     }
@@ -135,7 +135,7 @@ export default function TeacherSubjects() {
     <div className="space-y-6 font-sans">
       <PageHeader 
         title="Assigned Academic Courses" 
-        subtitle="Manage teaching load, student rosters, and syllabi for the active semester."
+        subtitle="Manage teaching load, class lists, and syllabi for the active semester."
         badge="Faculty Load"
       />
       

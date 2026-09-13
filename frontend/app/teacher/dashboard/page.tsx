@@ -300,7 +300,7 @@ export default function TeacherDashboard() {
           icon={Users} 
           color="success"
           link="/teacher/students"
-          linkText="View Class Rosters"
+          linkText="View Class List"
         />
         <StatCard 
           title="Today's Lectures" 
@@ -391,7 +391,7 @@ export default function TeacherDashboard() {
                         className="btn-primary text-xs flex items-center gap-1"
                       >
                         <Users size={12} />
-                        <span>Roster</span>
+                        <span>Class List</span>
                       </Link>
                     </div>
                   </div>
@@ -456,7 +456,7 @@ export default function TeacherDashboard() {
                       className="btn-secondary text-xs flex items-center gap-1"
                     >
                       <Users size={12} />
-                      <span>Roster</span>
+                      <span>Class List</span>
                     </Link>
                   </div>
                 </div>

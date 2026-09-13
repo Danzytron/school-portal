@@ -267,7 +267,7 @@ export default function TeacherSchedulePage() {
         <div className="bg-white border border-slate-200/90 rounded-xl overflow-hidden shadow-2xs">
           <div className="p-4 bg-slate-50/80 border-b border-slate-200 flex items-center justify-between">
             <span className="font-heading font-bold text-slate-900 text-sm">
-              Teaching Load Summary & Roster
+              Teaching Load Summary & Class List
             </span>
             <span className="text-xs font-mono text-slate-500">
               {schedules.length} Assigned Class Sessions
@@ -325,7 +325,7 @@ export default function TeacherSchedulePage() {
                     className="btn-primary text-xs flex items-center gap-1.5"
                   >
                     <Users size={13} />
-                    <span>Roster</span>
+                    <span>Class List</span>
                   </Link>
                 </div>
               </div>
@@ -390,7 +390,7 @@ export default function TeacherSchedulePage() {
                 onClick={() => setSelectedClass(null)}
               >
                 <Users size={13} />
-                <span>Open Student Roster</span>
+                <span>Open Class List</span>
               </Link>
             </div>
           </div>

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '@/lib/auth';
 import { api } from '@/lib/api';
 import { EnrollmentSubject, Semester } from '@/types';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -197,7 +196,6 @@ const DEFAULT_ENROLLED_SUBJECTS: any[] = [
 ];
 
 export default function StudentSubjectsPage() {
-  const { user } = useAuth();
   const [subjects, setSubjects] = useState<EnrollmentSubject[]>(DEFAULT_ENROLLED_SUBJECTS);
   const [semesters, setSemesters] = useState<Semester[]>([]);
   const [selectedSemester, setSelectedSemester] = useState<string>('');
@@ -205,8 +203,6 @@ export default function StudentSubjectsPage() {
   const [loadingSemesters, setLoadingSemesters] = useState(true);
   const [loadingSubjects, setLoadingSubjects] = useState(false);
   const [error, setError] = useState('');
-
-  const studentName = user?.name || 'Roldan D. Enaldo';
 
   useEffect(() => {
     const fetchSemesters = async () => {
@@ -243,6 +239,7 @@ export default function StudentSubjectsPage() {
         const response = await api.get<EnrollmentSubject[]>(`/student/subjects?semester_id=${selectedSemester}`);
         const data = (response as any)?.data ?? response;
         if (Array.isArray(data) && data.length > 0) {
+          // If the backend has subjects with schedule links, map them; otherwise keep the 14 subjects
           setSubjects(data);
         } else {
           setSubjects(DEFAULT_ENROLLED_SUBJECTS);
@@ -260,7 +257,6 @@ export default function StudentSubjectsPage() {
   if (loadingSemesters) return <LoadingState message="Loading academic course catalog..." />;
 
   const totalUnits = subjects.reduce((sum, s) => sum + (s.subject?.units || 3), 0);
-  const selectedSemesterName = semesters.find(s => s.id.toString() === selectedSemester)?.name || '1st Semester A.Y. 2026–2027';
 
   const columns = [
     { 
@@ -295,7 +291,7 @@ export default function StudentSubjectsPage() {
       header: 'Section', 
       accessor: 'section.name',
       render: (row: any) => (
-        <span className="font-mono text-slate-700 text-[11px] bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+        <span className="font-mono text-slate-700 text-[11px] bg-slate-100 px-2 py-0.5 rounded">
           {row.section?.name || 'BSIT 3-A'}
         </span>
       )
@@ -340,47 +336,14 @@ export default function StudentSubjectsPage() {
   return (
     <div className="space-y-6 font-sans">
       
-      {/* ------------------------------------------------------------------ */}
-      {/* 1. PRINT-ONLY OFFICIAL INSTITUTIONAL HEADER                        */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="hidden print:block text-center border-b-2 border-slate-800 pb-4 mb-6">
-        <h1 className="text-xl font-bold uppercase tracking-wide text-slate-900">
-          Cebu Eastern College
-        </h1>
-        <p className="text-xs text-slate-600">Leon Kilat St., Cebu City, Philippines • (032) 256-2181</p>
-        <p className="text-xs font-semibold uppercase tracking-widest text-[#1D4ED8] mt-1">
-          Office of the University Registrar
-        </p>
-        <h2 className="text-sm font-bold uppercase tracking-wider text-slate-800 mt-2 border-t border-b border-slate-300 py-1 inline-block">
-          Official Student Study Load & Course Roster
-        </h2>
-
-        {/* Student Dossier for Print */}
-        <div className="grid grid-cols-2 text-left text-xs mt-4 pt-2 border-t border-slate-200">
-          <div className="space-y-1">
-            <div><span className="font-semibold text-slate-600">Student Name:</span> <span className="font-bold text-slate-900">{studentName}</span></div>
-            <div><span className="font-semibold text-slate-600">Student Number:</span> <span className="font-mono font-bold text-slate-900">2026-00001</span></div>
-            <div><span className="font-semibold text-slate-600">Degree Program:</span> <span className="text-slate-900">BS in Information Technology (BSIT)</span></div>
-          </div>
-          <div className="space-y-1 text-right">
-            <div><span className="font-semibold text-slate-600">Academic Term:</span> <span className="font-bold text-slate-900">{selectedSemesterName}</span></div>
-            <div><span className="font-semibold text-slate-600">Section:</span> <span className="text-slate-900">BSIT 3-A</span></div>
-            <div><span className="font-semibold text-slate-600">Date Printed:</span> <span className="text-slate-900">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span></div>
-          </div>
-        </div>
-      </div>
-
-      {/* ------------------------------------------------------------------ */}
-      {/* 2. ON-SCREEN PAGE HEADER & DOSSIER                                */}
-      {/* ------------------------------------------------------------------ */}
+      {/* Page Header */}
       <PageHeader 
         title="Enrolled Courses & Academic Load" 
         subtitle="Official course roster, classroom venues, and faculty instructors for the active term."
         badge="Active Academic Load"
-        className="no-print"
         actions={[
           {
-            label: "Print Study Load Slip",
+            label: "Print Class Roster",
             onClick: () => window.print(),
             variant: "default",
             icon: Printer
@@ -388,61 +351,18 @@ export default function StudentSubjectsPage() {
         ]}
       />
 
-      {/* Screen Student Dossier Strip */}
-      <div className="no-print bg-white border border-slate-200 rounded-lg p-4 shadow-2xs border-t-2 border-t-[#1D4ED8]">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-slate-900 text-base">{studentName}</span>
-              <span className="font-mono text-xs px-2 py-0.5 bg-slate-100 border border-slate-200 text-slate-700 rounded font-semibold">
-                SN: 2026-00001
-              </span>
-              <span className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded font-semibold">
-                Officially Enrolled
-              </span>
-            </div>
-            <div className="text-xs text-slate-600 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
-              <span>Bachelor of Science in Information Technology</span>
-              <span className="text-slate-300">•</span>
-              <span>Year 3, Section BSIT 3-A</span>
-              <span className="text-slate-300">•</span>
-              <span className="font-mono font-medium text-slate-700">{selectedSemesterName}</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 bg-slate-50 border border-slate-200 px-3.5 py-2 rounded-md text-xs shrink-0">
-            <div>
-              <span className="text-[10px] text-slate-500 uppercase font-semibold block">Total Courses</span>
-              <span className="font-mono font-bold text-sm text-slate-900">{subjects.length} Subjects</span>
-            </div>
-            <div className="h-6 w-px bg-slate-200"></div>
-            <div>
-              <span className="text-[10px] text-slate-500 uppercase font-semibold block">Credit Units</span>
-              <span className="font-mono font-bold text-sm text-[#1D4ED8]">{totalUnits.toFixed(1)} Units</span>
-            </div>
-            <div className="h-6 w-px bg-slate-200"></div>
-            <div>
-              <span className="text-[10px] text-slate-500 uppercase font-semibold block">Load Status</span>
-              <span className="text-xs font-semibold text-emerald-700">Regular Load</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Term Selector Ribbon */}
-      <div className="no-print bg-white border border-slate-200 rounded-lg p-3.5 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-t-2 border-t-[#1D4ED8]">
         <div className="flex items-center gap-3">
-          <div className="p-1.5 rounded bg-blue-50 text-[#1D4ED8] border border-blue-200 shrink-0">
-            <Building2 size={16} />
+          <div className="p-2 rounded bg-blue-50 text-[#1D4ED8] border border-blue-200">
+            <Building2 size={18} />
           </div>
           <div>
-            <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">
-              Select Semester Term
-            </label>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 block">Academic Term</span>
             <select
               value={selectedSemester}
               onChange={(e) => setSelectedSemester(e.target.value)}
-              className="form-control text-xs font-semibold text-slate-800 py-1.5 px-3 min-w-[260px]"
+              className="form-control text-xs font-semibold text-slate-800 py-1.5 px-3 min-w-[240px] mt-0.5"
             >
               {semesters.map((s) => (
                 <option key={s.id} value={s.id.toString()}>
@@ -453,15 +373,16 @@ export default function StudentSubjectsPage() {
           </div>
         </div>
 
-        <div className="text-xs text-slate-500 font-sans">
-          <span>Advising Status: </span>
-          <span className="font-semibold text-emerald-700">Registrar & Dean Approved</span>
+        <div className="flex items-center gap-4 text-xs font-mono">
+          <div className="bg-slate-50 px-3 py-1.5 rounded border border-slate-200 text-slate-700">
+            Total Subjects: <strong className="text-slate-900">{subjects.length} Courses</strong>
+          </div>
+          <div className="bg-blue-50 px-3 py-1.5 rounded border border-blue-200 text-[#1D4ED8] font-bold">
+            Total Units: {totalUnits.toFixed(1)} Units
+          </div>
         </div>
       </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* 3. SUBJECT ROSTER TABLE                                            */}
-      {/* ------------------------------------------------------------------ */}
       {loadingSubjects ? (
         <LoadingState message="Fetching enrolled courses from academic records..." />
       ) : error && subjects.length === 0 ? (
@@ -476,46 +397,17 @@ export default function StudentSubjectsPage() {
           <div className="panel-heading">
             <div className="flex items-center gap-2">
               <BookOpen size={16} className="text-[#1D4ED8]" />
-              <span className="font-semibold text-slate-900">Registered Subject Roster</span>
+              <span className="font-heading font-bold text-slate-900">Registered Subject Roster</span>
             </div>
-            <span className="text-[11px] font-mono text-slate-500">Official Study Load</span>
+            <span className="text-[11px] font-mono text-slate-500">Official Class Load</span>
           </div>
 
           <DataTable 
             data={subjects} 
             columns={columns} 
           />
-
-          <div className="p-3 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-600 gap-2">
-            <div>
-              <span>Registered load for: </span>
-              <strong className="text-slate-900">{selectedSemesterName}</strong>
-            </div>
-            <div className="flex items-center gap-4 font-mono font-semibold">
-              <span>Total Subjects: {subjects.length}</span>
-              <span>Total Units: {totalUnits.toFixed(1)}</span>
-            </div>
-          </div>
         </div>
       )}
-
-      {/* ------------------------------------------------------------------ */}
-      {/* 4. SIGNATURE CERTIFICATION BLOCK (PRINT ONLY)                     */}
-      {/* ------------------------------------------------------------------ */}
-      <div className="hidden print:grid grid-cols-2 gap-12 mt-12 pt-8 text-xs text-center font-sans">
-        <div>
-          <div className="w-48 mx-auto border-b border-slate-900 pb-1 mb-1 font-bold text-slate-900">
-            MARIA ELENA S. REYES, Ed.D.
-          </div>
-          <span className="text-[11px] text-slate-600 block">Dean, College of Computer Studies</span>
-        </div>
-        <div>
-          <div className="w-48 mx-auto border-b border-slate-900 pb-1 mb-1 font-bold text-slate-900">
-            ATTY. ROBERTO V. TAN, CESO
-          </div>
-          <span className="text-[11px] text-slate-600 block">University Registrar</span>
-        </div>
-      </div>
 
     </div>
   );

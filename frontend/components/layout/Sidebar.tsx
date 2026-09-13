@@ -94,7 +94,7 @@ export function Sidebar({
           items: [
             { href: "/teacher/schedule", label: "Teaching Schedule", icon: Calendar },
             { href: "/teacher/subjects", label: "Assigned Classes", icon: BookOpen },
-            { href: "/teacher/students", label: "Class Roster", icon: Users },
+            { href: "/teacher/students", label: "Class List", icon: Users },
             { href: "/teacher/grades", label: "Grade Management", icon: GraduationCap },
             { href: "/teacher/attendance", label: "Attendance Entry", icon: ClipboardList },
             { href: "/teacher/documents", label: "Course Documents", icon: FolderOpen },

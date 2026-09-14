@@ -122,4 +122,21 @@ class GradeController extends Controller
         $grade->update(['is_submitted' => true, 'submitted_at' => now()]);
         return response()->json($grade);
     }
+
+    public function destroy(Request $request, $id)
+    {
+        $grade = Grade::findOrFail($id);
+        $user = $request->user();
+
+        if ($user->role === 'teacher' && $user->teacher && $grade->teacher_id !== $user->teacher->id) {
+            return response()->json(['message' => 'Unauthorized: You can only delete grades for your assigned classes.'], 403);
+        }
+
+        if ($grade->is_submitted) {
+            return response()->json(['message' => 'Cannot delete a submitted grade record. Contact the Registrar to unlock.'], 422);
+        }
+
+        $grade->delete();
+        return response()->json(['message' => 'Grade record deleted successfully.']);
+    }
 }

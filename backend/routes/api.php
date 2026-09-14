@@ -70,6 +70,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/grades', [GradeController::class, 'submit']);
         Route::put('/grades/{id}', [GradeController::class, 'update']);
         Route::post('/grades/submit', [GradeController::class, 'submitFinal']);
+        Route::delete('/grades/{id}', [GradeController::class, 'destroy']);
         Route::get('/attendance', [AttendanceController::class, 'getBySubject']);
         Route::post('/attendance', [AttendanceController::class, 'store']);
         Route::get('/announcements', [AnnouncementController::class, 'teacherIndex']);

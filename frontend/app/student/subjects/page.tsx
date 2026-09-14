@@ -330,6 +330,19 @@ export default function StudentSubjectsPage() {
       accessor: 'status',
       align: 'center' as const,
       render: () => <StatusBadge status="Enrolled" type="success" />
+    },
+    {
+      header: 'Action',
+      accessor: 'id',
+      align: 'center' as const,
+      render: (row: any) => (
+        <a
+          href={`/student/subjects/${row.id || 1}`}
+          className="btn-secondary text-[11px] px-2.5 py-1 inline-flex items-center gap-1"
+        >
+          <span>Syllabus & Details</span>
+        </a>
+      )
     }
   ];
 

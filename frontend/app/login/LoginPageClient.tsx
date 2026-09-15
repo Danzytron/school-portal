@@ -137,7 +137,7 @@ export default function LoginPageClient() {
 
               {/* School Name & Subtitle */}
               <div className="space-y-2 select-text">
-                <h1 className="font-heading font-black text-3xl sm:text-4xl xl:text-[40px] text-white tracking-tight leading-[1.14] drop-shadow-md m-0 uppercase select-text">
+                <h1 className="font-heading font-black text-2xl sm:text-3xl xl:text-[32px] text-white tracking-tight leading-tight drop-shadow-md m-0 uppercase select-text whitespace-normal sm:whitespace-nowrap">
                   CEBU EASTERN COLLEGE, INC.
                 </h1>
                 

@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Services\GradeService;
 use Illuminate\Http\Request;
 use App\Models\Grade;
+use App\Models\Student;
+use App\Models\Semester;
+use App\Models\TeacherSubject;
+use App\Models\Schedule;
 
 class GradeController extends Controller
 {
@@ -19,14 +23,52 @@ class GradeController extends Controller
     public function submit(Request $request)
     {
         $validated = $request->validate([
-            'student_id' => 'required|exists:students,id',
+            'student_id' => 'nullable',
+            'name' => 'nullable|string',
             'subject_id' => 'required|exists:subjects,id',
             'semester_id' => 'nullable|exists:semesters,id',
             'section_id' => 'nullable|exists:sections,id',
             'midterm' => 'nullable|numeric|min:1|max:5',
             'final' => 'nullable|numeric|min:1|max:5',
+            'final_grade' => 'nullable|numeric|min:1|max:5',
             'remarks' => 'nullable|string|max:255',
         ]);
+
+        $student = null;
+        if (!empty($validated['student_id'])) {
+            $student = Student::where('id', $validated['student_id'])
+                ->orWhere('student_id_number', $validated['student_id'])
+                ->first();
+        }
+        if (!$student && !empty($request->name)) {
+            $name = trim($request->name);
+            $student = Student::whereHas('user', function($q) use ($name) {
+                $q->where('name', 'ilike', "%{$name}%");
+            })->first();
+        }
+
+        if (!$student) {
+            return response()->json(['message' => 'Student record not found.'], 422);
+        }
+
+        $validated['student_id'] = $student->id;
+
+        if (empty($validated['semester_id'])) {
+            $activeSem = Semester::where('is_active', true)->first() ?? Semester::first();
+            $validated['semester_id'] = $activeSem ? $activeSem->id : 1;
+        }
+
+        if (empty($validated['section_id'])) {
+            $validated['section_id'] = $student->section_id ?? 1;
+        }
+
+        if (empty($validated['final_grade']) && !is_null($validated['midterm'] ?? null) && !is_null($validated['final'] ?? null)) {
+            $validated['final_grade'] = round(($validated['midterm'] + $validated['final']) / 2, 2);
+        }
+
+        if (empty($validated['remarks']) && !empty($validated['final_grade'])) {
+            $validated['remarks'] = $validated['final_grade'] <= 3.00 ? 'Passed' : 'Failed';
+        }
 
         $user = $request->user();
         if ($user->role === 'teacher') {
@@ -45,7 +87,84 @@ class GradeController extends Controller
             $validated
         );
 
-        return response()->json($grade);
+        return response()->json($grade->load(['student.user', 'subject']));
+    }
+
+    public function bulkSubmit(Request $request)
+    {
+        $validated = $request->validate([
+            'subject_id' => 'required|exists:subjects,id',
+            'section_id' => 'required|exists:sections,id',
+            'grades' => 'required|array',
+        ]);
+
+        $user = $request->user();
+        $teacherId = null;
+        if ($user->role === 'teacher') {
+            $teacher = $user->teacher;
+            if (!$teacher) {
+                return response()->json(['message' => 'Teacher profile not found'], 403);
+            }
+            $teacherId = $teacher->id;
+        }
+
+        $activeSem = Semester::where('is_active', true)->first() ?? Semester::first();
+        $semesterId = $activeSem ? $activeSem->id : 1;
+
+        $savedGrades = [];
+        foreach ($validated['grades'] as $item) {
+            $student = null;
+            if (!empty($item['studentId'])) {
+                $student = Student::where('student_id_number', $item['studentId'])
+                    ->orWhere('id', $item['studentId'])
+                    ->first();
+            }
+            if (!$student && !empty($item['name'])) {
+                $name = trim($item['name']);
+                $student = Student::whereHas('user', function($q) use ($name) {
+                    $q->where('name', 'ilike', "%{$name}%");
+                })->first();
+            }
+
+            if (!$student) continue;
+
+            $midterm = isset($item['midterm']) && $item['midterm'] !== '' ? floatval($item['midterm']) : null;
+            $final = isset($item['final']) && $item['final'] !== '' ? floatval($item['final']) : null;
+            $finalGrade = null;
+            if ($midterm !== null && $final !== null) {
+                $finalGrade = round(($midterm + $final) / 2, 2);
+            }
+
+            $remarks = $item['remarks'] ?? null;
+            if (!$remarks && $finalGrade !== null) {
+                $remarks = $finalGrade <= 3.00 ? 'Passed' : 'Failed';
+            }
+
+            $gradeData = [
+                'student_id' => $student->id,
+                'subject_id' => $validated['subject_id'],
+                'section_id' => $validated['section_id'],
+                'semester_id' => $semesterId,
+                'midterm' => $midterm,
+                'final' => $final,
+                'final_grade' => $finalGrade,
+                'remarks' => $remarks,
+            ];
+            if ($teacherId) {
+                $gradeData['teacher_id'] = $teacherId;
+            }
+
+            $grade = Grade::updateOrCreate(
+                [
+                    'student_id' => $student->id,
+                    'subject_id' => $validated['subject_id'],
+                ],
+                $gradeData
+            );
+            $savedGrades[] = $grade;
+        }
+
+        return response()->json(['message' => 'Grades saved successfully', 'count' => count($savedGrades)]);
     }
 
     public function classGrades(Request $request)
@@ -54,7 +173,11 @@ class GradeController extends Controller
         $query = Grade::with(['student.user', 'subject']);
 
         if ($user->role === 'teacher' && $user->teacher) {
-            $query->where('teacher_id', $user->teacher->id);
+            $teacher = $user->teacher;
+            $query->where(function($q) use ($teacher) {
+                $q->where('teacher_id', $teacher->id)
+                  ->orWhereNull('teacher_id');
+            });
         }
 
         if ($request->has('subject_id') && $request->subject_id) {
@@ -72,8 +195,25 @@ class GradeController extends Controller
         $grade = Grade::findOrFail($id);
         $user = $request->user();
 
-        if ($user->role === 'teacher' && $user->teacher && $grade->teacher_id !== $user->teacher->id) {
-            return response()->json(['message' => 'Unauthorized: You can only edit grades for your assigned classes.'], 403);
+        if ($user->role === 'teacher') {
+            $teacher = $user->teacher;
+            if (!$teacher) {
+                return response()->json(['message' => 'Teacher profile not found.'], 403);
+            }
+
+            $isAssigned = ($grade->teacher_id === $teacher->id) ||
+                TeacherSubject::where('teacher_id', $teacher->id)
+                    ->where('subject_id', $grade->subject_id)
+                    ->where('section_id', $grade->section_id)
+                    ->exists() ||
+                Schedule::where('teacher_id', $teacher->id)
+                    ->where('subject_id', $grade->subject_id)
+                    ->where('section_id', $grade->section_id)
+                    ->exists();
+
+            if (!$isAssigned) {
+                return response()->json(['message' => 'Unauthorized: You can only edit grades for your assigned classes.'], 403);
+            }
         }
 
         $validated = $request->validate([
@@ -84,8 +224,12 @@ class GradeController extends Controller
             'is_submitted' => 'nullable|boolean',
         ]);
 
+        if (empty($validated['final_grade']) && !empty($validated['midterm']) && !empty($validated['final'])) {
+            $validated['final_grade'] = round(($validated['midterm'] + $validated['final']) / 2, 2);
+        }
+
         $grade->update($validated);
-        return response()->json($grade);
+        return response()->json($grade->load(['student.user', 'subject']));
     }
 
     public function submitFinal(Request $request)
@@ -128,15 +272,29 @@ class GradeController extends Controller
         $grade = Grade::findOrFail($id);
         $user = $request->user();
 
-        if ($user->role === 'teacher' && $user->teacher && $grade->teacher_id !== $user->teacher->id) {
-            return response()->json(['message' => 'Unauthorized: You can only delete grades for your assigned classes.'], 403);
-        }
+        if ($user->role === 'teacher') {
+            $teacher = $user->teacher;
+            if (!$teacher) {
+                return response()->json(['message' => 'Teacher profile not found.'], 403);
+            }
 
-        if ($grade->is_submitted) {
-            return response()->json(['message' => 'Cannot delete a submitted grade record. Contact the Registrar to unlock.'], 422);
+            $isAssigned = ($grade->teacher_id === $teacher->id) ||
+                TeacherSubject::where('teacher_id', $teacher->id)
+                    ->where('subject_id', $grade->subject_id)
+                    ->where('section_id', $grade->section_id)
+                    ->exists() ||
+                Schedule::where('teacher_id', $teacher->id)
+                    ->where('subject_id', $grade->subject_id)
+                    ->where('section_id', $grade->section_id)
+                    ->exists();
+
+            if (!$isAssigned) {
+                return response()->json(['message' => 'Unauthorized: You can only delete grades for your assigned classes.'], 403);
+            }
         }
 
         $grade->delete();
+
         return response()->json(['message' => 'Grade record deleted successfully.']);
     }
 }

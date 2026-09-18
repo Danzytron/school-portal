@@ -76,6 +76,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/schedule', [TeacherController::class, 'schedule']);
         Route::get('/grades', [GradeController::class, 'classGrades']);
         Route::post('/grades', [GradeController::class, 'submit']);
+        Route::post('/grades/bulk', [GradeController::class, 'bulkSubmit']);
         Route::put('/grades/{id}', [GradeController::class, 'update']);
         Route::post('/grades/submit', [GradeController::class, 'submitFinal']);
         Route::delete('/grades/{id}', [GradeController::class, 'destroy']);

@@ -310,31 +310,29 @@ export default function TeacherGrades() {
     try {
       const response = await api.get(`/teacher/grades?subject_id=${subjectId}&section_id=${sectionId}`);
       const data = (response as any)?.data ?? response;
-      if (Array.isArray(data) && data.length > 0) {
+      if (Array.isArray(data)) {
         const mapped: GradeRecord[] = data.map((g: any) => ({
           id: g.id,
-          studentId: g.student?.student_id_number || g.student_id || '',
+          studentId: g.student?.student_id_number || (typeof g.student_id === 'number' ? `2026-${String(g.student_id).padStart(5, '0')}` : g.student_id || ''),
           name: g.student?.user?.name || g.name || '',
           assessmentType: g.assessment_type || 'Major Exam',
           assessmentName: g.assessment_name || 'Midterm & Final Examination',
-          rawScore: g.raw_score?.toString() || '',
-          maxScore: g.max_score?.toString() || '100',
-          weight: g.weight?.toString() || '100',
-          midterm: g.midterm?.toString() || '',
-          final: g.final?.toString() || '',
-          finalGrade: g.final_grade?.toString() || calcFinalGrade(g.midterm?.toString(), g.final?.toString()),
-          term: g.term || '1st Semester',
-          schoolYear: g.school_year || '2026–2027',
+          rawScore: g.raw_score !== null && g.raw_score !== undefined ? g.raw_score.toString() : '',
+          maxScore: g.max_score !== null && g.max_score !== undefined ? g.max_score.toString() : '100',
+          weight: g.weight !== null && g.weight !== undefined ? g.weight.toString() : '100',
+          midterm: g.midterm !== null && g.midterm !== undefined ? g.midterm.toString() : '',
+          final: g.final !== null && g.final !== undefined ? g.final.toString() : '',
+          finalGrade: g.final_grade !== null && g.final_grade !== undefined ? g.final_grade.toString() : calcFinalGrade(g.midterm?.toString(), g.final?.toString()),
+          term: g.term || currentTerm?.label || '1st Semester',
+          schoolYear: g.school_year || currentSY?.label || '2026–2027',
           remarks: g.remarks || '',
           status: g.is_submitted ? 'Submitted' : (g.midterm || g.final ? 'Draft' : 'No Grade'),
           is_submitted: g.is_submitted,
         }));
         setGrades(mapped);
-      } else {
-        setGrades(DEFAULT_STUDENTS);
       }
-    } catch {
-      setGrades(DEFAULT_STUDENTS);
+    } catch (err) {
+      console.error('Failed to fetch grades:', err);
     } finally {
       setLoading(false);
     }
@@ -468,6 +466,8 @@ export default function TeacherGrades() {
       const payload: any = {
         subject_id: subjectId,
         section_id: sectionId,
+        student_id: formData.studentId || undefined,
+        name: formData.name || undefined,
         midterm: formData.midterm ? parseFloat(formData.midterm) : null,
         final: formData.final ? parseFloat(formData.final) : null,
         remarks: formData.remarks || null,
@@ -484,63 +484,15 @@ export default function TeacherGrades() {
         setToast({ message: 'Grade record updated successfully.', type: 'success' });
       } else {
         // CREATE
-        payload.student_id = formData.studentId || 1;
         await api.post('/teacher/grades', payload);
         setToast({ message: 'Grade record added successfully.', type: 'success' });
       }
       setShowAddModal(false);
       setEditingGrade(null);
-      fetchGrades();
-    } catch {
-      // Offline / Local State Fallback
-      if (editingGrade) {
-        setGrades((prev) =>
-          prev.map((g) => {
-            if (g.id === editingGrade.id) {
-              const updatedMidterm = formData.midterm;
-              const updatedFinal = formData.final;
-              const updatedFinalGrade = calcFinalGrade(updatedMidterm, updatedFinal);
-              return {
-                ...g,
-                assessmentType: formData.assessmentType,
-                assessmentName: formData.assessmentName,
-                rawScore: formData.rawScore,
-                maxScore: formData.maxScore,
-                weight: formData.weight,
-                midterm: updatedMidterm,
-                final: updatedFinal,
-                finalGrade: updatedFinalGrade,
-                remarks: formData.remarks,
-                status: (updatedMidterm || updatedFinal ? 'Draft' : 'No Grade') as GradeRecord['status'],
-              };
-            }
-            return g;
-          })
-        );
-        setToast({ message: 'Grade record updated locally.', type: 'success' });
-      } else {
-        const newRecord: GradeRecord = {
-          id: Date.now(),
-          studentId: formData.studentId || `2026-${String(grades.length + 1).padStart(5, '0')}`,
-          name: formData.name,
-          assessmentType: formData.assessmentType,
-          assessmentName: formData.assessmentName,
-          rawScore: formData.rawScore,
-          maxScore: formData.maxScore,
-          weight: formData.weight,
-          midterm: formData.midterm,
-          final: formData.final,
-          finalGrade: calcFinalGrade(formData.midterm, formData.final),
-          term: currentTerm?.label || '1st Semester',
-          schoolYear: currentSY?.label || 'A.Y. 2026–2027',
-          remarks: formData.remarks,
-          status: formData.midterm || formData.final ? 'Draft' : 'No Grade',
-        };
-        setGrades((prev) => [newRecord, ...prev]);
-        setToast({ message: 'Grade record added locally.', type: 'success' });
-      }
-      setShowAddModal(false);
-      setEditingGrade(null);
+      await fetchGrades();
+    } catch (err: any) {
+      const errorMsg = err?.response?.data?.message || 'Failed to save grade record.';
+      setToast({ message: errorMsg, type: 'error' });
     } finally {
       setIsSaving(false);
     }
@@ -572,10 +524,11 @@ export default function TeacherGrades() {
     try {
       await api.delete(`/teacher/grades/${deleteTarget.id}`);
       setToast({ message: 'Grade record deleted successfully.', type: 'success' });
-      fetchGrades();
-    } catch {
       setGrades((prev) => prev.filter((g) => g.id !== deleteTarget.id));
-      setToast({ message: 'Grade record removed locally.', type: 'success' });
+      await fetchGrades();
+    } catch (err: any) {
+      const errorMsg = err?.response?.data?.message || err?.message || 'Failed to delete grade record from server.';
+      setToast({ message: errorMsg, type: 'error' });
     } finally {
       setDeleteTarget(null);
       setIsSaving(false);
@@ -608,14 +561,16 @@ export default function TeacherGrades() {
   const handleSaveAllBulk = async () => {
     setIsSaving(true);
     try {
-      await api.post('/teacher/grades', {
+      await api.post('/teacher/grades/bulk', {
         grades: grades,
         subject_id: subjectId,
         section_id: sectionId,
       });
-      setToast({ message: 'All student grades saved successfully as draft.', type: 'success' });
-    } catch {
-      setToast({ message: 'All student grades saved locally as draft.', type: 'success' });
+      setToast({ message: 'All student grades saved successfully.', type: 'success' });
+      await fetchGrades();
+    } catch (err: any) {
+      const errorMsg = err?.response?.data?.message || 'Failed to save grades in bulk.';
+      setToast({ message: errorMsg, type: 'error' });
     } finally {
       setIsSaving(false);
     }

@@ -35,7 +35,7 @@ const securityHeaders = [
       "font-src 'self' data: https://fonts.gstatic.com",
       "frame-src 'self' https://challenges.cloudflare.com",
       "child-src 'self' https://challenges.cloudflare.com",
-      "connect-src 'self' http://localhost:8000 https://cebucecportal.site https://challenges.cloudflare.com",
+      "connect-src 'self' http://localhost:8000 https://cebucecportal.site https://challenges.cloudflare.com https://*.up.railway.app",
       "frame-ancestors 'none'",
       "object-src 'none'",
       "base-uri 'self'",

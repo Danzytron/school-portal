@@ -35,10 +35,15 @@ class GradeController extends Controller
         ]);
 
         $student = null;
-        if (!empty($validated['student_id'])) {
-            $student = Student::where('id', $validated['student_id'])
-                ->orWhere('student_id_number', $validated['student_id'])
-                ->first();
+        $studentInput = $validated['student_id'] ?? null;
+        if (!empty($studentInput)) {
+            if (is_numeric($studentInput)) {
+                $student = Student::where('id', intval($studentInput))
+                    ->orWhere('student_id_number', strval($studentInput))
+                    ->first();
+            } else {
+                $student = Student::where('student_id_number', strval($studentInput))->first();
+            }
         }
         if (!$student && !empty($request->name)) {
             $name = trim($request->name);
@@ -51,40 +56,56 @@ class GradeController extends Controller
             return response()->json(['message' => 'Student record not found.'], 422);
         }
 
-        $validated['student_id'] = $student->id;
-
-        if (empty($validated['semester_id'])) {
-            $activeSem = Semester::where('is_active', true)->first() ?? Semester::first();
-            $validated['semester_id'] = $activeSem ? $activeSem->id : 1;
+        $semesterId = $validated['semester_id'] ?? null;
+        if (empty($semesterId)) {
+            $activeSem = Semester::where('is_current', true)->first() ?? Semester::first();
+            $semesterId = $activeSem ? $activeSem->id : 1;
         }
 
-        if (empty($validated['section_id'])) {
-            $validated['section_id'] = $student->section_id ?? 1;
+        $sectionId = $validated['section_id'] ?? ($student->section_id ?? 1);
+
+        $midterm = isset($validated['midterm']) && $validated['midterm'] !== null ? floatval($validated['midterm']) : null;
+        $final = isset($validated['final']) && $validated['final'] !== null ? floatval($validated['final']) : null;
+        $finalGrade = isset($validated['final_grade']) && $validated['final_grade'] !== null ? floatval($validated['final_grade']) : null;
+        if ($finalGrade === null && $midterm !== null && $final !== null) {
+            $finalGrade = round(($midterm + $final) / 2, 2);
         }
 
-        if (empty($validated['final_grade']) && !is_null($validated['midterm'] ?? null) && !is_null($validated['final'] ?? null)) {
-            $validated['final_grade'] = round(($validated['midterm'] + $validated['final']) / 2, 2);
+        $remarks = $validated['remarks'] ?? null;
+        if (empty($remarks) && $finalGrade !== null) {
+            $remarks = $finalGrade <= 3.00 ? 'Passed' : 'Failed';
         }
 
-        if (empty($validated['remarks']) && !empty($validated['final_grade'])) {
-            $validated['remarks'] = $validated['final_grade'] <= 3.00 ? 'Passed' : 'Failed';
-        }
-
+        $teacherId = null;
         $user = $request->user();
         if ($user->role === 'teacher') {
             $teacher = $user->teacher;
             if (!$teacher) {
                 return response()->json(['message' => 'Teacher profile not found'], 403);
             }
-            $validated['teacher_id'] = $teacher->id;
+            $teacherId = $teacher->id;
+        }
+
+        $gradeData = [
+            'student_id' => $student->id,
+            'subject_id' => $validated['subject_id'],
+            'section_id' => $sectionId,
+            'semester_id' => $semesterId,
+            'midterm' => $midterm,
+            'final' => $final,
+            'final_grade' => $finalGrade,
+            'remarks' => $remarks,
+        ];
+        if ($teacherId) {
+            $gradeData['teacher_id'] = $teacherId;
         }
 
         $grade = Grade::updateOrCreate(
             [
-                'student_id' => $validated['student_id'],
+                'student_id' => $student->id,
                 'subject_id' => $validated['subject_id'],
             ],
-            $validated
+            $gradeData
         );
 
         return response()->json($grade->load(['student.user', 'subject']));
@@ -108,16 +129,21 @@ class GradeController extends Controller
             $teacherId = $teacher->id;
         }
 
-        $activeSem = Semester::where('is_active', true)->first() ?? Semester::first();
+        $activeSem = Semester::where('is_current', true)->first() ?? Semester::first();
         $semesterId = $activeSem ? $activeSem->id : 1;
 
         $savedGrades = [];
         foreach ($validated['grades'] as $item) {
             $student = null;
-            if (!empty($item['studentId'])) {
-                $student = Student::where('student_id_number', $item['studentId'])
-                    ->orWhere('id', $item['studentId'])
-                    ->first();
+            $sId = $item['studentId'] ?? null;
+            if (!empty($sId)) {
+                if (is_numeric($sId)) {
+                    $student = Student::where('id', intval($sId))
+                        ->orWhere('student_id_number', strval($sId))
+                        ->first();
+                } else {
+                    $student = Student::where('student_id_number', strval($sId))->first();
+                }
             }
             if (!$student && !empty($item['name'])) {
                 $name = trim($item['name']);

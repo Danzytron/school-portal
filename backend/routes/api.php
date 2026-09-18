@@ -30,6 +30,14 @@ use App\Http\Controllers\Api\ReportController;
 |--------------------------------------------------------------------------
 */
 
+// Public status route
+Route::get('/', function () {
+    return response()->json([
+        'status' => 'online',
+        'message' => 'School Portal API is running'
+    ]);
+});
+
 // Public routes (Rate limited to 5 requests per minute)
 Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 

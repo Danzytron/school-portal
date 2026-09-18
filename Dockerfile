@@ -24,13 +24,16 @@ COPY backend/ .
 # Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Permissions
-RUN chown -R www-data:www-data storage bootstrap/cache && \
+# Ensure storage directories exist and set permissions
+RUN mkdir -p storage/app/public \
+             storage/framework/cache/data \
+             storage/framework/sessions \
+             storage/framework/views \
+             storage/logs \
+             bootstrap/cache && \
+    chown -R www-data:www-data storage bootstrap/cache && \
     chmod -R 775 storage bootstrap/cache
 
 EXPOSE 8000
 
-CMD php artisan config:clear && \
-    php artisan route:clear && \
-    php artisan migrate --force && \
-    php artisan serve --host=0.0.0.0 --port=${PORT:-8000}
+CMD ["sh", "-c", "php artisan config:clear && php artisan route:clear && php artisan migrate --force && exec php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"]

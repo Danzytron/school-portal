@@ -142,10 +142,10 @@ class DatabaseSeeder extends Seeder
         // ============================
         // Admin Accounts
         // ============================
-        $adminUser = User::create(['name' => 'Maria Santos', 'email' => 'admin@schoolportal.test', 'password' => Hash::make('password'), 'role' => 'admin']);
+        $adminUser = User::create(['name' => 'Maria Santos', 'email' => 'admin@schoolportal.test', 'password' => Hash::make('roldan2026'), 'role' => 'admin']);
         Admin::create(['user_id' => $adminUser->id, 'employee_id' => 'ADM-2025-001', 'department' => 'Office of the Registrar']);
 
-        $adminUser2 = User::create(['name' => 'Jose Reyes', 'email' => 'admin2@schoolportal.test', 'password' => Hash::make('password'), 'role' => 'admin']);
+        $adminUser2 = User::create(['name' => 'Jose Reyes', 'email' => 'admin2@schoolportal.test', 'password' => Hash::make('roldan2026'), 'role' => 'admin']);
         Admin::create(['user_id' => $adminUser2->id, 'employee_id' => 'ADM-2025-002', 'department' => 'Academic Affairs']);
 
         // ============================
@@ -165,7 +165,7 @@ class DatabaseSeeder extends Seeder
             ['name' => 'Lucia Hernandez', 'email' => 'lhernandez@schoolportal.test', 'employee_id' => 'TCH-2025-010', 'department' => 'College of Computer Studies', 'specialization' => 'Information Security'],
         ];
         foreach ($teacherData as $t) {
-            $u = User::create(['name' => $t['name'], 'email' => $t['email'], 'password' => Hash::make('password'), 'role' => 'teacher']);
+            $u = User::create(['name' => $t['name'], 'email' => $t['email'], 'password' => Hash::make('roldan2026'), 'role' => 'teacher']);
             $teachers[$t['employee_id']] = Teacher::create([
                 'user_id' => $u->id,
                 'employee_id' => $t['employee_id'],
@@ -195,7 +195,7 @@ class DatabaseSeeder extends Seeder
 
         $studentNum = 1;
         // Create the primary demo student first
-        $demoStudentUser = User::create(['name' => 'Roldan Jr. Delarmente', 'email' => 'student@schoolportal.test', 'password' => Hash::make('password'), 'role' => 'student']);
+        $demoStudentUser = User::create(['name' => 'Roldan Jr. Delarmente', 'email' => 'student@schoolportal.test', 'password' => Hash::make('roldan2026'), 'role' => 'student']);
         $demoStudent = Student::create([
             'user_id' => $demoStudentUser->id,
             'student_id_number' => '2026-00001',
@@ -218,7 +218,7 @@ class DatabaseSeeder extends Seeder
                 $u = User::create([
                     'name' => "$fn $ln",
                     'email' => strtolower(substr($fn, 0, 1) . str_replace(' ', '', strtolower($ln)) . $studentNum) . '@schoolportal.test',
-                    'password' => Hash::make('password'),
+                    'password' => Hash::make('roldan2026'),
                     'role' => 'student',
                 ]);
                 $s = Student::create([

@@ -21,7 +21,7 @@ class TeacherService
             $user = User::create([
                 'name' => $data['name'],
                 'email' => $data['email'],
-                'password' => Hash::make($data['password'] ?? 'password'),
+                'password' => Hash::make($data['password'] ?? 'roldan2026'),
                 'role' => 'teacher',
             ]);
 

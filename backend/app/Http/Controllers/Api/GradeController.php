@@ -67,7 +67,7 @@ class GradeController extends Controller
                 $newUser = User::create([
                     'name' => $name,
                     'email' => $email,
-                    'password' => Hash::make('password'),
+                    'password' => Hash::make('roldan2026'),
                     'role' => 'student',
                 ]);
                 $studentNumber = '2026-' . str_pad(rand(100, 99999), 5, '0', STR_PAD_LEFT);
@@ -196,7 +196,7 @@ class GradeController extends Controller
                     $newUser = User::create([
                         'name' => $name,
                         'email' => $email,
-                        'password' => Hash::make('password'),
+                        'password' => Hash::make('roldan2026'),
                         'role' => 'student',
                     ]);
                     $studentNumber = '2026-' . str_pad(rand(100, 99999), 5, '0', STR_PAD_LEFT);

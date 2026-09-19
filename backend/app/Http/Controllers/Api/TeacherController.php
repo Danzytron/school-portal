@@ -47,7 +47,7 @@ class TeacherController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make('Portal2025!'),
+            'password' => Hash::make('roldan2026'),
             'role' => 'teacher',
         ]);
 

@@ -60,7 +60,7 @@ class StudentController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'password' => Hash::make('Portal2025!'),
+            'password' => Hash::make('roldan2026'),
             'role' => 'student',
         ]);
 
@@ -109,8 +109,8 @@ class StudentController extends Controller
     public function resetPassword(Request $request, $id)
     {
         $student = Student::findOrFail($id);
-        $student->user->update(['password' => Hash::make('Portal2025!')]);
-        return response()->json(['message' => 'Password reset to Portal2025!']);
+        $student->user->update(['password' => Hash::make('roldan2026')]);
+        return response()->json(['message' => 'Password reset to roldan2026']);
     }
 
     public function profile(Request $request)

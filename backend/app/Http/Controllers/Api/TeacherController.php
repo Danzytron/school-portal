@@ -91,28 +91,30 @@ class TeacherController extends Controller
 
     public function profile(Request $request)
     {
-        $teacher = $request->user()->teacher;
-        if (!$teacher) {
+        $user = $request->user();
+        if (!$user || !$user->teacher) {
             return response()->json(['message' => 'Teacher profile not found'], 404);
         }
-        return response()->json($teacher->load('user'));
+        return response()->json($user->teacher->load('user'));
     }
 
     public function updateProfile(Request $request)
     {
-        $teacher = $request->user()->teacher;
-        if (!$teacher) {
+        $user = $request->user();
+        if (!$user || !$user->teacher) {
             return response()->json(['message' => 'Teacher profile not found'], 404);
         }
+        $teacher = $user->teacher;
         $teacher->update($request->only(['contact_number', 'specialization']));
         return response()->json($teacher->load('user'));
     }
 
     public function subjects(Request $request)
     {
-        $teacher = $request->user()->teacher;
-        if (!$teacher) return response()->json([]);
+        $user = $request->user();
+        if (!$user || !$user->teacher) return response()->json([]);
 
+        $teacher = $user->teacher;
         $assigned = TeacherSubject::where('teacher_id', $teacher->id)
             ->with(['subject', 'section'])
             ->get();
@@ -122,12 +124,16 @@ class TeacherController extends Controller
 
     public function students(Request $request)
     {
-        $teacher = $request->user()->teacher;
-        if (!$teacher) return response()->json([]);
+        $user = $request->user();
+        if (!$user || !$user->teacher) return response()->json([]);
 
+        $teacher = $user->teacher;
         $sectionIds = TeacherSubject::where('teacher_id', $teacher->id)->pluck('section_id')->unique();
 
         $query = Student::whereIn('section_id', $sectionIds)->with(['user', 'course', 'section']);
+        if ($request->has('section_id') && !empty($request->section_id)) {
+            $query->where('section_id', $request->section_id);
+        }
         if ($request->has('search')) {
             $search = $request->search;
             $query->whereHas('user', function($q) use ($search) {
@@ -140,9 +146,10 @@ class TeacherController extends Controller
 
     public function schedule(Request $request)
     {
-        $teacher = $request->user()->teacher;
-        if (!$teacher) return response()->json([]);
+        $user = $request->user();
+        if (!$user || !$user->teacher) return response()->json([]);
 
+        $teacher = $user->teacher;
         $schedules = Schedule::where('teacher_id', $teacher->id)
             ->with(['subject', 'section', 'room'])
             ->get();

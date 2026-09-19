@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Services\GradeService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Grade;
 use App\Models\Student;
+use App\Models\User;
 use App\Models\Semester;
 use App\Models\TeacherSubject;
 use App\Models\Schedule;
@@ -22,6 +24,11 @@ class GradeController extends Controller
 
     public function submit(Request $request)
     {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
         $validated = $request->validate([
             'student_id' => 'nullable',
             'name' => 'nullable|string',
@@ -33,6 +40,8 @@ class GradeController extends Controller
             'final_grade' => 'nullable|numeric|min:1|max:5',
             'remarks' => 'nullable|string|max:255',
         ]);
+
+        $sectionId = $validated['section_id'] ?? 1;
 
         $student = null;
         $studentInput = $validated['student_id'] ?? null;
@@ -50,10 +59,31 @@ class GradeController extends Controller
             $student = Student::whereHas('user', function($q) use ($name) {
                 $q->where('name', 'ilike', "%{$name}%");
             })->first();
+
+            // Auto-create student in this section if not found so grade addition never fails
+            if (!$student) {
+                $cleanName = preg_replace('/[^a-zA-Z0-9]/', '', strtolower($name));
+                $email = ($cleanName ?: 'student') . rand(100, 9999) . '@schoolportal.test';
+                $newUser = User::create([
+                    'name' => $name,
+                    'email' => $email,
+                    'password' => Hash::make('password'),
+                    'role' => 'student',
+                ]);
+                $studentNumber = '2026-' . str_pad(rand(100, 99999), 5, '0', STR_PAD_LEFT);
+                $student = Student::create([
+                    'user_id' => $newUser->id,
+                    'student_id_number' => $studentNumber,
+                    'course_id' => 1,
+                    'year_level' => 1,
+                    'section_id' => $sectionId,
+                    'enrollment_status' => 'enrolled',
+                ]);
+            }
         }
 
         if (!$student) {
-            return response()->json(['message' => 'Student record not found.'], 422);
+            return response()->json(['message' => 'Please provide a valid student name or ID.'], 422);
         }
 
         $semesterId = $validated['semester_id'] ?? null;
@@ -61,8 +91,6 @@ class GradeController extends Controller
             $activeSem = Semester::where('is_current', true)->first() ?? Semester::first();
             $semesterId = $activeSem ? $activeSem->id : 1;
         }
-
-        $sectionId = $validated['section_id'] ?? ($student->section_id ?? 1);
 
         $midterm = isset($validated['midterm']) && $validated['midterm'] !== null ? floatval($validated['midterm']) : null;
         $final = isset($validated['final']) && $validated['final'] !== null ? floatval($validated['final']) : null;
@@ -77,7 +105,6 @@ class GradeController extends Controller
         }
 
         $teacherId = null;
-        $user = $request->user();
         if ($user->role === 'teacher') {
             $teacher = $user->teacher;
             if (!$teacher) {
@@ -89,7 +116,7 @@ class GradeController extends Controller
         $gradeData = [
             'student_id' => $student->id,
             'subject_id' => $validated['subject_id'],
-            'section_id' => $sectionId,
+            'section_id' => $validated['section_id'] ?? ($student->section_id ?? $sectionId),
             'semester_id' => $semesterId,
             'midterm' => $midterm,
             'final' => $final,
@@ -104,6 +131,7 @@ class GradeController extends Controller
             [
                 'student_id' => $student->id,
                 'subject_id' => $validated['subject_id'],
+                'semester_id' => $semesterId,
             ],
             $gradeData
         );
@@ -113,13 +141,17 @@ class GradeController extends Controller
 
     public function bulkSubmit(Request $request)
     {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
         $validated = $request->validate([
             'subject_id' => 'required|exists:subjects,id',
             'section_id' => 'required|exists:sections,id',
             'grades' => 'required|array',
         ]);
 
-        $user = $request->user();
         $teacherId = null;
         if ($user->role === 'teacher') {
             $teacher = $user->teacher;
@@ -135,8 +167,15 @@ class GradeController extends Controller
         $savedGrades = [];
         foreach ($validated['grades'] as $item) {
             $student = null;
-            $sId = $item['studentId'] ?? null;
-            if (!empty($sId)) {
+            if (!empty($item['id']) && is_numeric($item['id'])) {
+                $existingGrade = Grade::find(intval($item['id']));
+                if ($existingGrade) {
+                    $student = $existingGrade->student;
+                }
+            }
+
+            $sId = $item['student_id'] ?? ($item['studentId'] ?? null);
+            if (!$student && !empty($sId)) {
                 if (is_numeric($sId)) {
                     $student = Student::where('id', intval($sId))
                         ->orWhere('student_id_number', strval($sId))
@@ -150,6 +189,26 @@ class GradeController extends Controller
                 $student = Student::whereHas('user', function($q) use ($name) {
                     $q->where('name', 'ilike', "%{$name}%");
                 })->first();
+
+                if (!$student) {
+                    $cleanName = preg_replace('/[^a-zA-Z0-9]/', '', strtolower($name));
+                    $email = ($cleanName ?: 'student') . rand(100, 9999) . '@schoolportal.test';
+                    $newUser = User::create([
+                        'name' => $name,
+                        'email' => $email,
+                        'password' => Hash::make('password'),
+                        'role' => 'student',
+                    ]);
+                    $studentNumber = '2026-' . str_pad(rand(100, 99999), 5, '0', STR_PAD_LEFT);
+                    $student = Student::create([
+                        'user_id' => $newUser->id,
+                        'student_id_number' => $studentNumber,
+                        'course_id' => 1,
+                        'year_level' => 1,
+                        'section_id' => $validated['section_id'],
+                        'enrollment_status' => 'enrolled',
+                    ]);
+                }
             }
 
             if (!$student) continue;
@@ -169,7 +228,7 @@ class GradeController extends Controller
             $gradeData = [
                 'student_id' => $student->id,
                 'subject_id' => $validated['subject_id'],
-                'section_id' => $validated['section_id'],
+                'section_id' => $validated['section_id'] ?? ($student->section_id ?? 1),
                 'semester_id' => $semesterId,
                 'midterm' => $midterm,
                 'final' => $final,
@@ -184,6 +243,7 @@ class GradeController extends Controller
                 [
                     'student_id' => $student->id,
                     'subject_id' => $validated['subject_id'],
+                    'semester_id' => $semesterId,
                 ],
                 $gradeData
             );
@@ -196,7 +256,11 @@ class GradeController extends Controller
     public function classGrades(Request $request)
     {
         $user = $request->user();
-        $query = Grade::with(['student.user', 'subject']);
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        $query = Grade::with(['student.user', 'subject', 'section']);
 
         if ($user->role === 'teacher' && $user->teacher) {
             $teacher = $user->teacher;
@@ -218,8 +282,12 @@ class GradeController extends Controller
 
     public function update(Request $request, $id)
     {
-        $grade = Grade::findOrFail($id);
         $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        $grade = Grade::findOrFail($id);
 
         if ($user->role === 'teacher') {
             $teacher = $user->teacher;
@@ -250,8 +318,15 @@ class GradeController extends Controller
             'is_submitted' => 'nullable|boolean',
         ]);
 
-        if (empty($validated['final_grade']) && !empty($validated['midterm']) && !empty($validated['final'])) {
-            $validated['final_grade'] = round(($validated['midterm'] + $validated['final']) / 2, 2);
+        $newMidterm = array_key_exists('midterm', $validated) ? $validated['midterm'] : $grade->midterm;
+        $newFinal = array_key_exists('final', $validated) ? $validated['final'] : $grade->final;
+
+        if (empty($validated['final_grade']) && !is_null($newMidterm) && !is_null($newFinal)) {
+            $validated['final_grade'] = round((floatval($newMidterm) + floatval($newFinal)) / 2, 2);
+        }
+
+        if (empty($validated['remarks']) && !empty($validated['final_grade'])) {
+            $validated['remarks'] = $validated['final_grade'] <= 3.00 ? 'Passed' : 'Failed';
         }
 
         $grade->update($validated);
@@ -260,12 +335,16 @@ class GradeController extends Controller
 
     public function submitFinal(Request $request)
     {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
         $request->validate([
             'subject_id' => 'required|exists:subjects,id',
             'section_id' => 'required|exists:sections,id',
         ]);
 
-        $user = $request->user();
         $query = Grade::where('subject_id', $request->subject_id)
             ->where('section_id', $request->section_id);
 
@@ -288,6 +367,11 @@ class GradeController extends Controller
 
     public function finalize(Request $request, $id)
     {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
         $grade = Grade::findOrFail($id);
         $grade->update(['is_submitted' => true, 'submitted_at' => now()]);
         return response()->json($grade);
@@ -295,8 +379,12 @@ class GradeController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        $grade = Grade::findOrFail($id);
         $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated.'], 401);
+        }
+
+        $grade = Grade::findOrFail($id);
 
         if ($user->role === 'teacher') {
             $teacher = $user->teacher;

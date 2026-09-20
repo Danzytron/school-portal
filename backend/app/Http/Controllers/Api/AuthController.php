@@ -20,24 +20,24 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|max:255',
+            'email' => 'required|string|max:255',
             'password' => 'required|string|max:255',
         ]);
 
         $ip = $request->ip();
-        $email = strtolower(trim($request->input('email')));
+        $identifier = trim($request->input('email'));
 
         $result = $this->authService->login([
-            'email' => $email,
+            'email' => $identifier,
             'password' => $request->input('password')
         ]);
 
         if (!$result) {
-            Log::warning("[SECURITY AUDIT] Failed login attempt for {$email} from IP {$ip}");
+            Log::warning("[SECURITY AUDIT] Failed login attempt for {$identifier} from IP {$ip}");
             return response()->json(['message' => 'Invalid email or password.'], 401);
         }
 
-        Log::info("[SECURITY AUDIT] Successful login for user {$email} (Role: {$result['user']->role}) from IP {$ip}");
+        Log::info("[SECURITY AUDIT] Successful login for user {$result['user']->email} (Role: {$result['user']->role}) from IP {$ip}");
 
         return response()->json([
             'message' => 'Login successful',

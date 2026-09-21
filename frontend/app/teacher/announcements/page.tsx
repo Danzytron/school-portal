@@ -1,43 +1,32 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
-import { api } from '@/lib/api';
-import { PageHeader } from '@/components/ui/PageHeader';
-import { DataTable } from '@/components/ui/DataTable';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { Modal } from '@/components/ui/Modal';
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-import { Toast } from '@/components/ui/Toast';
-import { Megaphone, Plus, Edit2, Trash2, Users, Send } from 'lucide-react';
+import api from '@/lib/api';
+import PageHeader from '@/components/ui/PageHeader';
+import DataTable from '@/components/ui/DataTable';
+import LoadingState from '@/components/ui/LoadingState';
+import Modal from '@/components/ui/Modal';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import Toast from '@/components/ui/Toast';
+import FormInput from '@/components/ui/FormInput';
+import FormSelect from '@/components/ui/FormSelect';
+import { Megaphone, Plus, Edit2, Trash2, Users } from 'lucide-react';
 
 export default function TeacherAnnouncements() {
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [editingAnnouncement, setEditingAnnouncement] = useState<any>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | number | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null);
 
-  const [formData, setFormData] = useState({ title: '', content: '', audience: 'All Students' });
-
-  const DEFAULT_TEACHER_ANNOUNCEMENTS = [
-    {
-      id: 1,
-      title: 'Midterm Examination Schedule for IT 312',
-      content: 'Please be reminded that our Midterm Exam will be held on Oct 14 at Computer Lab 3. Bring your valid school ID.',
-      audience: 'All Students',
-      published_at: '2026-08-20',
-      status: 'Published'
-    },
-    {
-      id: 2,
-      title: 'Submission of Case Study 1: Distributed Transactions',
-      content: 'Case Study 1 report must be submitted via the portal document repository on or before Sept 18 at 11:59 PM.',
-      audience: 'BSIT 3-B Only',
-      published_at: '2026-08-22',
-      status: 'Published'
-    }
-  ];
+  const [formData, setFormData] = useState({
+    title: '',
+    content: '',
+    target_audience: 'students',
+  });
 
   useEffect(() => {
     fetchAnnouncements();
@@ -47,245 +36,238 @@ export default function TeacherAnnouncements() {
     setLoading(true);
     try {
       const response = await api.get('/teacher/announcements');
-      const data = (response as any)?.data ?? response;
-      if (Array.isArray(data) && data.length > 0) {
-        setAnnouncements(data);
-      } else {
-        setAnnouncements(DEFAULT_TEACHER_ANNOUNCEMENTS);
-      }
+      const data = Array.isArray(response) ? response : ((response as any)?.data ?? []);
+      setAnnouncements(data);
     } catch (error) {
       console.error('Error fetching announcements', error);
-      setAnnouncements(DEFAULT_TEACHER_ANNOUNCEMENTS);
+      setAnnouncements([
+        {
+          id: 1,
+          title: 'Midterm Examination Schedule for IT 312',
+          content: 'Please be reminded that our Midterm Exam will be held on Oct 14 at Computer Lab 3.',
+          target_audience: 'students',
+          published_at: '2026-08-20',
+          is_published: true,
+        },
+      ]);
     } finally {
       setLoading(false);
     }
   };
 
+  const openAddModal = () => {
+    setEditingAnnouncement(null);
+    setFormData({ title: '', content: '', target_audience: 'students' });
+    setModalOpen(true);
+  };
+
+  const openEditModal = (item: any) => {
+    setEditingAnnouncement(item);
+    setFormData({
+      title: item.title || '',
+      content: item.content || '',
+      target_audience: item.target_audience || 'students',
+    });
+    setModalOpen(true);
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.title.trim() || !formData.content.trim()) {
+      setToast({ message: 'Title and content are required.', type: 'error' });
+      return;
+    }
+
+    setSubmitting(true);
     try {
-      if (selectedId) {
-        await api.put(`/teacher/announcements/${selectedId}`, formData);
+      const payload = {
+        title: formData.title.trim(),
+        content: formData.content.trim(),
+        target_audience: formData.target_audience,
+      };
+
+      if (editingAnnouncement) {
+        await api.put(`/teacher/announcements/${editingAnnouncement.id}`, payload);
         setToast({ message: 'Announcement updated successfully.', type: 'success' });
       } else {
-        await api.post('/teacher/announcements', formData);
-        setToast({ message: 'Announcement created successfully.', type: 'success' });
+        await api.post('/teacher/announcements', payload);
+        setToast({ message: 'Announcement published successfully.', type: 'success' });
       }
       setModalOpen(false);
-      fetchAnnouncements();
-    } catch (error) {
-      if (selectedId) {
-        setAnnouncements(prev => prev.map(a => a.id === selectedId ? { ...a, ...formData } : a));
-      } else {
-        const newAnn = {
-          id: Date.now(),
-          ...formData,
-          published_at: new Date().toISOString().split('T')[0],
-          status: 'Published'
-        };
-        setAnnouncements(prev => [newAnn, ...prev]);
-      }
-      setToast({ message: 'Announcement published successfully.', type: 'success' });
-      setModalOpen(false);
+      await fetchAnnouncements();
+    } catch (error: any) {
+      const msg = error.response?.data?.message || 'Failed to save announcement.';
+      setToast({ message: msg, type: 'error' });
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const handleDelete = async () => {
     if (!selectedId) return;
+    setSubmitting(true);
     try {
       await api.delete(`/teacher/announcements/${selectedId}`);
       setToast({ message: 'Announcement deleted successfully.', type: 'success' });
-    } catch (error) {
-      setAnnouncements(prev => prev.filter(a => a.id !== selectedId));
-      setToast({ message: 'Announcement deleted successfully.', type: 'success' });
-    } finally {
       setConfirmOpen(false);
+      setSelectedId(null);
+      await fetchAnnouncements();
+    } catch (error: any) {
+      const msg = error.response?.data?.message || 'Failed to delete announcement.';
+      setToast({ message: msg, type: 'error' });
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const columns = [
-    { 
-      header: 'Announcement Headline',
-      accessor: 'title',
+    {
+      key: 'title',
+      label: 'Announcement Title',
       render: (row: any) => (
         <div>
-          <span className="font-heading font-bold text-slate-900 block text-xs">
-            {row.title}
-          </span>
-          <span className="text-slate-500 text-[11px] line-clamp-1 mt-0.5">
-            {row.content}
-          </span>
+          <div className="font-semibold text-slate-900 flex items-center gap-1.5">
+            <Megaphone className="w-3.5 h-3.5 text-brand-gold" />
+            <span>{row.title}</span>
+          </div>
+          <div className="text-xs text-slate-500 line-clamp-1 mt-0.5">{row.content}</div>
         </div>
-      )
-    },
-    { 
-      header: 'Target Audience',
-      accessor: 'audience',
-      render: (row: any) => (
-        <span className="bg-blue-50 text-[#1D4ED8] border border-blue-200 px-2 py-0.5 rounded text-[10px] font-semibold">
-          {row.audience || 'All Students'}
-        </span>
-      )
-    },
-    { 
-      header: 'Date Broadcasted',
-      accessor: 'published_at',
-      render: (row: any) => (
-        <span className="font-mono text-slate-600 text-[11px]">
-          {row.published_at || 'Recent'}
-        </span>
-      )
-    },
-    { 
-      header: 'Status',
-      accessor: 'status',
-      render: (row: any) => (
-        <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-semibold uppercase">
-          {row.status || 'Published'}
-        </span>
-      )
+      ),
     },
     {
-      header: 'Actions',
-      accessor: 'id',
-      align: 'right' as const,
+      key: 'audience',
+      label: 'Target Audience',
       render: (row: any) => (
-        <div className="flex items-center justify-end gap-1.5">
-          <button 
-            onClick={() => { setSelectedId(row.id); setFormData({ title: row.title, content: row.content, audience: row.audience || 'All Students' }); setModalOpen(true); }}
-            className="btn-outline text-xs inline-flex items-center gap-1"
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <Users className="w-3 h-3" />
+          <span>{row.target_audience || 'students'}</span>
+        </span>
+      ),
+    },
+    {
+      key: 'date',
+      label: 'Date Published',
+      render: (row: any) => (
+        <span className="text-xs text-slate-600">
+          {row.published_at ? new Date(row.published_at).toLocaleDateString() : 'Today'}
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (row: any) => (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => openEditModal(row)}
+            className="p-1.5 text-slate-600 hover:text-brand-primary hover:bg-slate-100 rounded transition-colors"
+            title="Edit Bulletin"
           >
-            <Edit2 size={11} />
-            <span>Edit</span>
+            <Edit2 className="w-4 h-4" />
           </button>
-          <button 
-            onClick={() => { setSelectedId(row.id); setConfirmOpen(true); }}
-            className="btn-danger text-xs inline-flex items-center gap-1"
+          <button
+            onClick={() => {
+              setSelectedId(row.id);
+              setConfirmOpen(true);
+            }}
+            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+            title="Delete Bulletin"
           >
-            <Trash2 size={11} />
-            <span>Delete</span>
+            <Trash2 className="w-4 h-4" />
           </button>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   return (
     <div className="space-y-6 font-sans">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-      
-      <PageHeader 
-        title="Class Announcements & Advisories" 
-        subtitle="Broadcast important reminders, laboratory instructions, and examination updates to your students."
-        badge="Faculty Broadcast"
-        actions={[
-          {
-            label: "Create Announcement",
-            onClick: () => { setSelectedId(null); setFormData({ title: '', content: '', audience: 'All Students' }); setModalOpen(true); },
-            variant: "primary",
-            icon: Plus
-          }
-        ]}
+
+      <PageHeader
+        title="Class Announcements & Bulletins"
+        subtitle="Post assignments, examination reminders, and updates directly to your students"
+        action={{
+          label: 'Post New Announcement',
+          icon: <Plus className="w-4 h-4" />,
+          onClick: openAddModal,
+        }}
       />
 
-      <div className="panel">
-        <div className="panel-heading">
-          <div className="flex items-center gap-2">
-            <Megaphone size={16} className="text-[#1D4ED8]" />
-            <span className="font-heading font-bold text-slate-900">Broadcast Bulletins</span>
-          </div>
-          <span className="text-[11px] font-mono text-slate-500">{announcements.length} Published Notices</span>
-        </div>
+      {loading ? (
+        <LoadingState message="Loading announcements..." />
+      ) : (
+        <DataTable columns={columns} data={announcements} emptyMessage="No class announcements posted yet." />
+      )}
 
-        <div className="p-0">
-          {loading ? (
-            <div className="p-8"><LoadingState message="Loading announcements..." /></div>
-          ) : (
-            <DataTable 
-              columns={columns} 
-              data={announcements} 
-              keyField="id"
-              emptyMessage="No announcements found." 
-            />
-          )}
-        </div>
-      </div>
-
+      {/* Add/Edit Modal */}
       {modalOpen && (
-        <Modal 
-          isOpen={true}
-          title={selectedId ? "Edit Class Announcement" : "Draft New Class Announcement"} 
+        <Modal
+          title={editingAnnouncement ? 'Edit Class Announcement' : 'Post New Class Announcement'}
+          isOpen={modalOpen}
           onClose={() => setModalOpen(false)}
         >
-          <form onSubmit={handleSave} className="space-y-4 text-xs font-sans">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Announcement Title
-              </label>
-              <input 
-                type="text"
-                value={formData.title} 
-                onChange={(e) => setFormData({...formData, title: e.target.value})} 
-                placeholder="e.g. Schedule for Final Exam Review"
-                className="form-control text-xs py-1.5"
-                required 
-              />
-            </div>
+          <form onSubmit={handleSave} className="space-y-4">
+            <FormInput
+              label="Announcement Title"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              placeholder="e.g. Midterm Examination Schedule for IT 312"
+              required
+            />
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Target Audience
-              </label>
-              <select 
-                value={formData.audience} 
-                onChange={(e) => setFormData({...formData, audience: e.target.value})} 
-                className="form-control text-xs font-semibold text-slate-900 py-1.5"
-              >
-                <option value="All Students">All Enrolled Students in My Classes</option>
-                <option value="BSIT 3-A Only">BSIT 3-A Students Only</option>
-                <option value="BSIT 3-B Only">BSIT 3-B Students Only</option>
-                <option value="BSCS 3-A Only">BSCS 3-A Students Only</option>
-              </select>
-            </div>
+            <FormSelect
+              label="Target Audience"
+              value={formData.target_audience}
+              onChange={(e) => setFormData({ ...formData, target_audience: e.target.value })}
+              options={[
+                { value: 'students', label: 'Students in My Classes' },
+                { value: 'all', label: 'All Campus Community' },
+              ]}
+              required
+            />
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Detailed Message Content
+            <div className="space-y-1.5">
+              <label className="block text-sm font-semibold text-slate-700">
+                Message Content <span className="text-red-500">*</span>
               </label>
-              <textarea 
-                className="form-control text-xs p-2.5 h-28"
-                placeholder="Write the full advisory text here..."
+              <textarea
+                rows={5}
                 value={formData.content}
-                onChange={(e) => setFormData({...formData, content: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                placeholder="Write your announcement details here..."
+                className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary"
                 required
               />
             </div>
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
-              <button 
-                type="button" 
-                onClick={() => setModalOpen(false)} 
-                className="btn-secondary"
+            <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
+              <button
+                type="button"
+                onClick={() => setModalOpen(false)}
+                className="px-4 py-2 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-md font-medium text-sm"
               >
                 Cancel
               </button>
-              <button 
-                type="submit" 
-                className="btn-primary flex items-center gap-1.5"
+              <button
+                type="submit"
+                disabled={submitting}
+                className="px-4 py-2 bg-brand-primary text-white hover:bg-brand-secondary rounded-md font-medium text-sm transition-colors disabled:opacity-50"
               >
-                <Send size={12} />
-                <span>Publish Announcement</span>
+                {submitting ? 'Publishing...' : editingAnnouncement ? 'Save Changes' : 'Post Announcement'}
               </button>
             </div>
           </form>
         </Modal>
       )}
 
+      {/* Delete Confirmation */}
       {confirmOpen && (
         <ConfirmDialog
-          isOpen={true}
           title="Delete Announcement"
-          message="Are you sure you want to remove this announcement? It will no longer be visible on student dashboards."
+          message="Are you sure you want to delete this announcement?"
+          confirmLabel={submitting ? 'Deleting...' : 'Delete Announcement'}
+          variant="danger"
           onConfirm={handleDelete}
           onCancel={() => setConfirmOpen(false)}
         />

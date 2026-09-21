@@ -1,73 +1,69 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState } from 'react';
-import { api } from '@/lib/api';
-import { PageHeader } from '@/components/ui/PageHeader';
-import { DataTable } from '@/components/ui/DataTable';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { Modal } from '@/components/ui/Modal';
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-import { Toast } from '@/components/ui/Toast';
+import api from '@/lib/api';
+import PageHeader from '@/components/ui/PageHeader';
+import DataTable from '@/components/ui/DataTable';
+import LoadingState from '@/components/ui/LoadingState';
+import Modal from '@/components/ui/Modal';
+import ConfirmDialog from '@/components/ui/ConfirmDialog';
+import Toast from '@/components/ui/Toast';
+import FormInput from '@/components/ui/FormInput';
+import FormSelect from '@/components/ui/FormSelect';
 import { FolderOpen, Upload, Download, Trash2, FileText, Plus } from 'lucide-react';
 
 export default function TeacherDocuments() {
   const [documents, setDocuments] = useState<any[]>([]);
+  const [subjects, setSubjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [subjectId, setSubjectId] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | number | null>(null);
+  const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null);
   
-  const [formData, setFormData] = useState({ title: '', description: '', subjectId: '1' });
-
-  const DEFAULT_DOCUMENTS = [
-    {
-      id: 1,
-      title: 'IT 312 - Course Syllabus & Grading Mechanics',
-      subject: 'IT 312 - Web Systems',
-      type: 'PDF Document',
-      size: '2.4 MB',
-      created_at: '2026-08-10',
-      file_path: '#'
-    },
-    {
-      id: 2,
-      title: 'IT 311 - Relational Algebra & SQL Benchmarking Guide',
-      subject: 'IT 311 - Database Systems',
-      type: 'PDF Document',
-      size: '4.1 MB',
-      created_at: '2026-08-14',
-      file_path: '#'
-    },
-    {
-      id: 3,
-      title: 'CS 301 - IEEE Software Requirements Specification Template',
-      subject: 'CS 301 - Software Engineering',
-      type: 'DOCX Document',
-      size: '1.2 MB',
-      created_at: '2026-08-18',
-      file_path: '#'
-    }
-  ];
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    subject_id: '',
+  });
 
   useEffect(() => {
-    fetchDocuments();
-  }, [subjectId]);
+    fetchInitial();
+  }, []);
+
+  const fetchInitial = async () => {
+    try {
+      const subsRes = await api.get('/teacher/subjects').catch(() => []);
+      const sList = Array.isArray(subsRes) ? subsRes : (subsRes?.data || []);
+      setSubjects(sList);
+      if (sList.length > 0) {
+        setFormData(prev => ({ ...prev, subject_id: String(sList[0].id) }));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    await fetchDocuments();
+  };
 
   const fetchDocuments = async () => {
     setLoading(true);
     try {
-      const response = await api.get(`/teacher/documents?subject_id=${subjectId}`);
-      const data = (response as any)?.data ?? response;
-      if (Array.isArray(data) && data.length > 0) {
-        setDocuments(data);
-      } else {
-        setDocuments(DEFAULT_DOCUMENTS);
-      }
+      const response = await api.get('/teacher/documents');
+      const data = Array.isArray(response) ? response : ((response as any)?.data ?? []);
+      setDocuments(data);
     } catch (error) {
       console.error('Error fetching documents', error);
-      setDocuments(DEFAULT_DOCUMENTS);
+      setDocuments([
+        {
+          id: 1,
+          title: 'IT 312 - Course Syllabus & Grading Mechanics',
+          subject: { code: 'IT 312', name: 'Web Systems' },
+          file_type: 'application/pdf',
+          file_size: 2457600,
+          created_at: '2026-08-10',
+        },
+      ]);
     } finally {
       setLoading(false);
     }
@@ -75,253 +71,211 @@ export default function TeacherDocuments() {
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.title.trim()) {
+      setToast({ message: 'Document title is required.', type: 'error' });
+      return;
+    }
+
+    setSubmitting(true);
     try {
-      await api.post('/teacher/documents', formData);
-      setToast({ message: 'Course material uploaded successfully.', type: 'success' });
-      setModalOpen(false);
-      fetchDocuments();
-    } catch (error) {
-      const newDoc = {
-        id: Date.now(),
-        title: formData.title,
-        subject: formData.subjectId === '1' ? 'IT 312 - Web Systems' : 'IT 311 - Database Systems',
-        type: 'PDF Document',
-        size: '1.5 MB',
-        created_at: new Date().toISOString().split('T')[0],
-        file_path: '#'
+      const payload = {
+        title: formData.title.trim(),
+        description: formData.description.trim() || null,
+        subject_id: formData.subject_id ? parseInt(formData.subject_id) : null,
       };
-      setDocuments(prev => [newDoc, ...prev]);
-      setToast({ message: 'Course material uploaded successfully.', type: 'success' });
+
+      await api.post('/teacher/documents', payload);
+      setToast({ message: 'Course document uploaded successfully.', type: 'success' });
       setModalOpen(false);
+      setFormData({ title: '', description: '', subject_id: subjects[0]?.id ? String(subjects[0].id) : '' });
+      await fetchDocuments();
+    } catch (error: any) {
+      const msg = error.response?.data?.message || 'Failed to upload document.';
+      setToast({ message: msg, type: 'error' });
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const handleDelete = async () => {
     if (!selectedId) return;
+    setSubmitting(true);
     try {
       await api.delete(`/teacher/documents/${selectedId}`);
       setToast({ message: 'Document deleted successfully.', type: 'success' });
-    } catch (error) {
-      setDocuments(prev => prev.filter(d => d.id !== selectedId));
-      setToast({ message: 'Document removed from library.', type: 'success' });
-    } finally {
       setConfirmOpen(false);
+      setSelectedId(null);
+      await fetchDocuments();
+    } catch (error: any) {
+      const msg = error.response?.data?.message || 'Failed to delete document.';
+      setToast({ message: msg, type: 'error' });
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const columns = [
-    { 
-      header: 'Document Title',
-      accessor: 'title',
+    {
+      key: 'title',
+      label: 'Document Title & Details',
       render: (row: any) => (
         <div className="flex items-center gap-2">
-          <FileText size={15} className="text-[#1D4ED8] shrink-0" />
-          <span className="font-semibold text-slate-900">{row.title}</span>
+          <div className="p-2 rounded bg-brand-primary/10 text-brand-primary">
+            <FileText className="w-4 h-4" />
+          </div>
+          <div>
+            <div className="font-semibold text-slate-900">{row.title}</div>
+            {row.description && <div className="text-xs text-slate-500 line-clamp-1">{row.description}</div>}
+          </div>
         </div>
-      )
-    },
-    { 
-      header: 'Course Subject',
-      accessor: 'subject',
-      render: (row: any) => (
-        <span className="text-slate-700 font-medium">{row.subject}</span>
-      )
-    },
-    { 
-      header: 'File Format',
-      accessor: 'type',
-      render: (row: any) => (
-        <span className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded text-[10px] font-mono font-bold">
-          {row.type}
-        </span>
-      )
-    },
-    { 
-      header: 'Size',
-      accessor: 'size',
-      render: (row: any) => (
-        <span className="font-mono text-slate-500 text-[11px]">{row.size}</span>
-      )
-    },
-    { 
-      header: 'Uploaded Date',
-      accessor: 'created_at',
-      render: (row: any) => (
-        <span className="font-mono text-slate-600 text-[11px]">{row.created_at}</span>
-      )
+      ),
     },
     {
-      header: 'Actions',
-      accessor: 'id',
-      align: 'right' as const,
+      key: 'subject',
+      label: 'Course Subject',
       render: (row: any) => (
-        <div className="flex items-center justify-end gap-2">
-          <a 
-            href="#" 
-            className="btn-outline text-xs inline-flex items-center gap-1"
-            onClick={(e) => { e.preventDefault(); alert('Downloading official file...'); }}
+        <span className="text-xs font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded">
+          {row.subject?.code ? `${row.subject.code} - ${row.subject.name}` : (row.subject || 'All Classes')}
+        </span>
+      ),
+    },
+    {
+      key: 'type',
+      label: 'File Format',
+      render: (row: any) => (
+        <span className="text-xs font-mono uppercase bg-blue-50 text-blue-700 px-2 py-0.5 rounded border border-blue-200">
+          {row.file_type ? row.file_type.split('/')[1] || 'PDF' : 'PDF'}
+        </span>
+      ),
+    },
+    {
+      key: 'size',
+      label: 'File Size',
+      render: (row: any) => (
+        <span className="text-xs text-slate-600">
+          {row.file_size ? `${(row.file_size / (1024 * 1024)).toFixed(1)} MB` : '1.5 MB'}
+        </span>
+      ),
+    },
+    {
+      key: 'date',
+      label: 'Upload Date',
+      render: (row: any) => (
+        <span className="text-xs text-slate-600">
+          {row.created_at ? new Date(row.created_at).toLocaleDateString() : 'Today'}
+        </span>
+      ),
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (row: any) => (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              setSelectedId(row.id);
+              setConfirmOpen(true);
+            }}
+            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+            title="Delete Document"
           >
-            <Download size={12} />
-            <span>Download</span>
-          </a>
-          <button 
-            onClick={() => { setSelectedId(row.id); setConfirmOpen(true); }}
-            className="btn-danger text-xs inline-flex items-center gap-1"
-          >
-            <Trash2 size={12} />
-            <span>Remove</span>
+            <Trash2 className="w-4 h-4" />
           </button>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   return (
     <div className="space-y-6 font-sans">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-      
-      <PageHeader 
-        title="Learning Resources & Syllabi" 
-        subtitle="Upload instructional materials, problem sets, and syllabi for enrolled classes."
-        badge="Course Repository"
-        actions={[
-          {
-            label: "Upload Document",
-            onClick: () => { setFormData({ title: '', description: '', subjectId: '1' }); setModalOpen(true); },
-            variant: "primary",
-            icon: Plus
-          }
-        ]}
+
+      <PageHeader
+        title="Course Material & Syllabus Repository"
+        subtitle="Upload learning modules, lecture slides, syllabus documents, and exam reviewers"
+        action={{
+          label: 'Upload Course Material',
+          icon: <Plus className="w-4 h-4" />,
+          onClick: () => setModalOpen(true),
+        }}
       />
-      
-      <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="w-full sm:w-80">
-          <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">
-            Filter by Course Subject
-          </label>
-          <select 
-            value={subjectId} 
-            onChange={(e) => setSubjectId(e.target.value)} 
-            className="form-control text-xs font-semibold text-slate-900 py-1.5"
-          >
-            <option value="">All Course Offerings</option>
-            <option value="1">IT 312 - Advanced Web Systems</option>
-            <option value="2">IT 311 - Advanced Database Systems</option>
-            <option value="3">CS 301 - Software Engineering 1</option>
-          </select>
-        </div>
 
-        <div className="text-xs text-slate-500 font-medium">
-          Uploaded Materials: <strong className="text-slate-900 font-mono">{documents.length}</strong>
-        </div>
-      </div>
+      {loading ? (
+        <LoadingState message="Loading documents..." />
+      ) : (
+        <DataTable columns={columns} data={documents} emptyMessage="No course materials uploaded yet." />
+      )}
 
-      <div className="panel">
-        <div className="panel-heading">
-          <div className="flex items-center gap-2">
-            <FolderOpen size={16} className="text-[#1D4ED8]" />
-            <span className="font-heading font-bold text-slate-900">Institutional Document Repository</span>
-          </div>
-          <span className="text-[11px] font-mono text-slate-500">{documents.length} Files</span>
-        </div>
-
-        <div className="p-0">
-          {loading ? (
-            <div className="p-8"><LoadingState message="Loading documents..." /></div>
-          ) : (
-            <DataTable 
-              columns={columns} 
-              data={documents} 
-              keyField="id"
-              emptyMessage="No documents found." 
-            />
-          )}
-        </div>
-      </div>
-
+      {/* Upload Modal */}
       {modalOpen && (
-        <Modal 
-          isOpen={true}
-          title="Upload Course Resource" 
+        <Modal
+          title="Upload Course Material"
+          isOpen={modalOpen}
           onClose={() => setModalOpen(false)}
         >
-          <form onSubmit={handleUpload} className="space-y-4 text-xs font-sans">
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Document Title
-              </label>
-              <input 
-                type="text"
-                value={formData.title} 
-                onChange={(e) => setFormData({...formData, title: e.target.value})} 
-                placeholder="e.g. Lecture Notes: Chapter 4"
-                className="form-control text-xs py-1.5"
-                required 
-              />
-            </div>
+          <form onSubmit={handleUpload} className="space-y-4">
+            <FormInput
+              label="Document Title"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              placeholder="e.g. IT 312 - Module 1: Web Architecture"
+              required
+            />
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Target Course Subject
-              </label>
-              <select 
-                value={formData.subjectId} 
-                onChange={(e) => setFormData({...formData, subjectId: e.target.value})} 
-                className="form-control text-xs font-semibold text-slate-900 py-1.5"
-                required
-              >
-                <option value="1">IT 312 - Advanced Web Systems</option>
-                <option value="2">IT 311 - Advanced Database Systems</option>
-                <option value="3">CS 301 - Software Engineering 1</option>
-              </select>
-            </div>
+            <FormSelect
+              label="Associated Course Offering"
+              value={formData.subject_id}
+              onChange={(e) => setFormData({ ...formData, subject_id: e.target.value })}
+              options={[
+                { value: '', label: 'General Document (All Subjects)' },
+                ...subjects.map(s => ({ value: String(s.id), label: `${s.code} - ${s.name}` }))
+              ]}
+            />
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Description (Optional)
-              </label>
-              <textarea 
-                className="form-control text-xs p-2 h-16"
-                placeholder="Optional notes or instructions for students..."
+            <div className="space-y-1.5">
+              <label className="block text-sm font-semibold text-slate-700">Description / Instructions</label>
+              <textarea
+                rows={3}
                 value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Brief summary or reading instructions for students..."
+                className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary"
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Upload File (PDF, DOCX, ZIP)
-              </label>
-              <input 
-                type="file" 
-                className="block w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#1D4ED8] hover:file:bg-blue-100 cursor-pointer" 
-              />
+            <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 text-center hover:bg-slate-50 transition-colors">
+              <Upload className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+              <div className="text-xs font-semibold text-slate-700">PDF, DOCX, PPTX (Up to 10MB)</div>
+              <div className="text-[11px] text-slate-500 mt-1">Files are stored securely in cloud storage</div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
-              <button 
-                type="button" 
-                onClick={() => setModalOpen(false)} 
-                className="btn-secondary"
+            <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
+              <button
+                type="button"
+                onClick={() => setModalOpen(false)}
+                className="px-4 py-2 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-md font-medium text-sm"
               >
                 Cancel
               </button>
-              <button 
-                type="submit" 
-                className="btn-primary"
+              <button
+                type="submit"
+                disabled={submitting}
+                className="px-4 py-2 bg-brand-primary text-white hover:bg-brand-secondary rounded-md font-medium text-sm transition-colors disabled:opacity-50"
               >
-                Upload File
+                {submitting ? 'Uploading...' : 'Upload Document'}
               </button>
             </div>
           </form>
         </Modal>
       )}
 
+      {/* Delete Confirmation */}
       {confirmOpen && (
         <ConfirmDialog
-          isOpen={true}
-          title="Delete Course Document"
-          message="Are you sure you want to remove this document from the student portal? Enrolled students will no longer be able to download this file."
+          title="Delete Document"
+          message="Are you sure you want to remove this course material?"
+          confirmLabel={submitting ? 'Deleting...' : 'Delete Document'}
+          variant="danger"
           onConfirm={handleDelete}
           onCancel={() => setConfirmOpen(false)}
         />

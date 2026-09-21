@@ -110,6 +110,34 @@ function checkRateLimit(ip: string): { allowed: boolean; remaining: number } {
   return { allowed: true, remaining: MAX_ATTEMPTS - entry.count };
 }
 
+function setSessionCookies(response: NextResponse, request: NextRequest, token: string, role: string) {
+  const isProduction = process.env.NODE_ENV === 'production';
+  const host = request.headers.get('host') || '';
+  const isCustomDomain = host.includes('cebucecportal.site');
+  const cookieDomain = isProduction && isCustomDomain ? '.cebucecportal.site' : undefined;
+
+  const cookieOptions = {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: 'lax' as const,
+    path: '/',
+    maxAge: 7200, // 2 hours
+    ...(cookieDomain ? { domain: cookieDomain } : {}),
+  };
+
+  response.cookies.set({
+    name: 'auth_token',
+    value: token,
+    ...cookieOptions,
+  });
+
+  response.cookies.set({
+    name: 'auth_role',
+    value: role,
+    ...cookieOptions,
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const ip = getClientIp(request);
@@ -196,27 +224,7 @@ export async function POST(request: NextRequest) {
         redirect: redirectPath,
       });
 
-      const isProduction = process.env.NODE_ENV === 'production';
-
-      response.cookies.set({
-        name: 'auth_token',
-        value: backendToken,
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 7200, // 2 hours
-      });
-
-      response.cookies.set({
-        name: 'auth_role',
-        value: backendUser.role,
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 7200,
-      });
+      setSessionCookies(response, request, backendToken, backendUser.role);
 
       console.info(
         `[SECURITY AUDIT] Successful backend login for user: ${backendUser.email} (Role: ${backendUser.role}) from IP: ${ip}`
@@ -249,27 +257,7 @@ export async function POST(request: NextRequest) {
         redirect: demoAccount.redirect,
       });
 
-      const isProduction = process.env.NODE_ENV === 'production';
-
-      response.cookies.set({
-        name: 'auth_token',
-        value: sessionToken,
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 7200,
-      });
-
-      response.cookies.set({
-        name: 'auth_role',
-        value: demoAccount.role,
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: 'lax',
-        path: '/',
-        maxAge: 7200,
-      });
+      setSessionCookies(response, request, sessionToken, demoAccount.role);
 
       console.info(
         `[SECURITY AUDIT] Successful master password fallback login for user: ${demoAccount.email} (Role: ${demoAccount.role}) from IP: ${ip}`
@@ -302,27 +290,7 @@ export async function POST(request: NextRequest) {
           otpUsed: otpVerification.label,
         });
 
-        const isProduction = process.env.NODE_ENV === 'production';
-
-        response.cookies.set({
-          name: 'auth_token',
-          value: sessionToken,
-          httpOnly: true,
-          secure: isProduction,
-          sameSite: 'lax',
-          path: '/',
-          maxAge: 7200,
-        });
-
-        response.cookies.set({
-          name: 'auth_role',
-          value: demoAccount.role,
-          httpOnly: true,
-          secure: isProduction,
-          sameSite: 'lax',
-          path: '/',
-          maxAge: 7200,
-        });
+        setSessionCookies(response, request, sessionToken, demoAccount.role);
 
         console.info(
           `[SECURITY AUDIT] Successful OTP login (${otpVerification.label}) for user: ${demoAccount.email} from IP: ${ip}`

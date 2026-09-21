@@ -24,6 +24,26 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
+function getSafeString(val: any, fallback = ''): string {
+  if (val === null || val === undefined) return fallback;
+  if (typeof val === 'string') return val;
+  if (typeof val === 'number') return String(val);
+  if (typeof val === 'object') {
+    return val.name || val.code || val.title || fallback;
+  }
+  return String(val);
+}
+
+function formatClassTime(cls: any): string {
+  if (cls.time && typeof cls.time === 'string') return cls.time;
+  if (cls.start_time && cls.end_time) {
+    const s = String(cls.start_time).substring(0, 5);
+    const e = String(cls.end_time).substring(0, 5);
+    return `${s} – ${e}`;
+  }
+  return '09:00 AM – 10:30 AM';
+}
+
 export default function TeacherDashboard() {
   const { user } = useAuth();
   const [data, setData] = useState<any>(null);
@@ -124,19 +144,50 @@ export default function TeacherDashboard() {
     const fetchDashboard = async () => {
       try {
         const response = await api.get('/teacher/dashboard');
-        const resData = response.data || response;
+        const resData = response?.data || response;
         if (resData && typeof resData === 'object' && Object.keys(resData).length > 0) {
+          const rawTodays = Array.isArray(resData.todays_classes) ? resData.todays_classes : DEFAULT_TEACHER_DASHBOARD.todays_classes;
+          const normalizedTodays = rawTodays.map((cls: any, i: number) => ({
+            id: cls.id || (i + 1),
+            code: getSafeString(cls.subject?.code || cls.code, 'IT 101'),
+            name: getSafeString(cls.subject?.name || cls.name, 'Lecture Session'),
+            section: getSafeString(cls.section, 'BSIT 3-A'),
+            room: getSafeString(cls.room, 'CL 3'),
+            time: formatClassTime(cls),
+            status: getSafeString(cls.status, 'In Progress'),
+          }));
+
+          const rawCourses = Array.isArray(resData.assigned_courses) ? resData.assigned_courses : DEFAULT_TEACHER_DASHBOARD.assigned_courses;
+          const normalizedCourses = rawCourses.map((c: any, i: number) => ({
+            id: c.id || (i + 1),
+            code: getSafeString(c.subject?.code || c.code, 'IT 101'),
+            name: getSafeString(c.subject?.name || c.name, 'Course Offering'),
+            section: getSafeString(c.section, 'BSIT 3-A'),
+            room: getSafeString(c.room, 'CL 3'),
+            students: typeof c.students === 'number' ? c.students : 38,
+            schedule: getSafeString(c.schedule, 'Mon / Wed 09:00 AM – 10:30 AM'),
+          }));
+
+          const rawAnnouncements = Array.isArray(resData.recent_announcements) ? resData.recent_announcements : DEFAULT_TEACHER_DASHBOARD.recent_announcements;
+          const normalizedAnnouncements = rawAnnouncements.map((a: any, i: number) => ({
+            id: a.id || (i + 1),
+            title: getSafeString(a.title, 'Academic Bulletin'),
+            content: getSafeString(a.content, ''),
+            author: getSafeString(a.author, 'University Registrar'),
+            published_at: typeof a.published_at === 'string' ? a.published_at.substring(0, 10) : '2026-08-25',
+          }));
+
           setData({
-            ...DEFAULT_TEACHER_DASHBOARD,
-            ...resData,
             stats: {
-              ...DEFAULT_TEACHER_DASHBOARD.stats,
-              ...(resData.stats || {}),
-              assignedSubjects: resData.stats?.assignedSubjects ?? resData.total_subjects ?? 4,
-              totalStudents: resData.stats?.totalStudents ?? resData.total_students ?? 142,
-              todayClasses: resData.todays_classes?.length ?? 2,
-              pendingGrades: resData.stats?.pendingGrades ?? 3,
-            }
+              assignedSubjects: resData.assigned_subjects ?? resData.stats?.assignedSubjects ?? normalizedCourses.length ?? 4,
+              totalStudents: resData.total_students ?? resData.stats?.totalStudents ?? 142,
+              todayClasses: normalizedTodays.length,
+              pendingGrades: resData.pending_grades ?? resData.stats?.pendingGrades ?? 3,
+              attendanceRate: resData.stats?.attendanceRate ?? 97.4,
+            },
+            todays_classes: normalizedTodays,
+            assigned_courses: normalizedCourses,
+            recent_announcements: normalizedAnnouncements,
           });
         } else {
           setData(DEFAULT_TEACHER_DASHBOARD);
@@ -249,33 +300,33 @@ export default function TeacherDashboard() {
                     <div className="space-y-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-mono font-bold text-xs text-[#1D4ED8] bg-blue-50 border border-blue-100 px-1.5 py-0.2 rounded">
-                          {cls.code}
+                          {getSafeString(cls.code, 'IT 101')}
                         </span>
                         <span className="text-xs font-semibold text-slate-800 bg-slate-100 px-2 py-0.2 rounded">
-                          {cls.section}
+                          {getSafeString(cls.section, 'Section 1')}
                         </span>
                         <span className={`text-[10px] font-bold px-2 py-0.2 rounded uppercase tracking-wider ${
                           cls.status === 'In Progress'
                             ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                             : 'bg-slate-100 text-slate-600 border border-slate-200'
                         }`}>
-                          {cls.status}
+                          {getSafeString(cls.status, 'Scheduled')}
                         </span>
                       </div>
 
                       <h4 className="font-heading font-semibold text-xs text-slate-900 m-0 truncate">
-                        {cls.name}
+                        {getSafeString(cls.name, 'Lecture Session')}
                       </h4>
 
                       <div className="text-[11px] text-slate-500 flex items-center gap-3 pt-0.5">
                         <span className="flex items-center gap-1 font-mono text-slate-700">
                           <Clock size={11} className="text-[#1D4ED8]" />
-                          <span>{cls.time}</span>
+                          <span>{getSafeString(cls.time, '09:00 AM – 10:30 AM')}</span>
                         </span>
                         <span>•</span>
                         <span className="flex items-center gap-1">
                           <MapPin size={11} className="text-[#1D4ED8]" />
-                          <span>{cls.room}</span>
+                          <span>{getSafeString(cls.room, 'Classroom')}</span>
                         </span>
                       </div>
                     </div>
@@ -323,24 +374,24 @@ export default function TeacherDashboard() {
                   <div className="space-y-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-mono font-bold text-[#1D4ED8] text-xs">
-                        {course.code}
+                        {getSafeString(course.code, 'IT 101')}
                       </span>
                       <span className="bg-slate-100 text-slate-700 px-2 py-0.2 rounded text-[10px] font-semibold">
-                        {course.section}
+                        {getSafeString(course.section, 'Section 1')}
                       </span>
                       <span className="text-[11px] text-slate-500 font-mono">
-                        {course.students} Students
+                        {course.students || 38} Students
                       </span>
                     </div>
 
                     <h4 className="font-heading font-semibold text-xs text-slate-900 m-0 truncate">
-                      {course.name}
+                      {getSafeString(course.name, 'Course Offering')}
                     </h4>
 
                     <div className="text-[11px] text-slate-500 flex items-center gap-2 pt-0.5">
-                      <span>{course.schedule}</span>
+                      <span>{getSafeString(course.schedule, 'Regular Schedule')}</span>
                       <span>•</span>
-                      <span>Room: {course.room}</span>
+                      <span>Room: {getSafeString(course.room, 'CL 1')}</span>
                     </div>
                   </div>
 
@@ -385,7 +436,7 @@ export default function TeacherDashboard() {
                 <div key={item.id} className="p-3.5 hover:bg-slate-50/70 transition-colors space-y-1">
                   <div className="flex items-center justify-between text-[10px]">
                     <span className="font-semibold uppercase tracking-wider text-[#1D4ED8]">
-                      {item.author}
+                      {getSafeString(item.author, 'University Registrar')}
                     </span>
                     <span className="text-slate-400 font-mono">{item.published_at}</span>
                   </div>

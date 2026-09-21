@@ -18,11 +18,13 @@ import {
   Info
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { TurnstileWidget, TurnstileWidgetRef } from "@/components/security/TurnstileWidget";
 import { PublicFooter } from "@/components/layout/PublicFooter";
 
 export default function LoginPageClient() {
-  const { login } = useAuth();
+  const { login, isAuthenticated, user, token, isLoading } = useAuth();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [turnstileToken, setTurnstileToken] = useState("");
@@ -35,6 +37,40 @@ export default function LoginPageClient() {
   const emailInputRef = useRef<HTMLInputElement>(null);
   const passwordInputRef = useRef<HTMLInputElement>(null);
   const turnstileRef = useRef<TurnstileWidgetRef>(null);
+
+  // Auto-restore session and redirect if user already has an active session
+  useEffect(() => {
+    if (!isLoading && isAuthenticated && user && token) {
+      const syncAndRedirect = async () => {
+        try {
+          // Re-sync cookies via /api/auth/me using bearer token
+          await fetch('/api/auth/me', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          }).catch(() => {});
+        } catch {
+          // Continue anyway
+        }
+
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get('redirect');
+        if (redirect && redirect.startsWith('/') && !redirect.startsWith('/login')) {
+          router.push(redirect);
+        } else if (user.role === 'student') {
+          router.push('/student/dashboard');
+        } else if (user.role === 'teacher') {
+          router.push('/teacher/dashboard');
+        } else if (user.role === 'admin') {
+          router.push('/admin/dashboard');
+        }
+      };
+
+      syncAndRedirect();
+    }
+  }, [isLoading, isAuthenticated, user, token, router]);
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);

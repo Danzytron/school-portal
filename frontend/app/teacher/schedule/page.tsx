@@ -111,7 +111,7 @@ export default function TeacherSchedulePage() {
   const getSchedulesForDayAndTime = (day: string, timeSlot: string) => {
     if (!Array.isArray(schedules)) return [];
     return schedules.filter(s => {
-      if (s.day_of_week !== day) return false;
+      if (s.day_of_week?.toLowerCase() !== day.toLowerCase()) return false;
       const start = s.start_time?.substring(0, 5);
       const slotHour = timeSlot.includes('PM') && !timeSlot.startsWith('12') 
         ? parseInt(timeSlot.substring(0, 2)) + 12 

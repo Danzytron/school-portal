@@ -11,7 +11,7 @@ const securityHeaders = [
   },
   {
     key: "X-Frame-Options",
-    value: "DENY",
+    value: "SAMEORIGIN",
   },
   {
     key: "X-Content-Type-Options",
@@ -36,7 +36,7 @@ const securityHeaders = [
       "frame-src 'self' https://challenges.cloudflare.com",
       "child-src 'self' https://challenges.cloudflare.com",
       "connect-src 'self' http://localhost:8000 https://cebucecportal.site https://www.cebucecportal.site https://challenges.cloudflare.com https://*.up.railway.app",
-      "frame-ancestors 'none'",
+      "frame-ancestors 'self' https://cebucecportal.site https://www.cebucecportal.site",
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",

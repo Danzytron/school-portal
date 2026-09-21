@@ -225,7 +225,7 @@ export default function CourseManagement() {
         subtitle="Manage academic degree programs, departments, and curricula"
         action={{
           label: 'Add Degree Program',
-          icon: <Plus className="w-4 h-4" />,
+          icon: Plus,
           onClick: openAddModal,
         }}
       />
@@ -343,3 +343,4 @@ export default function CourseManagement() {
     </div>
   );
 }
+

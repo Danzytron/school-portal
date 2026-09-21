@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
 import DataTable from '@/components/ui/DataTable';
 import SearchBar from '@/components/ui/SearchBar';
@@ -12,11 +12,12 @@ import StatusBadge from '@/components/ui/StatusBadge';
 import LoadingState from '@/components/ui/LoadingState';
 import Toast from '@/components/ui/Toast';
 import api from '@/lib/api';
-import { Plus, Edit2, Trash2, Megaphone, Users, Calendar } from 'lucide-react';
+import { Plus, Edit2, Trash2, Megaphone, Users, Calendar, AlertCircle, RefreshCw } from 'lucide-react';
 
 export default function AnnouncementManagement() {
   const [announcements, setAnnouncements] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [selectedAudience, setSelectedAudience] = useState('');
   
@@ -40,23 +41,37 @@ export default function AnnouncementManagement() {
     { value: 'admin', label: 'Administration Only' },
   ];
 
-  useEffect(() => {
-    fetchAnnouncements();
-  }, []);
-
-  const fetchAnnouncements = async () => {
+  const fetchAnnouncements = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const res = await api.get('/admin/announcements');
       const list = Array.isArray(res) ? res : (res?.data || []);
       setAnnouncements(list);
     } catch (err: any) {
-      console.error('Failed to fetch announcements', err);
-      setToast({ message: 'Failed to load bulletins from database.', type: 'error' });
+      console.error('Failed to fetch announcements:', err);
+      let errorMsg = 'Unable to load announcements from the server.';
+      
+      if (err.response?.status === 401) {
+        errorMsg = 'Your session has expired. Please sign in again.';
+      } else if (err.response?.status === 403) {
+        errorMsg = 'You are not authorized to manage announcements.';
+      } else if (!err.response && err.message) {
+        errorMsg = 'Unable to connect to the server. Please check your network connection.';
+      } else if (err.response?.data?.message) {
+        errorMsg = err.response.data.message;
+      }
+      
+      setError(errorMsg);
+      setToast({ message: errorMsg, type: 'error' });
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchAnnouncements();
+  }, [fetchAnnouncements]);
 
   const openAddModal = () => {
     setEditingAnnouncement(null);
@@ -80,8 +95,12 @@ export default function AnnouncementManagement() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title.trim() || !formData.content.trim()) {
-      setToast({ message: 'Title and bulletin content are required.', type: 'error' });
+    if (!formData.title.trim()) {
+      setToast({ message: 'Announcement title is required.', type: 'error' });
+      return;
+    }
+    if (!formData.content.trim()) {
+      setToast({ message: 'Announcement content is required.', type: 'error' });
       return;
     }
 
@@ -103,7 +122,7 @@ export default function AnnouncementManagement() {
       setShowModal(false);
       await fetchAnnouncements();
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Failed to save announcement.';
+      const msg = err.response?.data?.message || 'Failed to save announcement. Please try again.';
       setToast({ message: msg, type: 'error' });
     } finally {
       setSubmitting(false);
@@ -115,7 +134,7 @@ export default function AnnouncementManagement() {
     setSubmitting(true);
     try {
       await api.delete(`/admin/announcements/${announcementToDelete.id}`);
-      setToast({ message: 'Bulletin deleted successfully.', type: 'success' });
+      setToast({ message: 'Bulletin deleted successfully from database.', type: 'success' });
       setShowDeleteConfirm(false);
       setAnnouncementToDelete(null);
       await fetchAnnouncements();
@@ -128,6 +147,7 @@ export default function AnnouncementManagement() {
   };
 
   const filteredAnnouncements = announcements.filter(item => {
+    if (!item) return false;
     const q = search.toLowerCase();
     const title = (item.title || '').toLowerCase();
     const content = (item.content || '').toLowerCase();
@@ -138,6 +158,21 @@ export default function AnnouncementManagement() {
     return matchesSearch && matchesAudience;
   });
 
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'Active';
+    try {
+      const d = new Date(dateString);
+      if (isNaN(d.getTime())) return 'Active';
+      return d.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    } catch {
+      return 'Active';
+    }
+  };
+
   const columns = [
     {
       key: 'title',
@@ -145,10 +180,10 @@ export default function AnnouncementManagement() {
       render: (row: any) => (
         <div>
           <div className="font-semibold text-slate-900 flex items-center gap-1.5">
-            <Megaphone className="w-3.5 h-3.5 text-brand-gold" />
-            <span>{row.title}</span>
+            <Megaphone className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
+            <span>{row.title || 'Untitled'}</span>
           </div>
-          <div className="text-xs text-slate-500 line-clamp-1 mt-0.5">{row.content}</div>
+          <div className="text-xs text-slate-500 line-clamp-1 mt-0.5">{row.content || ''}</div>
         </div>
       ),
     },
@@ -185,9 +220,9 @@ export default function AnnouncementManagement() {
       key: 'date',
       label: 'Publication Date',
       render: (row: any) => (
-        <div className="flex items-center gap-1 text-xs text-slate-600">
+        <div className="flex items-center gap-1 text-xs text-slate-600 whitespace-nowrap">
           <Calendar className="w-3.5 h-3.5 text-slate-400" />
-          <span>{row.published_at ? new Date(row.published_at).toLocaleDateString() : 'Active'}</span>
+          <span>{formatDate(row.published_at || row.created_at)}</span>
         </div>
       ),
     },
@@ -198,7 +233,7 @@ export default function AnnouncementManagement() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => openEditModal(row)}
-            className="p-1.5 text-slate-600 hover:text-brand-primary hover:bg-slate-100 rounded transition-colors"
+            className="p-1.5 text-slate-600 hover:text-blue-700 hover:bg-slate-100 rounded transition-colors"
             title="Edit Bulletin"
           >
             <Edit2 className="w-4 h-4" />
@@ -219,7 +254,7 @@ export default function AnnouncementManagement() {
   ];
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 font-sans">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
       <PageHeader
@@ -227,14 +262,35 @@ export default function AnnouncementManagement() {
         subtitle="Publish campus news, memos, deadlines, and official announcements across student and faculty portals"
         action={{
           label: 'Create Bulletin',
-          icon: <Plus className="w-4 h-4" />,
+          icon: Plus,
           onClick: openAddModal,
         }}
       />
 
+      {/* Error state with working Retry button */}
+      {error && (
+        <div className="bg-rose-50 border border-rose-200 rounded-lg p-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0" />
+            <div>
+              <div className="text-sm font-semibold text-rose-900">Notice</div>
+              <div className="text-xs text-rose-700 mt-0.5">{error}</div>
+            </div>
+          </div>
+          <button
+            onClick={() => fetchAnnouncements()}
+            disabled={loading}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-rose-300 hover:bg-rose-100 text-rose-800 rounded-md text-xs font-semibold shadow-2xs transition-colors flex-shrink-0 disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <span>Retry</span>
+          </button>
+        </div>
+      )}
+
       <div className="bg-white p-3 border border-slate-200 rounded-md shadow-2xs">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <SearchBar value={search} onChange={setSearch} placeholder="Search bulletins by title or keyword..." />
+          <SearchBar value={search} onChange={setSearch} placeholder="Search bulletins by title, keyword, or author..." />
           <FormSelect
             label=""
             value={selectedAudience}
@@ -283,7 +339,7 @@ export default function AnnouncementManagement() {
                 value={formData.content}
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                 placeholder="Write the full announcement details here..."
-                className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary"
+                className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 font-sans"
                 required
               />
             </div>
@@ -299,7 +355,7 @@ export default function AnnouncementManagement() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-4 py-2 bg-brand-primary text-white hover:bg-brand-secondary rounded-md font-medium text-sm transition-colors disabled:opacity-50"
+                className="px-4 py-2 bg-blue-700 text-white hover:bg-blue-800 rounded-md font-medium text-sm transition-colors disabled:opacity-50"
               >
                 {submitting ? 'Publishing...' : editingAnnouncement ? 'Save Changes' : 'Publish Bulletin'}
               </button>
@@ -308,11 +364,11 @@ export default function AnnouncementManagement() {
         </Modal>
       )}
 
-      {/* Delete Confirmation */}
+      {/* Delete Confirmation Dialog */}
       {showDeleteConfirm && announcementToDelete && (
         <ConfirmDialog
           title="Delete Bulletin"
-          message={`Are you sure you want to delete "${announcementToDelete.title}"?`}
+          message={`Are you sure you want to delete "${announcementToDelete.title}"? This will permanently remove it from the database.`}
           confirmLabel={submitting ? 'Deleting...' : 'Delete Bulletin'}
           variant="danger"
           onConfirm={handleDelete}

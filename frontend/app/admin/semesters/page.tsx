@@ -232,7 +232,7 @@ export default function SemesterManagement() {
         subtitle="Configure active school years, semester start/end dates, and encoding periods"
         action={{
           label: 'Add Academic Term',
-          icon: <Plus className="w-4 h-4" />,
+          icon: Plus,
           onClick: openAddModal,
         }}
       />
@@ -330,3 +330,4 @@ export default function SemesterManagement() {
     </div>
   );
 }
+

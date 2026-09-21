@@ -30,9 +30,15 @@ export function PageHeader({ title, subtitle, description, badge, actions, actio
     else if (act.variant === "outline") btnClass = "btn-outline";
     
     const Icon = act.icon;
+    const iconElement = React.isValidElement(Icon) ? (
+      <span className="mr-1.5 inline-flex items-center">{Icon}</span>
+    ) : typeof Icon === "function" || (typeof Icon === "object" && Icon !== null && ("render" in Icon || "$$typeof" in Icon)) ? (
+      <Icon size={14} className="mr-1.5" />
+    ) : null;
+
     const content = (
       <>
-        {Icon && <Icon size={14} className="mr-1.5" />}
+        {iconElement}
         <span>{act.label}</span>
       </>
     );

@@ -275,7 +275,7 @@ export default function ScheduleManagement() {
         subtitle="Manage academic timetable allocations, instructor teaching loads, and room facility schedules"
         action={{
           label: 'Create Class Schedule',
-          icon: <Plus className="w-4 h-4" />,
+          icon: Plus,
           onClick: openAddModal,
         }}
       />
@@ -408,3 +408,4 @@ export default function ScheduleManagement() {
     </div>
   );
 }
+

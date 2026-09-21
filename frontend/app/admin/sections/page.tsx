@@ -227,7 +227,7 @@ export default function SectionManagement() {
         subtitle="Manage student class sections, maximum capacities, and course allocations"
         action={{
           label: 'Add New Section',
-          icon: <Plus className="w-4 h-4" />,
+          icon: Plus,
           onClick: openAddModal,
         }}
       />
@@ -348,3 +348,4 @@ export default function SectionManagement() {
     </div>
   );
 }
+

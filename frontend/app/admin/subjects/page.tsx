@@ -245,7 +245,7 @@ export default function SubjectManagement() {
         subtitle="Manage curriculum subjects, credit units, and course offerings"
         action={{
           label: 'Add New Subject',
-          icon: <Plus className="w-4 h-4" />,
+          icon: Plus,
           onClick: openAddModal,
         }}
       />
@@ -399,3 +399,4 @@ export default function SubjectManagement() {
     </div>
   );
 }
+

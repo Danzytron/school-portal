@@ -238,7 +238,7 @@ export default function FeesManagement() {
         subtitle="Manage student semester tuition fees, payments, official receipts, and balance ledgers"
         action={{
           label: 'Assess Student Fee',
-          icon: <Plus className="w-4 h-4" />,
+          icon: Plus,
           onClick: openAssessModal,
         }}
       />
@@ -439,3 +439,4 @@ export default function FeesManagement() {
     </div>
   );
 }
+

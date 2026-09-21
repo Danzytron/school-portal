@@ -226,7 +226,7 @@ export default function UserManagement() {
         subtitle="Manage user authentication credentials, security privileges, and system roles"
         action={{
           label: 'Create User Account',
-          icon: <Plus className="w-4 h-4" />,
+          icon: Plus,
           onClick: openAddModal,
         }}
       />
@@ -345,3 +345,4 @@ export default function UserManagement() {
     </div>
   );
 }
+

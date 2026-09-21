@@ -235,7 +235,7 @@ export default function RoomManagement() {
         subtitle="Manage campus classrooms, computer laboratories, and lecture hall capacities"
         action={{
           label: 'Add New Room',
-          icon: <Plus className="w-4 h-4" />,
+          icon: Plus,
           onClick: openAddModal,
         }}
       />
@@ -360,3 +360,4 @@ export default function RoomManagement() {
     </div>
   );
 }
+

@@ -15,14 +15,16 @@ export default function StudentLayout({
   const router = useRouter();
 
   React.useEffect(() => {
+    const role = (user?.role || '').toLowerCase().trim();
     if (!isLoading && (!isAuthenticated || !user)) {
       router.push('/login');
-    } else if (!isLoading && user && user.role !== 'student') {
+    } else if (!isLoading && user && role !== 'student' && role !== 'admin' && role !== 'administrator') {
       router.push('/unauthorized');
     }
   }, [user, isAuthenticated, isLoading, router]);
 
-  if (isLoading || !isAuthenticated || !user || user.role !== 'student') {
+  const role = (user?.role || '').toLowerCase().trim();
+  if (isLoading || !isAuthenticated || !user || (role !== 'student' && role !== 'admin' && role !== 'administrator')) {
     return <LoadingState message="Verifying student access..." />;
   }
 

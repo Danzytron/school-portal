@@ -11,14 +11,16 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   useEffect(() => {
+    const role = (user?.role || '').toLowerCase().trim();
     if (!isLoading && (!isAuthenticated || !user)) {
       router.push('/login');
-    } else if (!isLoading && user && user.role !== 'admin') {
+    } else if (!isLoading && user && role !== 'admin' && role !== 'administrator') {
       router.push('/unauthorized');
     }
   }, [isLoading, isAuthenticated, user, router]);
 
-  if (isLoading || !isAuthenticated || !user || user.role !== 'admin') {
+  const role = (user?.role || '').toLowerCase().trim();
+  if (isLoading || !isAuthenticated || !user || (role !== 'admin' && role !== 'administrator')) {
     return <LoadingState message="Verifying administrative access..." />;
   }
 

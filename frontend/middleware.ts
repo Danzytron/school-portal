@@ -19,7 +19,7 @@ export function middleware(request: NextRequest) {
   if (isStudentRoute || isTeacherRoute || isAdminRoute) {
     const token = request.cookies.get('auth_token')?.value;
     const rawRole = request.cookies.get('auth_role')?.value;
-    const role = (rawRole || '').toLowerCase();
+    const role = (rawRole || '').toLowerCase().trim();
 
     // 1. Check if user has an active session
     if (!token || !role) {
@@ -28,14 +28,16 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    // 2. Strict Role Verification
-    if (isStudentRoute && role !== 'student') {
+    const isAdmin = role === 'admin' || role === 'administrator';
+
+    // 2. Role Verification (Administrators have universal institutional access)
+    if (isStudentRoute && role !== 'student' && !isAdmin) {
       return NextResponse.redirect(new URL('/unauthorized', request.nextUrl.origin));
     }
-    if (isTeacherRoute && role !== 'teacher') {
+    if (isTeacherRoute && role !== 'teacher' && role !== 'faculty' && !isAdmin) {
       return NextResponse.redirect(new URL('/unauthorized', request.nextUrl.origin));
     }
-    if (isAdminRoute && role !== 'admin') {
+    if (isAdminRoute && !isAdmin) {
       return NextResponse.redirect(new URL('/unauthorized', request.nextUrl.origin));
     }
   }

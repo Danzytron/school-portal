@@ -109,9 +109,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     router.push('/login');
   };
 
-  const isStudent = user?.role === 'student';
-  const isTeacher = user?.role === 'teacher';
-  const isAdmin = user?.role === 'admin';
+  const normalizedRole = (user?.role || '').toLowerCase().trim();
+  const isStudent = normalizedRole === 'student';
+  const isTeacher = normalizedRole === 'teacher' || normalizedRole === 'faculty';
+  const isAdmin = normalizedRole === 'admin' || normalizedRole === 'administrator';
   const isAuthenticated = !!user && !!token;
 
   return (
@@ -143,8 +144,14 @@ export const ProtectedRoute = ({ children, allowedRoles }: { children: React.Rea
   useEffect(() => {
     if (!loading && (!isAuthenticated || !user)) {
       router.push('/login');
-    } else if (!loading && user && allowedRoles && !allowedRoles.includes(user.role)) {
-      router.push('/unauthorized');
+    } else if (!loading && user && allowedRoles) {
+      const userRole = (user.role || '').toLowerCase().trim();
+      const normalizedAllowed = allowedRoles.map(r => r.toLowerCase().trim());
+      // Admins have universal authorization across all portal sections, or if user's role matches
+      const hasAccess = userRole === 'admin' || userRole === 'administrator' || normalizedAllowed.includes(userRole);
+      if (!hasAccess) {
+        router.push('/unauthorized');
+      }
     }
   }, [user, isAuthenticated, loading, router, allowedRoles]);
 

@@ -47,7 +47,7 @@ class User extends Authenticatable
         return $this->hasOne(Admin::class);
     }
     
-    public function isAdmin() { return $this->role === 'admin'; }
-    public function isTeacher() { return $this->role === 'teacher'; }
-    public function isStudent() { return $this->role === 'student'; }
+    public function isAdmin() { return in_array(strtolower(trim((string)$this->role)), ['admin', 'administrator']); }
+    public function isTeacher() { return in_array(strtolower(trim((string)$this->role)), ['teacher', 'faculty']); }
+    public function isStudent() { return in_array(strtolower(trim((string)$this->role)), ['student']); }
 }

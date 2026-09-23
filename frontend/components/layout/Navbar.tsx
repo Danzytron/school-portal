@@ -18,13 +18,20 @@ import { useState } from "react";
 import Link from "next/link";
 
 export function Navbar({ onMenuToggle }: { onMenuToggle: () => void }) {
-  const { user, logout } = useAuth();
+  const { user, isAdmin, isTeacher, isStudent, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const announcementsHref = isAdmin 
+    ? '/admin/announcements' 
+    : isTeacher 
+    ? '/teacher/announcements' 
+    : '/student/announcements';
+
   const getRoleBadge = (role?: string) => {
-    if (role === 'admin') {
+    const r = (role || '').toLowerCase().trim();
+    if (r === 'admin' || r === 'administrator') {
       return (
         <span className="bg-rose-50 text-rose-700 border border-rose-200 text-[10px] font-semibold px-2 py-0.5 rounded tracking-wide uppercase">
           Administrator
@@ -82,9 +89,9 @@ export function Navbar({ onMenuToggle }: { onMenuToggle: () => void }) {
           
           {/* Direct Messages Icon Button */}
           <Link
-            href="/student/announcements?filter=notices"
+            href={announcementsHref}
             className="w-9 h-9 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-600 hover:text-slate-900 transition-colors relative cursor-pointer shrink-0"
-            title="Institutional Messages & Advisories"
+            title="Institutional Bulletins & Announcements"
           >
             <MessageSquare size={17} />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#2563EB] rounded-full ring-2 ring-white"></span>
@@ -145,7 +152,7 @@ export function Navbar({ onMenuToggle }: { onMenuToggle: () => void }) {
 
                 <div className="p-2.5 bg-slate-50 border-t border-slate-200 text-center">
                   <Link 
-                    href="/student/announcements" 
+                    href={announcementsHref} 
                     onClick={() => setNotificationOpen(false)}
                     className="text-[#1D4ED8] hover:underline font-semibold text-[11px]"
                   >

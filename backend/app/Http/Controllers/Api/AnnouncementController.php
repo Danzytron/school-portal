@@ -20,13 +20,21 @@ class AnnouncementController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        if ($user->isAdmin()) {
+        if ($user && $user->isAdmin()) {
             return response()->json(Announcement::with('author')->latest()->get());
         }
         
+        $role = strtolower(trim((string)($user ? $user->role : '')));
+        $audiences = ['all', $role];
+        if (in_array($role, ['teacher', 'faculty'])) {
+            $audiences = array_unique(array_merge($audiences, ['teacher', 'teachers', 'faculty']));
+        } elseif (in_array($role, ['student'])) {
+            $audiences = array_unique(array_merge($audiences, ['student', 'students']));
+        }
+
         return response()->json(
             Announcement::where('is_published', true)
-                ->whereIn('target_audience', ['all', $user->role])
+                ->whereIn('target_audience', $audiences)
                 ->with('author')
                 ->latest()
                 ->get()
@@ -35,13 +43,7 @@ class AnnouncementController extends Controller
 
     public function teacherIndex(Request $request)
     {
-        $user = $request->user();
-        return response()->json(
-            Announcement::where('author_id', $user->id)
-                ->with('author')
-                ->latest()
-                ->get()
-        );
+        return $this->index($request);
     }
 
     public function show($id)
@@ -52,6 +54,10 @@ class AnnouncementController extends Controller
 
     public function store(Request $request)
     {
+        if (!$request->user() || !$request->user()->isAdmin()) {
+            return response()->json(['message' => 'Unauthorized. Admin access required.'], 403);
+        }
+
         $validated = $request->validate([
             'title' => 'required|string',
             'content' => 'required|string',
@@ -72,13 +78,21 @@ class AnnouncementController extends Controller
 
     public function update(Request $request, $id)
     {
+        if (!$request->user() || !$request->user()->isAdmin()) {
+            return response()->json(['message' => 'Unauthorized. Admin access required.'], 403);
+        }
+
         $announcement = Announcement::findOrFail($id);
         $announcement->update($request->only(['title', 'content', 'target_audience', 'is_published']));
         return response()->json($announcement->load('author'));
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
+        if (!$request->user() || !$request->user()->isAdmin()) {
+            return response()->json(['message' => 'Unauthorized. Admin access required.'], 403);
+        }
+
         $announcement = Announcement::findOrFail($id);
         $announcement->delete();
         return response()->json(['message' => 'Announcement deleted successfully']);

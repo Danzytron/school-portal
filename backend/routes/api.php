@@ -82,10 +82,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::delete('/grades/{id}', [GradeController::class, 'destroy']);
         Route::get('/attendance', [AttendanceController::class, 'getBySubject']);
         Route::post('/attendance', [AttendanceController::class, 'store']);
-        Route::get('/announcements', [AnnouncementController::class, 'teacherIndex']);
-        Route::post('/announcements', [AnnouncementController::class, 'store']);
-        Route::put('/announcements/{id}', [AnnouncementController::class, 'update']);
-        Route::delete('/announcements/{id}', [AnnouncementController::class, 'destroy']);
+        Route::get('/announcements', [AnnouncementController::class, 'index']);
         Route::get('/documents', [DocumentController::class, 'teacherIndex']);
         Route::post('/documents', [DocumentController::class, 'store']);
         Route::delete('/documents/{id}', [DocumentController::class, 'destroy']);

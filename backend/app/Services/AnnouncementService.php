@@ -14,8 +14,16 @@ class AnnouncementService
     
     public function getForUser($role)
     {
+        $role = strtolower(trim((string)$role));
+        $audiences = ['all', $role];
+        if (in_array($role, ['teacher', 'faculty'])) {
+            $audiences = array_unique(array_merge($audiences, ['teacher', 'teachers', 'faculty']));
+        } elseif (in_array($role, ['student'])) {
+            $audiences = array_unique(array_merge($audiences, ['student', 'students']));
+        }
+
         return Announcement::where('is_published', true)
-            ->whereIn('target_audience', ['all', $role])
+            ->whereIn('target_audience', $audiences)
             ->with('author')
             ->latest()
             ->get();

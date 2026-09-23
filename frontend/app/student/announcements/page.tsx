@@ -1,181 +1,375 @@
-'use client';
+﻿'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { api } from '@/lib/api';
-import { Announcement } from '@/types';
-import { PageHeader } from '@/components/ui/PageHeader';
-import { LoadingState } from '@/components/ui/LoadingState';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { Pagination } from '@/components/ui/Pagination';
-import { Bell, ChevronDown, ChevronUp, User, Calendar, Megaphone, ShieldCheck } from 'lucide-react';
+import PageHeader from '@/components/ui/PageHeader';
+import LoadingState from '@/components/ui/LoadingState';
+import { 
+  Megaphone, 
+  Search, 
+  Calendar, 
+  Clock, 
+  User, 
+  RefreshCw, 
+  AlertCircle, 
+  CheckCircle2, 
+  ChevronDown, 
+  ChevronUp,
+  Tag,
+  BookOpen
+} from 'lucide-react';
 
-interface DisplayAnnouncement extends Announcement {
+interface AnnouncementItem {
+  id: number;
+  title: string;
+  content: string;
+  target_audience?: string;
+  is_published?: boolean;
+  published_at?: string;
+  created_at?: string;
   isRead?: boolean;
+  author?: {
+    id: number;
+    name: string;
+    email: string;
+    role?: string;
+  };
 }
 
 export default function StudentAnnouncementsPage() {
-  const [announcements, setAnnouncements] = useState<DisplayAnnouncement[]>([]);
+  const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [expandedId, setExpandedId] = useState<number | null>(null);
-  
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const perPage = 6;
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [audienceFilter, setAudienceFilter] = useState<'all' | 'students' | 'campus'>('all');
+  const [expandedIds, setExpandedIds] = useState<Record<number, boolean>>({});
+
+  const fetchAnnouncements = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await api.get('/student/announcements');
+      const data = Array.isArray(response) 
+        ? response 
+        : (response?.data && Array.isArray(response.data) ? response.data : []);
+      setAnnouncements(data);
+    } catch (err: any) {
+      console.error('Error fetching student announcements:', err);
+      setError('Unable to load announcements. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchAnnouncements = async () => {
-      setLoading(true);
-      try {
-        const response = await api.get<any>(`/student/announcements?page=${currentPage}&per_page=${perPage}`);
-        const data = response.data || response;
-        if (data.data && Array.isArray(data.data)) {
-          setAnnouncements(data.data);
-          setTotalPages(data.meta?.last_page || Math.ceil(data.meta?.total / perPage) || 1);
-        } else if (Array.isArray(data)) {
-          const start = (currentPage - 1) * perPage;
-          const paginatedItems = data.slice(start, start + perPage);
-          setAnnouncements(paginatedItems);
-          setTotalPages(Math.ceil(data.length / perPage));
-        }
-      } catch (err: any) {
-        setError(err.message || 'Failed to load university bulletins');
-      } finally {
-        setLoading(false);
-      }
-    };
-    
     fetchAnnouncements();
-  }, [currentPage]);
+  }, []);
 
   const toggleExpand = async (id: number) => {
-    if (expandedId === id) {
-      setExpandedId(null);
-      return;
-    }
-    
-    setExpandedId(id);
-    
+    const isNowExpanded = !expandedIds[id];
+    setExpandedIds(prev => ({
+      ...prev,
+      [id]: isNowExpanded
+    }));
+
+    // If expanding and unread, try to mark as read in background
     const ann = announcements.find(a => a.id === id);
-    if (ann && ann.isRead !== true) {
+    if (isNowExpanded && ann && ann.isRead !== true) {
       try {
         await api.post(`/announcements/${id}/read`, {});
-        setAnnouncements(announcements.map(a => 
-          a.id === id ? { ...a, isRead: true } : a
-        ));
-      } catch (e) {
+        setAnnouncements(prev => prev.map(a => a.id === id ? { ...a, isRead: true } : a));
+      } catch {
         // silent catch
       }
     }
   };
 
-  if (loading && announcements.length === 0) return <LoadingState message="Connecting to University Bulletin Archive..." />;
+  const filteredAnnouncements = useMemo(() => {
+    return announcements.filter(item => {
+      // Search filter by title, content, or author
+      const q = searchQuery.toLowerCase().trim();
+      const matchSearch = !q || 
+        item.title.toLowerCase().includes(q) || 
+        item.content.toLowerCase().includes(q) ||
+        (item.author?.name && item.author.name.toLowerCase().includes(q));
+
+      if (!matchSearch) return false;
+
+      // Category filter
+      if (audienceFilter === 'students') {
+        return item.target_audience === 'students' || item.target_audience === 'student';
+      }
+      if (audienceFilter === 'campus') {
+        return item.target_audience === 'all';
+      }
+      return true;
+    });
+  }, [announcements, searchQuery, audienceFilter]);
+
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'Recent';
+    try {
+      const d = new Date(dateString);
+      return d.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    } catch {
+      return dateString;
+    }
+  };
+
+  const formatTime = (dateString?: string) => {
+    if (!dateString) return '';
+    try {
+      const d = new Date(dateString);
+      return d.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return '';
+    }
+  };
+
+  const getAudienceBadge = (target?: string) => {
+    const t = (target || 'all').toLowerCase();
+    if (t === 'students' || t === 'student') {
+      return {
+        label: 'Student Advisory',
+        color: 'bg-blue-50 text-blue-800 border-blue-200'
+      };
+    }
+    return {
+      label: 'Campus-wide Bulletin',
+      color: 'bg-emerald-50 text-emerald-800 border-emerald-200'
+    };
+  };
 
   return (
-    <div className="space-y-6 font-sans">
-      
-      {/* Page Header */}
-      <PageHeader 
-        title="University Memoranda & Official Bulletins" 
-        subtitle="Important administrative announcements, academic advisories, and student affairs notices."
-        badge="Official University Communications"
+    <div className="space-y-6">
+      {/* Top Header */}
+      <PageHeader
+        title="Student Memorandums & Official Bulletins"
+        subtitle="Important institutional updates, academic guidelines, and student affairs announcements."
+        badge="Student Portal"
       />
 
-      {error ? (
-        <EmptyState title="Error" description={error} icon={<Bell size={48} />} />
-      ) : announcements.length === 0 ? (
-        <EmptyState 
-          title="No Active University Bulletins" 
-          description="There are currently no announcements posted for your academic program." 
-          icon={<Bell size={48} className="text-slate-300" />} 
-        />
-      ) : (
-        <div className="space-y-3.5">
-          {announcements.map((ann) => {
-            const isExpanded = expandedId === ann.id;
-            const isUnread = ann.isRead === false || ann.isRead === undefined; 
-            
-            return (
-              <div 
-                key={ann.id} 
-                className={`bg-white border rounded-lg shadow-2xs overflow-hidden transition-all ${
-                  isUnread ? 'border-[#1D4ED8]/60 border-l-4 border-l-[#1D4ED8]' : 'border-slate-200/90'
-                }`}
+      {/* Control Bar: Search and Category Filter */}
+      <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs space-y-3">
+        <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+          {/* Search Input */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Search announcements by title, keyword, or issuer..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#800000]/20 focus:border-[#800000] text-slate-800 placeholder-slate-400 transition"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 font-medium"
               >
-                <div 
-                  className={`p-4 sm:p-5 cursor-pointer hover:bg-slate-50/50 flex justify-between items-start gap-4 ${
-                    isExpanded ? 'bg-slate-50/40' : ''
-                  }`}
-                  onClick={() => toggleExpand(ann.id)}
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      <span className="text-[10px] font-semibold bg-blue-50 text-[#1D4ED8] border border-blue-200 px-2 py-0.5 rounded uppercase">
-                        Official Memorandum
+                Clear
+              </button>
+            )}
+          </div>
+
+          {/* Quick Refresh */}
+          <button
+            onClick={fetchAnnouncements}
+            disabled={loading}
+            className="inline-flex items-center justify-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition disabled:opacity-50"
+            title="Refresh bulletins"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#800000]' : 'text-slate-500'}`} />
+            <span className="hidden sm:inline">Refresh</span>
+          </button>
+        </div>
+
+        {/* Filter Badges */}
+        <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100 text-xs">
+          <span className="text-slate-500 font-medium mr-1 flex items-center gap-1">
+            <Tag className="w-3.5 h-3.5" /> Filter:
+          </span>
+          <button
+            onClick={() => setAudienceFilter('all')}
+            className={`px-2.5 py-1 rounded-md font-medium transition ${
+              audienceFilter === 'all'
+                ? 'bg-[#800000] text-white shadow-xs'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            All Bulletins ({announcements.length})
+          </button>
+          <button
+            onClick={() => setAudienceFilter('students')}
+            className={`px-2.5 py-1 rounded-md font-medium transition ${
+              audienceFilter === 'students'
+                ? 'bg-[#800000] text-white shadow-xs'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            Student Advisories
+          </button>
+          <button
+            onClick={() => setAudienceFilter('campus')}
+            className={`px-2.5 py-1 rounded-md font-medium transition ${
+              audienceFilter === 'campus'
+                ? 'bg-[#800000] text-white shadow-xs'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            Campus-wide
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      {loading ? (
+        <LoadingState message="Loading announcements..." />
+      ) : error ? (
+        /* Error State with required text and working Retry button */
+        <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center space-y-4">
+          <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto text-red-600">
+            <AlertCircle className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="text-base font-semibold text-red-900">
+              {error}
+            </h3>
+            <p className="text-sm text-red-700 mt-1">
+              Could not communicate with the institutional bulletin service. Please verify your connection and retry.
+            </p>
+          </div>
+          <button
+            onClick={fetchAnnouncements}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#800000] text-white rounded-lg text-sm font-medium hover:bg-[#660000] transition shadow-xs"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Retry
+          </button>
+        </div>
+      ) : filteredAnnouncements.length === 0 ? (
+        /* Empty State with required exact text: "No announcements available." */
+        <div className="bg-white border border-slate-200 rounded-xl p-12 text-center shadow-2xs space-y-3">
+          <div className="w-14 h-14 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mx-auto text-blue-700">
+            <Megaphone className="w-7 h-7" />
+          </div>
+          <div>
+            <h3 className="text-base font-semibold text-slate-900">
+              No announcements available.
+            </h3>
+            <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">
+              {searchQuery
+                ? 'No announcements match your search query. Try clearing the search filter.'
+                : 'There are currently no active bulletins or memorandums posted for students.'}
+            </p>
+          </div>
+          {searchQuery && (
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setAudienceFilter('all');
+              }}
+              className="text-xs text-[#800000] font-semibold hover:underline"
+            >
+              Reset filters
+            </button>
+          )}
+        </div>
+      ) : (
+        /* Announcements list */
+        <div className="space-y-4">
+          {filteredAnnouncements.map((ann) => {
+            const isExpanded = expandedIds[ann.id] ?? true;
+            const badge = getAudienceBadge(ann.target_audience);
+            const dateStr = formatDate(ann.published_at || ann.created_at);
+            const timeStr = formatTime(ann.published_at || ann.created_at);
+            const authorName = ann.author?.name || 'Institutional Administration';
+
+            return (
+              <article
+                key={ann.id}
+                className="bg-white rounded-xl border border-slate-200/90 shadow-2xs hover:shadow-xs transition overflow-hidden border-l-4 border-l-[#800000]"
+              >
+                {/* Header row */}
+                <div className="p-5 sm:p-6 pb-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className={`inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-full border ${badge.color}`}>
+                        {badge.label}
                       </span>
-                      {isUnread && (
-                        <span className="bg-[#1D4ED8] text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
-                          New Notice
-                        </span>
+                      <span className="inline-flex items-center gap-1 text-xs text-slate-500 font-medium">
+                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                        {dateStr}
+                        {timeStr && ` • ${timeStr}`}
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={() => toggleExpand(ann.id)}
+                      className="text-xs text-slate-500 hover:text-slate-800 inline-flex items-center gap-1 font-medium transition"
+                      aria-label={isExpanded ? 'Collapse announcement' : 'Expand announcement'}
+                    >
+                      {isExpanded ? (
+                        <>
+                          <span>Collapse</span>
+                          <ChevronUp className="w-4 h-4" />
+                        </>
+                      ) : (
+                        <>
+                          <span>Read full</span>
+                          <ChevronDown className="w-4 h-4" />
+                        </>
                       )}
-                      <span className="text-[11px] text-slate-400 font-mono flex items-center gap-1">
-                        <Calendar size={11} />
-                        <span>
-                          {new Date(ann.published_at || ann.created_at).toLocaleDateString(undefined, { 
-                            year: 'numeric', month: 'short', day: 'numeric' 
-                          })}
-                        </span>
-                      </span>
-                    </div>
+                    </button>
+                  </div>
 
-                    <h3 className="font-heading text-base font-bold text-slate-900 m-0 leading-snug">
-                      {ann.title}
-                    </h3>
+                  {/* Title */}
+                  <h3 className="text-lg font-bold text-slate-900 tracking-tight leading-snug">
+                    {ann.title}
+                  </h3>
 
-                    <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-1">
-                      <span className="font-medium text-slate-700">Issued by: {ann.author?.name || 'Office of Academic Affairs'}</span>
+                  {/* Author / Department Info */}
+                  <div className="flex items-center gap-2 text-xs text-slate-600 mt-2">
+                    <div className="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500">
+                      <User className="w-3 h-3" />
                     </div>
-                    
-                    {!isExpanded && (
-                      <p className="text-xs text-slate-600 m-0 mt-2 line-clamp-2 leading-relaxed">
-                        {ann.content}
-                      </p>
+                    <span>
+                      Issued by: <strong className="font-semibold text-slate-800">{authorName}</strong>
+                    </span>
+                    {ann.author?.role && (
+                      <span className="capitalize text-slate-400">({ann.author.role})</span>
                     )}
                   </div>
-
-                  <div className="text-slate-400 p-1 shrink-0">
-                    {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                  </div>
                 </div>
-                
+
+                {/* Body Content */}
                 {isExpanded && (
-                  <div className="p-5 pt-0 border-t border-slate-100 bg-white">
-                    <div className="text-xs sm:text-sm text-slate-800 leading-relaxed whitespace-pre-wrap mt-4 font-sans border-l-2 border-[#1D4ED8] pl-4 py-1">
+                  <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-slate-100 bg-slate-50/30">
+                    <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap font-normal">
                       {ann.content}
                     </div>
-                    
-                    <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-                      <span>Office of the University Registrar • Official Record</span>
-                      <span>Verified Digital Release</span>
+
+                    {/* Bottom Metadata verification notice */}
+                    <div className="mt-4 pt-3 border-t border-slate-200/60 flex flex-wrap items-center justify-between text-xs text-slate-400">
+                      <span className="flex items-center gap-1 text-emerald-700 font-medium">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Official Cebu Eastern College Notice
+                      </span>
+                      <span>Verified Digital Release • CEC-ANN-{ann.id}</span>
                     </div>
                   </div>
                 )}
-              </div>
+              </article>
             );
           })}
-          
-          {totalPages > 1 && (
-            <div className="mt-6 flex justify-center">
-              <Pagination 
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={setCurrentPage}
-              />
-            </div>
-          )}
         </div>
       )}
-
     </div>
   );
 }

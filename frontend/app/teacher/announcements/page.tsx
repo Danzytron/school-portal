@@ -1,276 +1,365 @@
 ﻿'use client';
 
-import { useEffect, useState } from 'react';
-import api from '@/lib/api';
+import React, { useEffect, useState, useMemo } from 'react';
+import { api } from '@/lib/api';
 import PageHeader from '@/components/ui/PageHeader';
-import DataTable from '@/components/ui/DataTable';
 import LoadingState from '@/components/ui/LoadingState';
-import Modal from '@/components/ui/Modal';
-import ConfirmDialog from '@/components/ui/ConfirmDialog';
-import Toast from '@/components/ui/Toast';
-import FormInput from '@/components/ui/FormInput';
-import FormSelect from '@/components/ui/FormSelect';
-import { Megaphone, Plus, Edit2, Trash2, Users } from 'lucide-react';
+import { 
+  Megaphone, 
+  Search, 
+  Calendar, 
+  Clock, 
+  User, 
+  RefreshCw, 
+  AlertCircle, 
+  Tag, 
+  CheckCircle2, 
+  ChevronDown, 
+  ChevronUp 
+} from 'lucide-react';
 
-export default function TeacherAnnouncements() {
-  const [announcements, setAnnouncements] = useState<any[]>([]);
+interface AnnouncementItem {
+  id: number;
+  title: string;
+  content: string;
+  target_audience?: string;
+  is_published?: boolean;
+  published_at?: string;
+  created_at?: string;
+  author?: {
+    id: number;
+    name: string;
+    email: string;
+    role?: string;
+  };
+}
+
+export default function TeacherAnnouncementsPage() {
+  const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [editingAnnouncement, setEditingAnnouncement] = useState<any>(null);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | number | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [toast, setToast] = useState<{message: string, type: 'success' | 'error'} | null>(null);
-
-  const [formData, setFormData] = useState({
-    title: '',
-    content: '',
-    target_audience: 'students',
-  });
-
-  useEffect(() => {
-    fetchAnnouncements();
-  }, []);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [audienceFilter, setAudienceFilter] = useState<'all' | 'teachers' | 'campus'>('all');
+  const [expandedIds, setExpandedIds] = useState<Record<number, boolean>>({});
 
   const fetchAnnouncements = async () => {
     setLoading(true);
+    setError(null);
     try {
       const response = await api.get('/teacher/announcements');
-      const data = Array.isArray(response) ? response : ((response as any)?.data ?? []);
+      const data = Array.isArray(response) 
+        ? response 
+        : (response?.data && Array.isArray(response.data) ? response.data : []);
       setAnnouncements(data);
-    } catch (error) {
-      console.error('Error fetching announcements', error);
-      setAnnouncements([
-        {
-          id: 1,
-          title: 'Midterm Examination Schedule for IT 312',
-          content: 'Please be reminded that our Midterm Exam will be held on Oct 14 at Computer Lab 3.',
-          target_audience: 'students',
-          published_at: '2026-08-20',
-          is_published: true,
-        },
-      ]);
+    } catch (err: any) {
+      console.error('Error fetching teacher announcements:', err);
+      setError('Unable to load announcements. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  const openAddModal = () => {
-    setEditingAnnouncement(null);
-    setFormData({ title: '', content: '', target_audience: 'students' });
-    setModalOpen(true);
+  useEffect(() => {
+    fetchAnnouncements();
+  }, []);
+
+  const toggleExpand = (id: number) => {
+    setExpandedIds(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
   };
 
-  const openEditModal = (item: any) => {
-    setEditingAnnouncement(item);
-    setFormData({
-      title: item.title || '',
-      content: item.content || '',
-      target_audience: item.target_audience || 'students',
-    });
-    setModalOpen(true);
-  };
+  const filteredAnnouncements = useMemo(() => {
+    return announcements.filter(item => {
+      // Search query filter (title and content)
+      const q = searchQuery.toLowerCase().trim();
+      const matchSearch = !q || 
+        item.title.toLowerCase().includes(q) || 
+        item.content.toLowerCase().includes(q) ||
+        (item.author?.name && item.author.name.toLowerCase().includes(q));
 
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.title.trim() || !formData.content.trim()) {
-      setToast({ message: 'Title and content are required.', type: 'error' });
-      return;
-    }
-
-    setSubmitting(true);
-    try {
-      const payload = {
-        title: formData.title.trim(),
-        content: formData.content.trim(),
-        target_audience: formData.target_audience,
-      };
-
-      if (editingAnnouncement) {
-        await api.put(`/teacher/announcements/${editingAnnouncement.id}`, payload);
-        setToast({ message: 'Announcement updated successfully.', type: 'success' });
-      } else {
-        await api.post('/teacher/announcements', payload);
-        setToast({ message: 'Announcement published successfully.', type: 'success' });
+      // Audience filter
+      if (!matchSearch) return false;
+      if (audienceFilter === 'teachers') {
+        return item.target_audience === 'teachers' || item.target_audience === 'teacher';
       }
-      setModalOpen(false);
-      await fetchAnnouncements();
-    } catch (error: any) {
-      const msg = error.response?.data?.message || 'Failed to save announcement.';
-      setToast({ message: msg, type: 'error' });
-    } finally {
-      setSubmitting(false);
-    }
-  };
+      if (audienceFilter === 'campus') {
+        return item.target_audience === 'all';
+      }
+      return true;
+    });
+  }, [announcements, searchQuery, audienceFilter]);
 
-  const handleDelete = async () => {
-    if (!selectedId) return;
-    setSubmitting(true);
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'Recent';
     try {
-      await api.delete(`/teacher/announcements/${selectedId}`);
-      setToast({ message: 'Announcement deleted successfully.', type: 'success' });
-      setConfirmOpen(false);
-      setSelectedId(null);
-      await fetchAnnouncements();
-    } catch (error: any) {
-      const msg = error.response?.data?.message || 'Failed to delete announcement.';
-      setToast({ message: msg, type: 'error' });
-    } finally {
-      setSubmitting(false);
+      const d = new Date(dateString);
+      return d.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+      });
+    } catch {
+      return dateString;
     }
   };
 
-  const columns = [
-    {
-      key: 'title',
-      label: 'Announcement Title',
-      render: (row: any) => (
-        <div>
-          <div className="font-semibold text-slate-900 flex items-center gap-1.5">
-            <Megaphone className="w-3.5 h-3.5 text-brand-gold" />
-            <span>{row.title}</span>
-          </div>
-          <div className="text-xs text-slate-500 line-clamp-1 mt-0.5">{row.content}</div>
-        </div>
-      ),
-    },
-    {
-      key: 'audience',
-      label: 'Target Audience',
-      render: (row: any) => (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
-          <Users className="w-3 h-3" />
-          <span>{row.target_audience || 'students'}</span>
-        </span>
-      ),
-    },
-    {
-      key: 'date',
-      label: 'Date Published',
-      render: (row: any) => (
-        <span className="text-xs text-slate-600">
-          {row.published_at ? new Date(row.published_at).toLocaleDateString() : 'Today'}
-        </span>
-      ),
-    },
-    {
-      key: 'actions',
-      label: 'Actions',
-      render: (row: any) => (
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => openEditModal(row)}
-            className="p-1.5 text-slate-600 hover:text-brand-primary hover:bg-slate-100 rounded transition-colors"
-            title="Edit Bulletin"
-          >
-            <Edit2 className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => {
-              setSelectedId(row.id);
-              setConfirmOpen(true);
-            }}
-            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
-            title="Delete Bulletin"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-        </div>
-      ),
-    },
-  ];
+  const formatTime = (dateString?: string) => {
+    if (!dateString) return '';
+    try {
+      const d = new Date(dateString);
+      return d.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return '';
+    }
+  };
+
+  const getAudienceBadge = (target?: string) => {
+    const t = (target || 'all').toLowerCase();
+    if (t === 'teachers' || t === 'teacher') {
+      return {
+        label: 'Faculty Notice',
+        color: 'bg-amber-50 text-amber-800 border-amber-200'
+      };
+    }
+    if (t === 'students' || t === 'student') {
+      return {
+        label: 'Student Bulletin',
+        color: 'bg-blue-50 text-blue-800 border-blue-200'
+      };
+    }
+    return {
+      label: 'All Campus',
+      color: 'bg-emerald-50 text-emerald-800 border-emerald-200'
+    };
+  };
 
   return (
-    <div className="space-y-6 font-sans">
-      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-
+    <div className="space-y-6">
+      {/* Top Header */}
       <PageHeader
-        title="Class Announcements & Bulletins"
-        subtitle="Post assignments, examination reminders, and updates directly to your students"
-        action={{
-          label: 'Post New Announcement',
-          icon: <Plus className="w-4 h-4" />,
-          onClick: openAddModal,
-        }}
+        title="Faculty Announcements & Bulletins"
+        subtitle="Official institutional memorandums, academic guidelines, and administrative updates."
+        badge="Faculty Portal"
       />
 
+      {/* Control bar: Search and Filter */}
+      <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs space-y-3">
+        <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+          {/* Search box */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="Search announcements by title, keyword, or author..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#800000]/20 focus:border-[#800000] text-slate-800 placeholder-slate-400 transition"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 font-medium"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+
+          {/* Quick Refresh */}
+          <button
+            onClick={fetchAnnouncements}
+            disabled={loading}
+            className="inline-flex items-center justify-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition disabled:opacity-50"
+            title="Refresh announcements"
+          >
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#800000]' : 'text-slate-500'}`} />
+            <span className="hidden sm:inline">Refresh</span>
+          </button>
+        </div>
+
+        {/* Filter Badges */}
+        <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-100 text-xs">
+          <span className="text-slate-500 font-medium mr-1 flex items-center gap-1">
+            <Tag className="w-3.5 h-3.5" /> Filter:
+          </span>
+          <button
+            onClick={() => setAudienceFilter('all')}
+            className={`px-2.5 py-1 rounded-md font-medium transition ${
+              audienceFilter === 'all'
+                ? 'bg-[#800000] text-white shadow-xs'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            All Bulletins ({announcements.length})
+          </button>
+          <button
+            onClick={() => setAudienceFilter('teachers')}
+            className={`px-2.5 py-1 rounded-md font-medium transition ${
+              audienceFilter === 'teachers'
+                ? 'bg-[#800000] text-white shadow-xs'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            Faculty Only
+          </button>
+          <button
+            onClick={() => setAudienceFilter('campus')}
+            className={`px-2.5 py-1 rounded-md font-medium transition ${
+              audienceFilter === 'campus'
+                ? 'bg-[#800000] text-white shadow-xs'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            }`}
+          >
+            General Campus
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
       {loading ? (
         <LoadingState message="Loading announcements..." />
+      ) : error ? (
+        /* Error State with required text and Retry button */
+        <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center space-y-4">
+          <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mx-auto text-red-600">
+            <AlertCircle className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="text-base font-semibold text-red-900">
+              {error}
+            </h3>
+            <p className="text-sm text-red-700 mt-1">
+              Could not communicate with the institutional bulletin service. Please verify your connection and retry.
+            </p>
+          </div>
+          <button
+            onClick={fetchAnnouncements}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#800000] text-white rounded-lg text-sm font-medium hover:bg-[#660000] transition shadow-xs"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Retry
+          </button>
+        </div>
+      ) : filteredAnnouncements.length === 0 ? (
+        /* Empty State with required exact text: "No announcements available." */
+        <div className="bg-white border border-slate-200 rounded-xl p-12 text-center shadow-2xs space-y-3">
+          <div className="w-14 h-14 rounded-full bg-amber-50 border border-amber-100 flex items-center justify-center mx-auto text-amber-700">
+            <Megaphone className="w-7 h-7" />
+          </div>
+          <div>
+            <h3 className="text-base font-semibold text-slate-900">
+              No announcements available.
+            </h3>
+            <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">
+              {searchQuery
+                ? 'No announcements match your search query. Try clearing the search filter.'
+                : 'There are currently no active bulletins or memorandums posted for faculty members.'}
+            </p>
+          </div>
+          {searchQuery && (
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setAudienceFilter('all');
+              }}
+              className="text-xs text-[#800000] font-semibold hover:underline"
+            >
+              Reset filters
+            </button>
+          )}
+        </div>
       ) : (
-        <DataTable columns={columns} data={announcements} emptyMessage="No class announcements posted yet." />
-      )}
+        /* Announcements list */
+        <div className="space-y-4">
+          {filteredAnnouncements.map((ann) => {
+            const isExpanded = expandedIds[ann.id] ?? true;
+            const badge = getAudienceBadge(ann.target_audience);
+            const dateStr = formatDate(ann.published_at || ann.created_at);
+            const timeStr = formatTime(ann.published_at || ann.created_at);
+            const authorName = ann.author?.name || 'Institutional Administration';
 
-      {/* Add/Edit Modal */}
-      {modalOpen && (
-        <Modal
-          title={editingAnnouncement ? 'Edit Class Announcement' : 'Post New Class Announcement'}
-          isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
-        >
-          <form onSubmit={handleSave} className="space-y-4">
-            <FormInput
-              label="Announcement Title"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="e.g. Midterm Examination Schedule for IT 312"
-              required
-            />
-
-            <FormSelect
-              label="Target Audience"
-              value={formData.target_audience}
-              onChange={(e) => setFormData({ ...formData, target_audience: e.target.value })}
-              options={[
-                { value: 'students', label: 'Students in My Classes' },
-                { value: 'all', label: 'All Campus Community' },
-              ]}
-              required
-            />
-
-            <div className="space-y-1.5">
-              <label className="block text-sm font-semibold text-slate-700">
-                Message Content <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                rows={5}
-                value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                placeholder="Write your announcement details here..."
-                className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary"
-                required
-              />
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
-              <button
-                type="button"
-                onClick={() => setModalOpen(false)}
-                className="px-4 py-2 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-md font-medium text-sm"
+            return (
+              <article
+                key={ann.id}
+                className="bg-white rounded-xl border border-slate-200/90 shadow-2xs hover:shadow-xs transition overflow-hidden border-l-4 border-l-[#800000]"
               >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="px-4 py-2 bg-brand-primary text-white hover:bg-brand-secondary rounded-md font-medium text-sm transition-colors disabled:opacity-50"
-              >
-                {submitting ? 'Publishing...' : editingAnnouncement ? 'Save Changes' : 'Post Announcement'}
-              </button>
-            </div>
-          </form>
-        </Modal>
-      )}
+                {/* Header row */}
+                <div className="p-5 sm:p-6 pb-4">
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className={`inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-full border ${badge.color}`}>
+                        {badge.label}
+                      </span>
+                      <span className="inline-flex items-center gap-1 text-xs text-slate-500 font-medium">
+                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                        {dateStr}
+                        {timeStr && ` • ${timeStr}`}
+                      </span>
+                    </div>
 
-      {/* Delete Confirmation */}
-      {confirmOpen && (
-        <ConfirmDialog
-          title="Delete Announcement"
-          message="Are you sure you want to delete this announcement?"
-          confirmLabel={submitting ? 'Deleting...' : 'Delete Announcement'}
-          variant="danger"
-          onConfirm={handleDelete}
-          onCancel={() => setConfirmOpen(false)}
-        />
+                    <button
+                      onClick={() => toggleExpand(ann.id)}
+                      className="text-xs text-slate-500 hover:text-slate-800 inline-flex items-center gap-1 font-medium transition"
+                      aria-label={isExpanded ? 'Collapse announcement' : 'Expand announcement'}
+                    >
+                      {isExpanded ? (
+                        <>
+                          <span>Collapse</span>
+                          <ChevronUp className="w-4 h-4" />
+                        </>
+                      ) : (
+                        <>
+                          <span>Read full</span>
+                          <ChevronDown className="w-4 h-4" />
+                        </>
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Title */}
+                  <h3 className="text-lg font-bold text-slate-900 tracking-tight leading-snug">
+                    {ann.title}
+                  </h3>
+
+                  {/* Author / Department Info */}
+                  <div className="flex items-center gap-2 text-xs text-slate-600 mt-2">
+                    <div className="w-5 h-5 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500">
+                      <User className="w-3 h-3" />
+                    </div>
+                    <span>
+                      Posted by: <strong className="font-semibold text-slate-800">{authorName}</strong>
+                    </span>
+                    {ann.author?.role && (
+                      <span className="capitalize text-slate-400">({ann.author.role})</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Body Content */}
+                {isExpanded && (
+                  <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-slate-100 bg-slate-50/30">
+                    <div className="text-sm text-slate-700 leading-relaxed whitespace-pre-wrap font-normal">
+                      {ann.content}
+                    </div>
+
+                    {/* Bottom Metadata verification notice */}
+                    <div className="mt-4 pt-3 border-t border-slate-200/60 flex flex-wrap items-center justify-between text-xs text-slate-400">
+                      <span className="flex items-center gap-1 text-emerald-700 font-medium">
+                        <CheckCircle2 className="w-3.5 h-3.5" /> Official Cebu Eastern College Notice
+                      </span>
+                      <span>Reference ID: CEC-ANN-{ann.id}</span>
+                    </div>
+                  </div>
+                )}
+              </article>
+            );
+          })}
+        </div>
       )}
     </div>
   );

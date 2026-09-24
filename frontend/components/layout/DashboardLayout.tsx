@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
-import Breadcrumb from "./Breadcrumb";
 import { ProtectedRoute } from "@/lib/auth";
 
 export function DashboardLayout({ 
@@ -47,10 +46,7 @@ export function DashboardLayout({
 
         <main className="pt-[60px] lg:ml-[240px] transition-all duration-200 min-h-screen flex flex-col font-sans w-full lg:w-[calc(100%-240px)] min-w-0">
           <div className="p-3.5 sm:p-5 lg:p-7 max-w-7xl w-full mx-auto flex-1 min-w-0">
-            <Breadcrumb />
-            <div className="min-w-0">
-              {children}
-            </div>
+            {children}
           </div>
           
           <footer className="no-print px-4 sm:px-6 py-4 border-t border-slate-200 bg-white text-xs text-slate-500">

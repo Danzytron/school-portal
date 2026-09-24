@@ -4,26 +4,164 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
+use App\Models\Announcement;
+use App\Models\AnnouncementRead;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class NotificationController extends Controller {
     public function index(Request $request) {
-        $items = Notification::where('user_id', $request->user()->id)
+        $user = $request->user();
+        if ($user) {
+            $this->syncAnnouncementNotifications($user);
+        }
+
+        $items = Notification::where('user_id', $user->id)
             ->latest()
+            ->take(30)
             ->get();
-        return response()->json($items);
+
+        $unreadCount = Notification::where('user_id', $user->id)
+            ->where('is_read', false)
+            ->count();
+
+        return response()->json([
+            'data' => $items,
+            'unread_count' => $unreadCount,
+        ]);
     }
 
     public function markAsRead(Request $request, $id) {
-        $notification = Notification::where('user_id', $request->user()->id)->findOrFail($id);
-        $notification->update(['is_read' => true, 'read_at' => now()]);
+        $user = $request->user();
+        $notification = Notification::where('user_id', $user->id)->findOrFail($id);
+        $notification->update([
+            'is_read' => true,
+            'read_at' => now(),
+        ]);
+
+        $announcementId = $notification->data['announcement_id'] ?? null;
+        if ($announcementId) {
+            AnnouncementRead::firstOrCreate([
+                'announcement_id' => $announcementId,
+                'user_id' => $user->id,
+            ], [
+                'read_at' => now(),
+            ]);
+        }
+
         return response()->json($notification);
     }
 
     public function markAllRead(Request $request) {
-        Notification::where('user_id', $request->user()->id)
+        $user = $request->user();
+        Notification::where('user_id', $user->id)
             ->where('is_read', false)
-            ->update(['is_read' => true, 'read_at' => now()]);
+            ->update([
+                'is_read' => true,
+                'read_at' => now(),
+            ]);
+
+        $role = strtolower(trim((string)$user->role));
+        $audiences = ['all', $role];
+        if (in_array($role, ['teacher', 'faculty'])) {
+            $audiences = array_unique(array_merge($audiences, ['teacher', 'teachers', 'faculty']));
+        } elseif (in_array($role, ['student'])) {
+            $audiences = array_unique(array_merge($audiences, ['student', 'students']));
+        } elseif (in_array($role, ['admin', 'administrator'])) {
+            $audiences = ['all', 'students', 'teachers', 'teacher', 'faculty', 'admin'];
+        }
+
+        $visibleAnnouncements = Announcement::where('is_published', true)
+            ->whereIn('target_audience', $audiences)
+            ->pluck('id');
+
+        foreach ($visibleAnnouncements as $annId) {
+            AnnouncementRead::firstOrCreate([
+                'announcement_id' => $annId,
+                'user_id' => $user->id,
+            ], [
+                'read_at' => now(),
+            ]);
+        }
+
         return response()->json(['message' => 'All notifications marked as read']);
+    }
+
+    protected function syncAnnouncementNotifications($user) {
+        $role = strtolower(trim((string)$user->role));
+        $audiences = ['all', $role];
+        if (in_array($role, ['teacher', 'faculty'])) {
+            $audiences = array_unique(array_merge($audiences, ['teacher', 'teachers', 'faculty']));
+        } elseif (in_array($role, ['student'])) {
+            $audiences = array_unique(array_merge($audiences, ['student', 'students']));
+        } elseif (in_array($role, ['admin', 'administrator'])) {
+            $audiences = ['all', 'students', 'teachers', 'teacher', 'faculty', 'admin'];
+        }
+
+        $publishedAnnouncements = Announcement::where('is_published', true)
+            ->whereIn('target_audience', $audiences)
+            ->get();
+
+        $activeAnnouncementIds = $publishedAnnouncements->pluck('id')->all();
+
+        // Clean up orphaned announcement notifications
+        $userNotifs = Notification::where('user_id', $user->id)
+            ->where('type', 'announcement')
+            ->get();
+
+        foreach ($userNotifs as $notif) {
+            $annId = $notif->data['announcement_id'] ?? null;
+            if ($annId && !in_array($annId, $activeAnnouncementIds)) {
+                $notif->delete();
+            }
+        }
+
+        // Get read announcement records for this user
+        $readAnnouncementIds = AnnouncementRead::where('user_id', $user->id)
+            ->pluck('read_at', 'announcement_id')
+            ->all();
+
+        foreach ($publishedAnnouncements as $ann) {
+            $isRead = isset($readAnnouncementIds[$ann->id]);
+            $readAt = $isRead ? $readAnnouncementIds[$ann->id] : null;
+
+            $existing = Notification::where('user_id', $user->id)
+                ->where('type', 'announcement')
+                ->where('data->announcement_id', $ann->id)
+                ->first();
+
+            $contentPreview = Str::limit($ann->content, 180);
+
+            if (!$existing) {
+                Notification::create([
+                    'user_id' => $user->id,
+                    'title' => $ann->title,
+                    'message' => $contentPreview,
+                    'type' => 'announcement',
+                    'is_read' => $isRead,
+                    'read_at' => $readAt,
+                    'data' => [
+                        'announcement_id' => $ann->id,
+                        'target_audience' => $ann->target_audience,
+                    ],
+                    'created_at' => $ann->published_at ?? $ann->created_at ?? now(),
+                ]);
+            } else {
+                $updates = [];
+                if ($existing->title !== $ann->title) {
+                    $updates['title'] = $ann->title;
+                }
+                if ($existing->message !== $contentPreview) {
+                    $updates['message'] = $contentPreview;
+                }
+                if ($isRead && !$existing->is_read) {
+                    $updates['is_read'] = true;
+                    $updates['read_at'] = $readAt ?? now();
+                }
+                if (!empty($updates)) {
+                    $existing->update($updates);
+                }
+            }
+        }
     }
 }

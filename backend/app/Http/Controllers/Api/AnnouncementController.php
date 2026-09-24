@@ -73,6 +73,8 @@ class AnnouncementController extends Controller
             'published_at' => now(),
         ]);
 
+        $this->dispatchAnnouncementNotifications($announcement);
+
         return response()->json($announcement->load('author'), 201);
     }
 
@@ -84,6 +86,9 @@ class AnnouncementController extends Controller
 
         $announcement = Announcement::findOrFail($id);
         $announcement->update($request->only(['title', 'content', 'target_audience', 'is_published']));
+        
+        $this->dispatchAnnouncementNotifications($announcement);
+
         return response()->json($announcement->load('author'));
     }
 
@@ -94,6 +99,12 @@ class AnnouncementController extends Controller
         }
 
         $announcement = Announcement::findOrFail($id);
+        
+        // Remove associated notifications
+        Notification::where('type', 'announcement')
+            ->where('data->announcement_id', $announcement->id)
+            ->delete();
+
         $announcement->delete();
         return response()->json(['message' => 'Announcement deleted successfully']);
     }
@@ -107,6 +118,70 @@ class AnnouncementController extends Controller
         ], [
             'read_at' => now(),
         ]);
+
+        Notification::where('user_id', $userId)
+            ->where('data->announcement_id', (int)$id)
+            ->update([
+                'is_read' => true,
+                'read_at' => now(),
+            ]);
+
         return response()->json(['message' => 'Marked as read']);
+    }
+
+    protected function dispatchAnnouncementNotifications(Announcement $announcement)
+    {
+        if (!$announcement->is_published) {
+            Notification::where('type', 'announcement')
+                ->where('data->announcement_id', $announcement->id)
+                ->delete();
+            return;
+        }
+
+        $audience = strtolower(trim((string)$announcement->target_audience));
+        $query = \App\Models\User::query();
+
+        if ($audience === 'students' || $audience === 'student') {
+            $query->whereIn('role', ['student', 'admin', 'administrator']);
+        } elseif ($audience === 'teachers' || $audience === 'teacher' || $audience === 'faculty') {
+            $query->whereIn('role', ['teacher', 'faculty', 'admin', 'administrator']);
+        } elseif ($audience === 'admin' || $audience === 'administrator') {
+            $query->whereIn('role', ['admin', 'administrator']);
+        }
+
+        $recipientIds = $query->pluck('id');
+        $contentPreview = \Illuminate\Support\Str::limit($announcement->content, 180);
+
+        foreach ($recipientIds as $userId) {
+            $existing = Notification::where('user_id', $userId)
+                ->where('type', 'announcement')
+                ->where('data->announcement_id', $announcement->id)
+                ->first();
+
+            if ($existing) {
+                $existing->update([
+                    'title' => $announcement->title,
+                    'message' => $contentPreview,
+                    'data' => [
+                        'announcement_id' => $announcement->id,
+                        'target_audience' => $announcement->target_audience,
+                    ],
+                ]);
+            } else {
+                Notification::create([
+                    'user_id' => $userId,
+                    'title' => $announcement->title,
+                    'message' => $contentPreview,
+                    'type' => 'announcement',
+                    'is_read' => false,
+                    'read_at' => null,
+                    'data' => [
+                        'announcement_id' => $announcement->id,
+                        'target_audience' => $announcement->target_audience,
+                    ],
+                    'created_at' => $announcement->published_at ?? $announcement->created_at ?? now(),
+                ]);
+            }
+        }
     }
 }

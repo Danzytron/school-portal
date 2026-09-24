@@ -193,29 +193,7 @@ export default function StudentDashboardPage() {
     }
   ];
 
-  const announcements = [
-    {
-      id: 1,
-      tag: 'Office of the Registrar',
-      title: 'Midterm Examination Schedule for 1st Semester A.Y. 2026–2027',
-      date: 'Sep 14, 2026',
-      summary: 'Official midterm evaluation week commences October 14, 2026. All classroom assignments and testing room guidelines are now active.'
-    },
-    {
-      id: 2,
-      tag: 'College of Information Technology',
-      title: 'Annual Hackathon & Software Showcase Submissions Open',
-      date: 'Sep 12, 2026',
-      summary: 'Register project proposals for the Easternian Tech Expo 2026 before October 05. Open to all BSIT & BSCS students.'
-    },
-    {
-      id: 3,
-      tag: 'Student Affairs',
-      title: 'University Health & Wellness Advisory',
-      date: 'Sep 10, 2026',
-      summary: 'Annual physical examinations scheduled for 3rd Year College students starting next Monday at the University Clinic.'
-    }
-  ];
+  const recentBulletins = Array.isArray(data?.recent_announcements) ? data.recent_announcements : [];
 
   return (
     <div className="space-y-6 font-sans">
@@ -447,22 +425,35 @@ export default function StudentDashboardPage() {
             </div>
 
             <div className="p-0 divide-y divide-slate-100 font-sans">
-              {announcements.map((item) => (
-                <div key={item.id} className="p-3.5 hover:bg-slate-50/70 transition-colors space-y-1">
-                  <div className="flex items-center justify-between text-[10px]">
-                    <span className="font-semibold uppercase tracking-wider text-[#1D4ED8]">
-                      {item.tag}
-                    </span>
-                    <span className="text-slate-400 font-mono">{item.date}</span>
-                  </div>
-                  <h4 className="font-heading font-bold text-xs text-slate-900 m-0">
-                    {item.title}
-                  </h4>
-                  <p className="text-[11px] text-slate-600 leading-relaxed m-0 pt-0.5">
-                    {item.summary}
-                  </p>
+              {recentBulletins.length > 0 ? (
+                recentBulletins.map((item: any) => {
+                  const dateStr = item.published_at 
+                    ? new Date(item.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+                    : (item.created_at ? new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recent');
+                  const tag = (item.target_audience === 'all' || !item.target_audience) ? 'All Campus' : 'Student Advisory';
+
+                  return (
+                    <div key={item.id} className="p-3.5 hover:bg-slate-50/70 transition-colors space-y-1">
+                      <div className="flex items-center justify-between text-[10px]">
+                        <span className="font-semibold uppercase tracking-wider text-[#1D4ED8]">
+                          {tag}
+                        </span>
+                        <span className="text-slate-400 font-mono">{dateStr}</span>
+                      </div>
+                      <h4 className="font-heading font-bold text-xs text-slate-900 m-0">
+                        {item.title}
+                      </h4>
+                      <p className="text-[11px] text-slate-600 leading-relaxed m-0 pt-0.5 line-clamp-2">
+                        {item.content || item.summary || ''}
+                      </p>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="p-6 text-center text-xs text-slate-400">
+                  No announcements available.
                 </div>
-              ))}
+              )}
             </div>
           </div>
 

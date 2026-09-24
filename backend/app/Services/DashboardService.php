@@ -62,7 +62,7 @@ class DashboardService
             'attendance_tasks' => 1,
             'assigned_courses' => $teacherSubjects,
             'recent_announcements' => Announcement::where('is_published', true)
-                ->whereIn('target_audience', ['all', 'teachers'])
+                ->whereIn('target_audience', ['all', 'teachers', 'teacher', 'faculty'])
                 ->latest()
                 ->take(5)
                 ->get(),
@@ -76,7 +76,7 @@ class DashboardService
                 $q->where('student_id', $studentId)->where('status', 'approved');
             })->count(),
             'recent_announcements' => Announcement::where('is_published', true)
-                ->whereIn('target_audience', ['all', 'students'])
+                ->whereIn('target_audience', ['all', 'students', 'student'])
                 ->latest()->take(5)->get(),
         ];
     }

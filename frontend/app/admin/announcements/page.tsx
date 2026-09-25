@@ -41,8 +41,10 @@ export default function AnnouncementManagement() {
     { value: 'admin', label: 'Administration Only' },
   ];
 
-  const fetchAnnouncements = useCallback(async () => {
-    setLoading(true);
+  const fetchAnnouncements = useCallback(async (silent = false) => {
+    if (!silent) {
+      setLoading(true);
+    }
     setError(null);
     try {
       const res = await api.get('/admin/announcements');
@@ -62,15 +64,19 @@ export default function AnnouncementManagement() {
         errorMsg = err.response.data.message;
       }
       
-      setError(errorMsg);
+      if (!silent) {
+        setError(errorMsg);
+      }
       setToast({ message: errorMsg, type: 'error' });
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   }, []);
 
   useEffect(() => {
-    fetchAnnouncements();
+    fetchAnnouncements(false);
   }, [fetchAnnouncements]);
 
   const openAddModal = () => {
@@ -119,7 +125,7 @@ export default function AnnouncementManagement() {
 
       if (editingAnnouncement) {
         await api.put(`/admin/announcements/${editingAnnouncement.id}`, payload);
-        setToast({ message: 'Bulletin updated successfully.', type: 'success' });
+        setToast({ message: 'Announcement updated successfully.', type: 'success' });
       } else {
         await api.post('/admin/announcements', payload);
         setToast({ message: 'Bulletin published successfully.', type: 'success' });
@@ -144,8 +150,8 @@ export default function AnnouncementManagement() {
         } catch {}
       }
 
-      // Automatically refresh Admin list
-      await fetchAnnouncements();
+      // Automatically refresh Admin list in background without full-screen loading spinner
+      await fetchAnnouncements(true);
     } catch (err: any) {
       console.error('Failed to save announcement:', err);
       const msg = err.response?.data?.message || err.message || 'Failed to save announcement. Please try again.';
@@ -157,13 +163,17 @@ export default function AnnouncementManagement() {
 
   const handleDelete = async () => {
     if (!announcementToDelete) return;
+    const targetId = announcementToDelete.id;
     setSubmitting(true);
     try {
-      await api.delete(`/admin/announcements/${announcementToDelete.id}`);
-      setToast({ message: 'Bulletin deleted successfully from database.', type: 'success' });
+      await api.delete(`/admin/announcements/${targetId}`);
+      // Optimistically remove from state immediately without triggering full-page loading state
+      setAnnouncements(prev => prev.filter(item => item.id !== targetId));
+      setToast({ message: 'Announcement deleted successfully.', type: 'success' });
       setShowDeleteConfirm(false);
       setAnnouncementToDelete(null);
 
+      // Broadcast delete event across all tabs & roles
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('cec:announcement-sync'));
         try {
@@ -173,10 +183,14 @@ export default function AnnouncementManagement() {
         } catch {}
       }
 
-      await fetchAnnouncements();
+      // Silent background fetch to guarantee DB consistency without showing full-page loader
+      await fetchAnnouncements(true);
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Failed to delete bulletin.';
+      console.error('Failed to delete announcement:', err);
+      const msg = err.response?.data?.message || err.message || 'Failed to delete announcement. Please try again.';
       setToast({ message: msg, type: 'error' });
+      setShowDeleteConfirm(false);
+      setAnnouncementToDelete(null);
     } finally {
       setSubmitting(false);
     }
@@ -279,8 +293,9 @@ export default function AnnouncementManagement() {
               setAnnouncementToDelete(row);
               setShowDeleteConfirm(true);
             }}
-            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
-            title="Delete Bulletin"
+            disabled={submitting && announcementToDelete?.id === row.id}
+            className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors disabled:opacity-40"
+            title="Delete Announcement"
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -403,9 +418,9 @@ export default function AnnouncementManagement() {
       {/* Delete Confirmation Dialog */}
       {showDeleteConfirm && announcementToDelete && (
         <ConfirmDialog
-          title="Delete Bulletin"
-          message={`Are you sure you want to delete "${announcementToDelete.title}"? This will permanently remove it from the database.`}
-          confirmLabel={submitting ? 'Deleting...' : 'Delete Bulletin'}
+          title="Delete Announcement"
+          message="Are you sure you want to delete this announcement?"
+          confirmLabel={submitting ? 'Deleting...' : 'Delete'}
           variant="danger"
           onConfirm={handleDelete}
           onCancel={() => {

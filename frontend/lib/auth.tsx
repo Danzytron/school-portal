@@ -96,17 +96,39 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const logout = async () => {
+  const logout = () => {
+    // 1. Immediately clear client session & storage
     try {
-      await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
-    } catch {
-      // Ignore network errors on logout
-    }
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      sessionStorage.clear();
+    } catch {}
+
     setToken(null);
     setUser(null);
-    router.push('/login');
+
+    // 2. Immediately expire cookies on client
+    try {
+      document.cookie = 'auth_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;';
+      document.cookie = 'auth_role=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;';
+      document.cookie = 'auth_token=; path=/; domain=.cebucecportal.site; expires=Thu, 01 Jan 1970 00:00:00 GMT;';
+      document.cookie = 'auth_role=; path=/; domain=.cebucecportal.site; expires=Thu, 01 Jan 1970 00:00:00 GMT;';
+    } catch {}
+
+    // 3. Fire-and-forget server cookie clearing without blocking
+    try {
+      fetch('/api/auth/logout', { 
+        method: 'POST',
+        keepalive: true,
+      }).catch(() => {});
+    } catch {}
+
+    // 4. Redirect immediately to /login and prevent back button re-entry
+    if (typeof window !== 'undefined') {
+      window.location.replace('/login');
+    } else {
+      router.replace('/login');
+    }
   };
 
   const normalizedRole = (user?.role || '').toLowerCase().trim();
@@ -143,27 +165,24 @@ export const ProtectedRoute = ({ children, allowedRoles }: { children: React.Rea
 
   useEffect(() => {
     if (!loading && (!isAuthenticated || !user)) {
-      router.push('/login');
+      if (typeof window !== 'undefined') {
+        window.location.replace('/login');
+      } else {
+        router.replace('/login');
+      }
     } else if (!loading && user && allowedRoles) {
       const userRole = (user.role || '').toLowerCase().trim();
       const normalizedAllowed = allowedRoles.map(r => r.toLowerCase().trim());
       // Admins have universal authorization across all portal sections, or if user's role matches
       const hasAccess = userRole === 'admin' || userRole === 'administrator' || normalizedAllowed.includes(userRole);
       if (!hasAccess) {
-        router.push('/unauthorized');
+        router.replace('/unauthorized');
       }
     }
   }, [user, isAuthenticated, loading, router, allowedRoles]);
 
   if (loading || !isAuthenticated || !user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
-        <div className="text-center font-sans">
-          <div className="w-8 h-8 border-3 border-[#1D4ED8] border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-          <span className="text-xs text-slate-500 font-medium">Verifying authorization...</span>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return <>{children}</>;

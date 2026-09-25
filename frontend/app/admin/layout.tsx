@@ -13,15 +13,19 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   useEffect(() => {
     const role = (user?.role || '').toLowerCase().trim();
     if (!isLoading && (!isAuthenticated || !user)) {
-      router.push('/login');
+      if (typeof window !== 'undefined') {
+        window.location.replace('/login');
+      } else {
+        router.replace('/login');
+      }
     } else if (!isLoading && user && role !== 'admin' && role !== 'administrator') {
-      router.push('/unauthorized');
+      router.replace('/unauthorized');
     }
   }, [isLoading, isAuthenticated, user, router]);
 
   const role = (user?.role || '').toLowerCase().trim();
   if (isLoading || !isAuthenticated || !user || (role !== 'admin' && role !== 'administrator')) {
-    return <LoadingState message="Verifying administrative access..." />;
+    return null;
   }
 
   return <DashboardLayout role="admin">{children}</DashboardLayout>;

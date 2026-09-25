@@ -95,11 +95,16 @@ export default function AnnouncementManagement() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.title.trim()) {
+    if (submitting) return;
+
+    const trimmedTitle = formData.title.trim();
+    const trimmedContent = formData.content.trim();
+
+    if (!trimmedTitle) {
       setToast({ message: 'Announcement title is required.', type: 'error' });
       return;
     }
-    if (!formData.content.trim()) {
+    if (!trimmedContent) {
       setToast({ message: 'Announcement content is required.', type: 'error' });
       return;
     }
@@ -107,20 +112,29 @@ export default function AnnouncementManagement() {
     setSubmitting(true);
     try {
       const payload = {
-        title: formData.title.trim(),
-        content: formData.content.trim(),
+        title: trimmedTitle,
+        content: trimmedContent,
         target_audience: formData.target_audience,
       };
 
       if (editingAnnouncement) {
         await api.put(`/admin/announcements/${editingAnnouncement.id}`, payload);
-        setToast({ message: 'Institutional bulletin updated successfully.', type: 'success' });
+        setToast({ message: 'Bulletin updated successfully.', type: 'success' });
       } else {
         await api.post('/admin/announcements', payload);
-        setToast({ message: 'Institutional bulletin published successfully.', type: 'success' });
+        setToast({ message: 'Bulletin published successfully.', type: 'success' });
       }
-      setShowModal(false);
 
+      // Close modal and reset form state
+      setShowModal(false);
+      setEditingAnnouncement(null);
+      setFormData({
+        title: '',
+        content: '',
+        target_audience: 'all',
+      });
+
+      // Broadcast real-time sync event across all tabs & roles
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('cec:announcement-sync'));
         try {
@@ -130,9 +144,11 @@ export default function AnnouncementManagement() {
         } catch {}
       }
 
+      // Automatically refresh Admin list
       await fetchAnnouncements();
     } catch (err: any) {
-      const msg = err.response?.data?.message || 'Failed to save announcement. Please try again.';
+      console.error('Failed to save announcement:', err);
+      const msg = err.response?.data?.message || err.message || 'Failed to save announcement. Please try again.';
       setToast({ message: msg, type: 'error' });
     } finally {
       setSubmitting(false);

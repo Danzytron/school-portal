@@ -115,10 +115,13 @@ class AnnouncementController extends Controller
 
         $announcement = Announcement::findOrFail($id);
         
-        // Remove associated notifications
-        Notification::where('type', 'announcement')
-            ->where('data->announcement_id', $announcement->id)
-            ->delete();
+        try {
+            Notification::where('type', 'announcement')
+                ->whereRaw("(\"data\"->>'announcement_id') = ?", [(string)$id])
+                ->delete();
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Error cleaning up notifications on announcement delete: ' . $e->getMessage());
+        }
 
         $announcement->delete();
         return response()->json(['message' => 'Announcement deleted successfully']);
@@ -134,78 +137,85 @@ class AnnouncementController extends Controller
             'read_at' => now(),
         ]);
 
-        Notification::where('user_id', $userId)
-            ->where('data->announcement_id', (int)$id)
-            ->update([
-                'is_read' => true,
-                'read_at' => now(),
-            ]);
+        try {
+            Notification::where('user_id', $userId)
+                ->whereRaw("(\"data\"->>'announcement_id') = ?", [(string)$id])
+                ->update([
+                    'is_read' => true,
+                    'read_at' => now(),
+                ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Error updating notification read status: ' . $e->getMessage());
+        }
 
         return response()->json(['message' => 'Marked as read']);
     }
 
     protected function dispatchAnnouncementNotifications(Announcement $announcement)
     {
-        if (!$announcement->is_published) {
+        try {
+            if (!$announcement->is_published) {
+                Notification::where('type', 'announcement')
+                    ->whereRaw("(\"data\"->>'announcement_id') = ?", [(string)$announcement->id])
+                    ->delete();
+                return;
+            }
+
+            $audience = strtolower(trim((string)$announcement->target_audience));
+            $query = \App\Models\User::query();
+
+            if ($audience === 'students' || $audience === 'student') {
+                $query->whereIn('role', ['student', 'admin', 'administrator']);
+            } elseif ($audience === 'teachers' || $audience === 'teacher' || $audience === 'faculty') {
+                $query->whereIn('role', ['teacher', 'faculty', 'admin', 'administrator']);
+            } elseif ($audience === 'admin' || $audience === 'administrator') {
+                $query->whereIn('role', ['admin', 'administrator']);
+            }
+
+            $recipientIds = $query->pluck('id');
+            if ($recipientIds->isEmpty()) {
+                return;
+            }
+
+            $contentPreview = \Illuminate\Support\Str::limit($announcement->content, 180);
+            $now = now();
+            $annDbTimestamp = $announcement->published_at ?? $announcement->created_at ?? $now;
+            $annTimestampIso = $announcement->published_at 
+                ? (method_exists($announcement->published_at, 'toIso8601String') ? $announcement->published_at->toIso8601String() : (string)$announcement->published_at)
+                : ($announcement->created_at 
+                    ? (method_exists($announcement->created_at, 'toIso8601String') ? $announcement->created_at->toIso8601String() : (string)$announcement->created_at) 
+                    : $now->toIso8601String());
+
+            // Delete any existing notifications for this announcement to prevent duplicates
             Notification::where('type', 'announcement')
-                ->where('data->announcement_id', $announcement->id)
+                ->whereRaw("(\"data\"->>'announcement_id') = ?", [(string)$announcement->id])
                 ->delete();
-            return;
-        }
 
-        $audience = strtolower(trim((string)$announcement->target_audience));
-        $query = \App\Models\User::query();
-
-        if ($audience === 'students' || $audience === 'student') {
-            $query->whereIn('role', ['student', 'admin', 'administrator']);
-        } elseif ($audience === 'teachers' || $audience === 'teacher' || $audience === 'faculty') {
-            $query->whereIn('role', ['teacher', 'faculty', 'admin', 'administrator']);
-        } elseif ($audience === 'admin' || $audience === 'administrator') {
-            $query->whereIn('role', ['admin', 'administrator']);
-        }
-
-        $recipientIds = $query->pluck('id');
-        $contentPreview = \Illuminate\Support\Str::limit($announcement->content, 180);
-        $annDbTimestamp = $announcement->published_at ?? $announcement->created_at ?? now();
-        $annTimestampIso = $announcement->published_at 
-            ? $announcement->published_at->toISOString() 
-            : ($announcement->created_at ? $announcement->created_at->toISOString() : now()->toISOString());
-
-        foreach ($recipientIds as $userId) {
-            $existing = Notification::where('user_id', $userId)
-                ->where('type', 'announcement')
-                ->where('data->announcement_id', $announcement->id)
-                ->first();
-
-            if ($existing) {
-                $existing->update([
-                    'title' => $announcement->title,
-                    'message' => $contentPreview,
-                    'created_at' => $annDbTimestamp,
-                    'data' => [
-                        'announcement_id' => $announcement->id,
-                        'target_audience' => $announcement->target_audience,
-                        'published_at' => $announcement->published_at ? $announcement->published_at->toISOString() : null,
-                        'announcement_timestamp' => $annTimestampIso,
-                    ],
-                ]);
-            } else {
-                Notification::create([
+            $notificationsToInsert = [];
+            foreach ($recipientIds as $userId) {
+                $notificationsToInsert[] = [
                     'user_id' => $userId,
                     'title' => $announcement->title,
                     'message' => $contentPreview,
                     'type' => 'announcement',
                     'is_read' => false,
                     'read_at' => null,
-                    'data' => [
+                    'data' => json_encode([
                         'announcement_id' => $announcement->id,
                         'target_audience' => $announcement->target_audience,
-                        'published_at' => $announcement->published_at ? $announcement->published_at->toISOString() : null,
+                        'published_at' => $announcement->published_at ? $announcement->published_at->toIso8601String() : null,
                         'announcement_timestamp' => $annTimestampIso,
-                    ],
+                    ]),
                     'created_at' => $annDbTimestamp,
-                ]);
+                    'updated_at' => $now,
+                ];
             }
+
+            foreach (array_chunk($notificationsToInsert, 100) as $chunk) {
+                Notification::insert($chunk);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Notification dispatch error: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine());
         }
     }
 }

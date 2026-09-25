@@ -110,8 +110,9 @@ class NotificationController extends Controller {
             ->get();
 
         foreach ($userNotifs as $notif) {
-            $annId = $notif->data['announcement_id'] ?? null;
-            if ($annId && !in_array($annId, $activeAnnouncementIds)) {
+            $data = is_array($notif->data) ? $notif->data : (json_decode((string)$notif->data, true) ?: []);
+            $annId = $data['announcement_id'] ?? null;
+            if ($annId && !in_array((int)$annId, $activeAnnouncementIds)) {
                 $notif->delete();
             }
         }
@@ -127,14 +128,16 @@ class NotificationController extends Controller {
 
             $existing = Notification::where('user_id', $user->id)
                 ->where('type', 'announcement')
-                ->where('data->announcement_id', $ann->id)
+                ->whereRaw("(\"data\"->>'announcement_id') = ?", [(string)$ann->id])
                 ->first();
 
             $contentPreview = Str::limit($ann->content, 180);
             $annDbTimestamp = $ann->published_at ?? $ann->created_at ?? now();
             $annTimestampIso = $ann->published_at 
-                ? $ann->published_at->toISOString() 
-                : ($ann->created_at ? $ann->created_at->toISOString() : now()->toISOString());
+                ? (method_exists($ann->published_at, 'toIso8601String') ? $ann->published_at->toIso8601String() : (string)$ann->published_at)
+                : ($ann->created_at 
+                    ? (method_exists($ann->created_at, 'toIso8601String') ? $ann->created_at->toIso8601String() : (string)$ann->created_at) 
+                    : now()->toIso8601String());
 
             if (!$existing) {
                 Notification::create([
@@ -147,7 +150,7 @@ class NotificationController extends Controller {
                     'data' => [
                         'announcement_id' => $ann->id,
                         'target_audience' => $ann->target_audience,
-                        'published_at' => $ann->published_at ? $ann->published_at->toISOString() : null,
+                        'published_at' => $ann->published_at ? $ann->published_at->toIso8601String() : null,
                         'announcement_timestamp' => $annTimestampIso,
                     ],
                     'created_at' => $annDbTimestamp,

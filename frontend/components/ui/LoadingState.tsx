@@ -11,8 +11,8 @@ export function LoadingState({ message, text, className = "" }: LoadingStateProp
   const label = message || text || "Loading data, please wait...";
 
   return (
-    <div className={`p-8 text-center bg-white border border-slate-200 rounded-md shadow-2xs flex flex-col items-center justify-center gap-2.5 ${className}`}>
-      <Loader2 size={24} className="text-blue-700 animate-spin" />
+    <div className={`p-8 text-center bg-white border border-slate-200/90 rounded-lg shadow-2xs flex flex-col items-center justify-center gap-2.5 font-sans ${className}`}>
+      <Loader2 size={24} className="text-[#1D4ED8] animate-spin" />
       <span className="text-xs font-medium text-slate-600">{label}</span>
     </div>
   );

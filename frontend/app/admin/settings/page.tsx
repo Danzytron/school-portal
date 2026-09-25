@@ -90,10 +90,10 @@ export default function SystemSettings() {
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div className="panel">
-          <div className="panel-heading bg-slate-800 text-white p-2.5 font-bold text-xs">
-            University Information & Branding
+          <div className="panel-heading">
+            <span>University Information & Branding</span>
           </div>
-          <div className="panel-body p-4 space-y-3.5">
+          <div className="panel-body space-y-3.5">
             <FormInput label="Official School Name" value={schoolName} onChange={(e) => setSchoolName(e.target.value)} />
             <FormInput label="Main Campus Address" value={schoolAddress} onChange={(e) => setSchoolAddress(e.target.value)} />
             <FormInput label="Registrar Contact Number" value={schoolContact} onChange={(e) => setSchoolContact(e.target.value)} />
@@ -102,20 +102,20 @@ export default function SystemSettings() {
         </div>
 
         <div className="panel">
-          <div className="panel-heading bg-slate-800 text-white p-2.5 font-bold text-xs">
-            Current Academic Period Controls
+          <div className="panel-heading">
+            <span>Current Academic Period Controls</span>
           </div>
-          <div className="panel-body p-4 space-y-3.5">
+          <div className="panel-body space-y-3.5">
             <FormSelect label="Active School Year" options={[{ value: '2025-2026', label: 'SY 2025-2026' }, { value: '2026-2027', label: 'SY 2026-2027' }]} value={activeSY} onChange={(e) => setActiveSY(e.target.value)} />
             <FormSelect label="Active Academic Term" options={[{ value: '1st Semester', label: '1st Semester' }, { value: '2nd Semester', label: '2nd Semester' }, { value: 'Summer', label: 'Summer Term' }]} value={activeSem} onChange={(e) => setActiveSem(e.target.value)} />
           </div>
         </div>
 
         <div className="panel md:col-span-2">
-          <div className="panel-heading bg-slate-800 text-white p-2.5 font-bold text-xs">
-            Module Access & System Operations
+          <div className="panel-heading">
+            <span>Module Access & System Operations</span>
           </div>
-          <div className="panel-body p-4 space-y-4">
+          <div className="panel-body space-y-4">
             <div className="flex items-center gap-3">
               <input type="checkbox" id="enrollmentOpen" checked={enrollmentOpen} onChange={(e) => setEnrollmentOpen(e.target.checked)} className="rounded border-slate-300 text-blue-600 focus:ring-blue-500 h-4 w-4" />
               <label htmlFor="enrollmentOpen" className="text-xs font-semibold text-slate-800 select-none cursor-pointer">Student Online Enrollment Encoding Period (ACTIVE)</label>

@@ -45,9 +45,9 @@ export function Pagination({ currentPage, totalPages, onPageChange, totalItems, 
                 {isEllipsis && <span className="px-1 text-slate-400">...</span>}
                 <button
                   onClick={() => onPageChange(page)}
-                  className={`px-2.5 py-1 text-[11px] rounded border font-medium transition-colors ${
+                  className={`px-2.5 py-1 text-[11px] rounded-md border font-medium transition-colors cursor-pointer ${
                     page === currentPage
-                      ? 'bg-blue-700 text-white border-blue-800 font-semibold'
+                      ? 'bg-[#1D4ED8] text-white border-[#1E40AF] font-semibold shadow-xs'
                       : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
                   }`}
                 >

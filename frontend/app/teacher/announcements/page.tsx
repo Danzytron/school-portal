@@ -224,12 +224,12 @@ export default function TeacherAnnouncementsPage() {
               placeholder="Search announcements by title, keyword, or author..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#800000]/20 focus:border-[#800000] text-slate-800 placeholder-slate-400 transition"
+              className="w-full pl-10 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#1D4ED8]/20 focus:border-[#1D4ED8] text-slate-800 placeholder-slate-400 transition"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 font-medium"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-400 hover:text-slate-600 font-medium cursor-pointer"
               >
                 Clear
               </button>
@@ -240,10 +240,10 @@ export default function TeacherAnnouncementsPage() {
           <button
             onClick={() => fetchAnnouncements(false)}
             disabled={loading}
-            className="inline-flex items-center justify-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition disabled:opacity-50"
+            className="inline-flex items-center justify-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition disabled:opacity-50 cursor-pointer"
             title="Refresh announcements"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#800000]' : 'text-slate-500'}`} />
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#1D4ED8]' : 'text-slate-500'}`} />
             <span className="hidden sm:inline">Refresh</span>
           </button>
         </div>
@@ -255,9 +255,9 @@ export default function TeacherAnnouncementsPage() {
           </span>
           <button
             onClick={() => setAudienceFilter('all')}
-            className={`px-2.5 py-1 rounded-md font-medium transition ${
+            className={`px-2.5 py-1 rounded-md font-medium transition cursor-pointer ${
               audienceFilter === 'all'
-                ? 'bg-[#800000] text-white shadow-xs'
+                ? 'bg-[#1D4ED8] text-white shadow-xs'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
           >
@@ -265,9 +265,9 @@ export default function TeacherAnnouncementsPage() {
           </button>
           <button
             onClick={() => setAudienceFilter('teachers')}
-            className={`px-2.5 py-1 rounded-md font-medium transition ${
+            className={`px-2.5 py-1 rounded-md font-medium transition cursor-pointer ${
               audienceFilter === 'teachers'
-                ? 'bg-[#800000] text-white shadow-xs'
+                ? 'bg-[#1D4ED8] text-white shadow-xs'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
           >
@@ -275,9 +275,9 @@ export default function TeacherAnnouncementsPage() {
           </button>
           <button
             onClick={() => setAudienceFilter('campus')}
-            className={`px-2.5 py-1 rounded-md font-medium transition ${
+            className={`px-2.5 py-1 rounded-md font-medium transition cursor-pointer ${
               audienceFilter === 'campus'
-                ? 'bg-[#800000] text-white shadow-xs'
+                ? 'bg-[#1D4ED8] text-white shadow-xs'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
           >
@@ -305,7 +305,7 @@ export default function TeacherAnnouncementsPage() {
           </div>
           <button
             onClick={() => fetchAnnouncements(false)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#800000] text-white rounded-lg text-sm font-medium hover:bg-[#660000] transition shadow-xs"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#1D4ED8] hover:bg-[#1E40AF] text-white rounded-lg text-sm font-medium transition shadow-xs cursor-pointer"
           >
             <RefreshCw className="w-4 h-4" />
             Retry
@@ -333,7 +333,7 @@ export default function TeacherAnnouncementsPage() {
                 setSearchQuery('');
                 setAudienceFilter('all');
               }}
-              className="text-xs text-[#800000] font-semibold hover:underline"
+              className="text-xs text-[#1D4ED8] font-semibold hover:underline cursor-pointer"
             >
               Reset filters
             </button>
@@ -352,7 +352,7 @@ export default function TeacherAnnouncementsPage() {
             return (
               <article
                 key={ann.id}
-                className="bg-white rounded-xl border border-slate-200/90 shadow-2xs hover:shadow-xs transition overflow-hidden border-l-4 border-l-[#800000]"
+                className="bg-white rounded-xl border border-slate-200/90 shadow-2xs hover:shadow-xs transition overflow-hidden border-l-4 border-l-[#1D4ED8]"
               >
                 {/* Header row */}
                 <div className="p-5 sm:p-6 pb-4">

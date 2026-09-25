@@ -25,12 +25,12 @@ export function EmptyState({ title = "No Data Found", description, message, icon
   };
 
   return (
-    <div className="p-8 text-center bg-white border border-slate-200 rounded-md shadow-2xs flex flex-col items-center justify-center gap-2">
+    <div className="p-8 text-center bg-white border border-slate-200/90 rounded-lg shadow-2xs flex flex-col items-center justify-center gap-2 font-sans">
       <div className="p-3 bg-slate-50 border border-slate-200 rounded-full mb-1">
         {renderIcon()}
       </div>
-      <h3 className="text-sm font-bold text-slate-800 m-0">{title}</h3>
-      <p className="text-xs text-slate-500 max-w-sm m-0">{desc}</p>
+      <h3 className="text-sm font-heading font-bold text-slate-900 m-0">{title}</h3>
+      <p className="text-xs text-slate-500 max-w-sm m-0 leading-relaxed">{desc}</p>
       {action && <div className="mt-3">{action}</div>}
     </div>
   );

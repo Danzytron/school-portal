@@ -14,7 +14,6 @@ import {
   CreditCard, 
   FolderOpen, 
   Megaphone, 
-  MessageSquare, 
   Settings,
   Users,
   UserCheck,
@@ -69,7 +68,6 @@ export function Sidebar({
           items: [
             { href: "/student/fees", label: "Finance & Fees", icon: CreditCard },
             { href: "/student/announcements", label: "Announcements", icon: Megaphone },
-            { href: "/student/announcements?filter=notices", label: "Messages", icon: MessageSquare },
           ]
         },
         {

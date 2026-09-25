@@ -29,13 +29,13 @@ export function Modal({ isOpen = true, onClose, title, children, footer, size = 
       />
 
       {/* Modal Dialog */}
-      <div className={`relative bg-white rounded-md border border-slate-200 shadow-xl w-full ${sizeMap[size]} z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-150`}>
+      <div className={`relative bg-white rounded-lg border border-slate-200 shadow-xl w-full ${sizeMap[size]} z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-150`}>
         {/* Header */}
         <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center justify-between">
-          <h3 className="text-sm font-bold text-slate-800 m-0 tracking-tight">{title}</h3>
+          <h3 className="text-sm font-heading font-bold text-slate-900 m-0 tracking-tight">{title}</h3>
           <button 
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600 p-1 rounded-md hover:bg-slate-200/60 transition-colors"
+            className="text-slate-400 hover:text-slate-600 p-1 rounded-md hover:bg-slate-200/60 transition-colors cursor-pointer"
             aria-label="Close dialog"
           >
             <X size={16} />

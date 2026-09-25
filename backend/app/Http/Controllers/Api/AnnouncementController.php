@@ -21,7 +21,7 @@ class AnnouncementController extends Controller
     {
         $user = $request->user();
         if ($user && $user->isAdmin()) {
-            return response()->json(Announcement::with('author')->latest()->get());
+            return response()->json(Announcement::with('author')->latest('published_at')->latest('created_at')->get());
         }
         
         $role = strtolower(trim((string)($user ? $user->role : '')));
@@ -32,13 +32,28 @@ class AnnouncementController extends Controller
             $audiences = array_unique(array_merge($audiences, ['student', 'students']));
         }
 
-        return response()->json(
-            Announcement::where('is_published', true)
-                ->whereIn('target_audience', $audiences)
-                ->with('author')
-                ->latest()
-                ->get()
-        );
+        $announcements = Announcement::where('is_published', true)
+            ->whereIn('target_audience', $audiences)
+            ->with('author')
+            ->latest('published_at')
+            ->latest('created_at')
+            ->get();
+
+        if ($user) {
+            $readIds = AnnouncementRead::where('user_id', $user->id)
+                ->pluck('announcement_id')
+                ->flip()
+                ->all();
+
+            $announcements->transform(function ($ann) use ($readIds) {
+                $isRead = isset($readIds[$ann->id]);
+                $ann->is_read = $isRead;
+                $ann->isRead = $isRead;
+                return $ann;
+            });
+        }
+
+        return response()->json($announcements);
     }
 
     public function teacherIndex(Request $request)
@@ -151,6 +166,10 @@ class AnnouncementController extends Controller
 
         $recipientIds = $query->pluck('id');
         $contentPreview = \Illuminate\Support\Str::limit($announcement->content, 180);
+        $annDbTimestamp = $announcement->published_at ?? $announcement->created_at ?? now();
+        $annTimestampIso = $announcement->published_at 
+            ? $announcement->published_at->toISOString() 
+            : ($announcement->created_at ? $announcement->created_at->toISOString() : now()->toISOString());
 
         foreach ($recipientIds as $userId) {
             $existing = Notification::where('user_id', $userId)
@@ -162,9 +181,12 @@ class AnnouncementController extends Controller
                 $existing->update([
                     'title' => $announcement->title,
                     'message' => $contentPreview,
+                    'created_at' => $annDbTimestamp,
                     'data' => [
                         'announcement_id' => $announcement->id,
                         'target_audience' => $announcement->target_audience,
+                        'published_at' => $announcement->published_at ? $announcement->published_at->toISOString() : null,
+                        'announcement_timestamp' => $annTimestampIso,
                     ],
                 ]);
             } else {
@@ -178,8 +200,10 @@ class AnnouncementController extends Controller
                     'data' => [
                         'announcement_id' => $announcement->id,
                         'target_audience' => $announcement->target_audience,
+                        'published_at' => $announcement->published_at ? $announcement->published_at->toISOString() : null,
+                        'announcement_timestamp' => $annTimestampIso,
                     ],
-                    'created_at' => $announcement->published_at ?? $announcement->created_at ?? now(),
+                    'created_at' => $annDbTimestamp,
                 ]);
             }
         }

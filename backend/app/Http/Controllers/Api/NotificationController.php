@@ -131,6 +131,10 @@ class NotificationController extends Controller {
                 ->first();
 
             $contentPreview = Str::limit($ann->content, 180);
+            $annDbTimestamp = $ann->published_at ?? $ann->created_at ?? now();
+            $annTimestampIso = $ann->published_at 
+                ? $ann->published_at->toISOString() 
+                : ($ann->created_at ? $ann->created_at->toISOString() : now()->toISOString());
 
             if (!$existing) {
                 Notification::create([
@@ -143,8 +147,10 @@ class NotificationController extends Controller {
                     'data' => [
                         'announcement_id' => $ann->id,
                         'target_audience' => $ann->target_audience,
+                        'published_at' => $ann->published_at ? $ann->published_at->toISOString() : null,
+                        'announcement_timestamp' => $annTimestampIso,
                     ],
-                    'created_at' => $ann->published_at ?? $ann->created_at ?? now(),
+                    'created_at' => $annDbTimestamp,
                 ]);
             } else {
                 $updates = [];
@@ -158,6 +164,19 @@ class NotificationController extends Controller {
                     $updates['is_read'] = true;
                     $updates['read_at'] = $readAt ?? now();
                 }
+                if ($existing->created_at != $annDbTimestamp) {
+                    $updates['created_at'] = $annDbTimestamp;
+                }
+                
+                $data = $existing->data ?? [];
+                if (($data['announcement_timestamp'] ?? null) !== $annTimestampIso) {
+                    $data['announcement_id'] = $ann->id;
+                    $data['target_audience'] = $ann->target_audience;
+                    $data['published_at'] = $ann->published_at ? $ann->published_at->toISOString() : null;
+                    $data['announcement_timestamp'] = $annTimestampIso;
+                    $updates['data'] = $data;
+                }
+
                 if (!empty($updates)) {
                     $existing->update($updates);
                 }

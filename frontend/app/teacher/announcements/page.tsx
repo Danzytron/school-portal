@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect, useState, useMemo } from 'react';
 import { api } from '@/lib/api';
@@ -18,6 +18,8 @@ import {
   ChevronUp 
 } from 'lucide-react';
 
+import { formatTimeAgo } from '@/lib/utils';
+
 interface AnnouncementItem {
   id: number;
   title: string;
@@ -26,6 +28,8 @@ interface AnnouncementItem {
   is_published?: boolean;
   published_at?: string;
   created_at?: string;
+  isRead?: boolean;
+  is_read?: boolean;
   author?: {
     id: number;
     name: string;
@@ -42,9 +46,11 @@ export default function TeacherAnnouncementsPage() {
   const [audienceFilter, setAudienceFilter] = useState<'all' | 'teachers' | 'campus'>('all');
   const [expandedIds, setExpandedIds] = useState<Record<number, boolean>>({});
 
-  const fetchAnnouncements = async () => {
-    setLoading(true);
-    setError(null);
+  const fetchAnnouncements = async (silent = false) => {
+    if (!silent) {
+      setLoading(true);
+      setError(null);
+    }
     try {
       const response = await api.get('/teacher/announcements');
       const data = Array.isArray(response) 
@@ -53,21 +59,81 @@ export default function TeacherAnnouncementsPage() {
       setAnnouncements(data);
     } catch (err: any) {
       console.error('Error fetching teacher announcements:', err);
-      setError('Unable to load announcements. Please try again.');
+      if (!silent) {
+        setError('Unable to load announcements. Please try again.');
+      }
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchAnnouncements();
+    fetchAnnouncements(false);
+
+    // Real-time synchronization
+    const interval = setInterval(() => {
+      fetchAnnouncements(true);
+    }, 4000);
+
+    const handleFocus = () => fetchAnnouncements(true);
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        fetchAnnouncements(true);
+      }
+    };
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    const handleCustomSync = () => fetchAnnouncements(true);
+    window.addEventListener('cec:announcement-sync', handleCustomSync);
+
+    let bc: BroadcastChannel | null = null;
+    try {
+      bc = new BroadcastChannel('cec-announcements-channel');
+      bc.onmessage = () => {
+        fetchAnnouncements(true);
+      };
+    } catch {}
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener('cec:announcement-sync', handleCustomSync);
+      if (bc) {
+        try { bc.close(); } catch {}
+      }
+    };
   }, []);
 
-  const toggleExpand = (id: number) => {
+  const toggleExpand = async (id: number) => {
+    const isNowExpanded = !expandedIds[id];
     setExpandedIds(prev => ({
       ...prev,
-      [id]: !prev[id]
+      [id]: isNowExpanded
     }));
+
+    // If expanding and unread, mark as read in PostgreSQL and notify navbar
+    const ann = announcements.find(a => a.id === id);
+    if (isNowExpanded && ann && ann.isRead !== true && ann.is_read !== true) {
+      try {
+        await api.post(`/announcements/${id}/read`, {});
+        setAnnouncements(prev => prev.map(a => a.id === id ? { ...a, isRead: true, is_read: true } : a));
+
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('cec:announcement-sync'));
+          try {
+            const bc = new BroadcastChannel('cec-announcements-channel');
+            bc.postMessage({ type: 'ANNOUNCEMENT_READ', announcementId: id, time: Date.now() });
+            bc.close();
+          } catch {}
+        }
+      } catch {
+        // silent catch
+      }
+    }
   };
 
   const filteredAnnouncements = useMemo(() => {
@@ -172,7 +238,7 @@ export default function TeacherAnnouncementsPage() {
 
           {/* Quick Refresh */}
           <button
-            onClick={fetchAnnouncements}
+            onClick={() => fetchAnnouncements(false)}
             disabled={loading}
             className="inline-flex items-center justify-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition disabled:opacity-50"
             title="Refresh announcements"
@@ -238,7 +304,7 @@ export default function TeacherAnnouncementsPage() {
             </p>
           </div>
           <button
-            onClick={fetchAnnouncements}
+            onClick={() => fetchAnnouncements(false)}
             className="inline-flex items-center gap-2 px-4 py-2 bg-[#800000] text-white rounded-lg text-sm font-medium hover:bg-[#660000] transition shadow-xs"
           >
             <RefreshCw className="w-4 h-4" />
@@ -295,9 +361,18 @@ export default function TeacherAnnouncementsPage() {
                       <span className={`inline-flex items-center text-xs font-semibold px-2.5 py-0.5 rounded-full border ${badge.color}`}>
                         {badge.label}
                       </span>
-                      <span className="inline-flex items-center gap-1 text-xs text-slate-500 font-medium">
-                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
-                        {dateStr}
+                      {(!ann.isRead && !ann.is_read) && (
+                        <span className="inline-flex items-center gap-1 bg-rose-100 text-rose-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-rose-200">
+                          <span className="w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse" />
+                          New
+                        </span>
+                      )}
+                      <span className="inline-flex items-center gap-1 text-xs text-slate-600 font-medium">
+                        <Clock className="w-3.5 h-3.5 text-slate-400" />
+                        <span className="font-semibold text-slate-800">{formatTimeAgo(ann.published_at || ann.created_at)}</span>
+                        <span className="text-slate-300">•</span>
+                        <Calendar className="w-3.5 h-3.5 text-slate-400 ml-0.5" />
+                        <span>{dateStr}</span>
                         {timeStr && ` • ${timeStr}`}
                       </span>
                     </div>

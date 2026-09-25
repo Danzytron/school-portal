@@ -25,6 +25,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import Link from 'next/link';
+import { formatTimeAgo } from '@/lib/utils';
 
 interface ExamItem {
   id: string;
@@ -427,9 +428,8 @@ export default function StudentDashboardPage() {
             <div className="p-0 divide-y divide-slate-100 font-sans">
               {recentBulletins.length > 0 ? (
                 recentBulletins.map((item: any) => {
-                  const dateStr = item.published_at 
-                    ? new Date(item.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-                    : (item.created_at ? new Date(item.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recent');
+                  const timestamp = item.published_at || item.created_at;
+                  const relativeTime = formatTimeAgo(timestamp);
                   const tag = (item.target_audience === 'all' || !item.target_audience) ? 'All Campus' : 'Student Advisory';
 
                   return (
@@ -438,7 +438,7 @@ export default function StudentDashboardPage() {
                         <span className="font-semibold uppercase tracking-wider text-[#1D4ED8]">
                           {tag}
                         </span>
-                        <span className="text-slate-400 font-mono">{dateStr}</span>
+                        <span className="text-slate-500 font-medium">{relativeTime}</span>
                       </div>
                       <h4 className="font-heading font-bold text-xs text-slate-900 m-0">
                         {item.title}

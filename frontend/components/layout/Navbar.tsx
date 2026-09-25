@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useAuth } from "@/lib/auth";
 import { api } from "@/lib/api";
@@ -17,6 +17,8 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { formatTimeAgo } from "@/lib/utils";
+
 interface NotificationItem {
   id: number;
   title: string;
@@ -28,6 +30,9 @@ interface NotificationItem {
   data?: {
     announcement_id?: number;
     target_audience?: string;
+    published_at?: string;
+    created_at?: string;
+    announcement_timestamp?: string;
   };
 }
 
@@ -68,29 +73,65 @@ export function Navbar({ onMenuToggle }: { onMenuToggle: () => void }) {
     }
   }, [user]);
 
-  // Initial load and lightweight real-time polling (every 15s + on window focus)
+  // Real-time synchronization: 3.5s polling + BroadcastChannel + window focus & visibility
   useEffect(() => {
     fetchNotifications();
 
+    // High-frequency lightweight poll (every 3.5 seconds)
     const interval = setInterval(() => {
       fetchNotifications();
-    }, 15000);
+    }, 3500);
 
+    // Instant sync on window focus and tab visibility change
     const handleFocus = () => fetchNotifications();
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        fetchNotifications();
+      }
+    };
     window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    // Cross-tab and intra-app real-time event bus
+    const handleCustomSync = () => fetchNotifications();
+    window.addEventListener('cec:announcement-sync', handleCustomSync);
+
+    let bc: BroadcastChannel | null = null;
+    try {
+      bc = new BroadcastChannel('cec-announcements-channel');
+      bc.onmessage = () => {
+        fetchNotifications();
+      };
+    } catch {}
 
     return () => {
       clearInterval(interval);
       window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener('cec:announcement-sync', handleCustomSync);
+      if (bc) {
+        try { bc.close(); } catch {}
+      }
     };
   }, [fetchNotifications]);
 
   const handleNotificationClick = async (notif: NotificationItem) => {
     if (!notif.is_read) {
+      // Optimistically mark as read immediately
+      setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, is_read: true, read_at: new Date().toISOString() } : n));
+      setUnreadCount(prev => Math.max(0, prev - 1));
+
       try {
         await api.put(`/notifications/${notif.id}/read`);
-        setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, is_read: true, read_at: new Date().toISOString() } : n));
-        setUnreadCount(prev => Math.max(0, prev - 1));
+        // Notify other components & tabs
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('cec:announcement-sync'));
+          try {
+            const bc = new BroadcastChannel('cec-announcements-channel');
+            bc.postMessage({ type: 'ANNOUNCEMENT_READ', notifId: notif.id, time: Date.now() });
+            bc.close();
+          } catch {}
+        }
       } catch (e) {
         console.error('Failed to mark notification as read', e);
       }
@@ -100,34 +141,22 @@ export function Navbar({ onMenuToggle }: { onMenuToggle: () => void }) {
   };
 
   const handleMarkAllRead = async () => {
+    // Optimistically mark all read
+    setNotifications(prev => prev.map(n => ({ ...n, is_read: true, read_at: new Date().toISOString() })));
+    setUnreadCount(0);
+
     try {
       await api.put('/notifications/read-all');
-      setNotifications(prev => prev.map(n => ({ ...n, is_read: true, read_at: new Date().toISOString() })));
-      setUnreadCount(0);
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('cec:announcement-sync'));
+        try {
+          const bc = new BroadcastChannel('cec-announcements-channel');
+          bc.postMessage({ type: 'ALL_READ', time: Date.now() });
+          bc.close();
+        } catch {}
+      }
     } catch (e) {
       console.error('Failed to mark all notifications as read', e);
-    }
-  };
-
-  const formatTimeAgo = (dateStr?: string) => {
-    if (!dateStr) return 'Recent';
-    try {
-      const now = new Date();
-      const past = new Date(dateStr);
-      const diffMs = now.getTime() - past.getTime();
-      const diffSec = Math.floor(diffMs / 1000);
-      const diffMin = Math.floor(diffSec / 60);
-      const diffHour = Math.floor(diffMin / 60);
-      const diffDay = Math.floor(diffHour / 24);
-
-      if (diffSec < 60) return 'Just now';
-      if (diffMin < 60) return `${diffMin}m ago`;
-      if (diffHour < 24) return `${diffHour}h ago`;
-      if (diffDay === 1) return 'Yesterday';
-      if (diffDay < 7) return `${diffDay}d ago`;
-      return past.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    } catch {
-      return 'Recent';
     }
   };
 
@@ -247,32 +276,35 @@ export function Navbar({ onMenuToggle }: { onMenuToggle: () => void }) {
                       <p className="text-[11px] text-slate-400 m-0 mt-0.5">All official advisories will appear here</p>
                     </div>
                   ) : (
-                    notifications.map((item) => (
-                      <div 
-                        key={item.id} 
-                        onClick={() => handleNotificationClick(item)}
-                        className={`p-3.5 transition-colors cursor-pointer text-left ${
-                          item.is_read ? 'hover:bg-slate-50 bg-white' : 'bg-blue-50/40 hover:bg-blue-50/70 border-l-2 border-l-[#1D4ED8]'
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-2 mb-1">
-                          <div className="flex items-center gap-1.5 min-w-0">
-                            {!item.is_read && (
-                              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
-                            )}
-                            <span className={`font-heading text-xs truncate ${item.is_read ? 'font-semibold text-slate-800' : 'font-bold text-slate-900'}`}>
-                              {item.title}
+                    notifications.map((item) => {
+                      const itemTimestamp = item.data?.announcement_timestamp || item.data?.published_at || item.data?.created_at || item.created_at;
+                      return (
+                        <div 
+                          key={item.id} 
+                          onClick={() => handleNotificationClick(item)}
+                          className={`p-3.5 transition-colors cursor-pointer text-left ${
+                            item.is_read ? 'hover:bg-slate-50 bg-white' : 'bg-blue-50/40 hover:bg-blue-50/70 border-l-2 border-l-[#1D4ED8]'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2 mb-1">
+                            <div className="flex items-center gap-1.5 min-w-0">
+                              {!item.is_read && (
+                                <span className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
+                              )}
+                              <span className={`font-heading text-xs truncate ${item.is_read ? 'font-semibold text-slate-800' : 'font-bold text-slate-900'}`}>
+                                {item.title}
+                              </span>
+                            </div>
+                            <span className="text-slate-400 font-medium text-[10px] shrink-0 whitespace-nowrap">
+                              {formatTimeAgo(itemTimestamp)}
                             </span>
                           </div>
-                          <span className="text-slate-400 font-mono text-[10px] shrink-0 whitespace-nowrap">
-                            {formatTimeAgo(item.created_at)}
-                          </span>
+                          <p className="text-slate-600 m-0 leading-relaxed text-[11px] line-clamp-2 pl-0.5">
+                            {item.message}
+                          </p>
                         </div>
-                        <p className="text-slate-600 m-0 leading-relaxed text-[11px] line-clamp-2 pl-0.5">
-                          {item.message}
-                        </p>
-                      </div>
-                    ))
+                      );
+                    })
                   )}
                 </div>
 

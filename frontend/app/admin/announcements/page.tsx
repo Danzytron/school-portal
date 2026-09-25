@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
@@ -120,6 +120,16 @@ export default function AnnouncementManagement() {
         setToast({ message: 'Institutional bulletin published successfully.', type: 'success' });
       }
       setShowModal(false);
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('cec:announcement-sync'));
+        try {
+          const bc = new BroadcastChannel('cec-announcements-channel');
+          bc.postMessage({ type: 'ANNOUNCEMENT_SYNC', action: editingAnnouncement ? 'UPDATE' : 'CREATE', timestamp: Date.now() });
+          bc.close();
+        } catch {}
+      }
+
       await fetchAnnouncements();
     } catch (err: any) {
       const msg = err.response?.data?.message || 'Failed to save announcement. Please try again.';
@@ -137,6 +147,16 @@ export default function AnnouncementManagement() {
       setToast({ message: 'Bulletin deleted successfully from database.', type: 'success' });
       setShowDeleteConfirm(false);
       setAnnouncementToDelete(null);
+
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('cec:announcement-sync'));
+        try {
+          const bc = new BroadcastChannel('cec-announcements-channel');
+          bc.postMessage({ type: 'ANNOUNCEMENT_SYNC', action: 'DELETE', timestamp: Date.now() });
+          bc.close();
+        } catch {}
+      }
+
       await fetchAnnouncements();
     } catch (err: any) {
       const msg = err.response?.data?.message || 'Failed to delete bulletin.';

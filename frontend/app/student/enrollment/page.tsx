@@ -97,8 +97,6 @@ export default function StudentEnrollmentPage() {
     }
   };
 
-  if (loading) return <LoadingState message="Connecting to Academic Advising Portal..." />;
-
   const isApproved = enrollment?.status === 'approved' || enrollment?.status === 'enrolled' || !!enrollment;
 
   const totalSelectedUnits = availableSubjects

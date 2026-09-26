@@ -40,8 +40,6 @@ export default function AdminDashboard() {
     fetchDashboard();
   }, []);
 
-  if (loading) return <LoadingState message="Loading administrative portal..." />;
-
   const stats = {
     totalStudents: data?.total_students ?? data?.stats?.totalStudents ?? 50,
     totalTeachers: data?.total_teachers ?? data?.stats?.totalTeachers ?? 10,

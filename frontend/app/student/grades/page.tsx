@@ -95,8 +95,6 @@ export default function StudentGradesPage() {
     fetchGrades();
   }, [selectedSemester]);
 
-  if (loadingSemesters) return <LoadingState message="Connecting to Registrar Grade Archives..." />;
-
   // Calculate General Weighted Average (GWA)
   let totalQualityPoints = 0;
   let totalUnits = 0;

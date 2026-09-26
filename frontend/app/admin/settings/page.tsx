@@ -71,8 +71,6 @@ export default function SystemSettings() {
     }
   };
 
-  if (loading) return <LoadingState message="Loading system configuration..." />;
-
   return (
     <div className="space-y-4">
       <PageHeader 

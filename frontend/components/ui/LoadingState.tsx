@@ -8,12 +8,12 @@ interface LoadingStateProps {
 }
 
 export function LoadingState({ message, text, className = "" }: LoadingStateProps) {
-  const label = message || text || "Loading data, please wait...";
+  const label = message || text || "Loading records...";
 
   return (
-    <div className={`p-8 text-center bg-white border border-slate-200/90 rounded-lg shadow-2xs flex flex-col items-center justify-center gap-2.5 font-sans ${className}`}>
-      <Loader2 size={24} className="text-[#1D4ED8] animate-spin" />
-      <span className="text-xs font-medium text-slate-600">{label}</span>
+    <div className={`py-8 px-4 text-center bg-white border border-slate-200/90 rounded-lg shadow-2xs flex items-center justify-center gap-2.5 font-sans ${className}`}>
+      <Loader2 size={16} className="text-[#1D4ED8] animate-spin shrink-0" />
+      <span className="text-xs font-medium text-slate-500">{label}</span>
     </div>
   );
 }

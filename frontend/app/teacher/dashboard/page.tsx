@@ -201,8 +201,6 @@ export default function TeacherDashboard() {
     fetchDashboard();
   }, []);
 
-  if (loading) return <LoadingState message="Loading faculty portal dashboard..." />;
-
   const facultyData = data || DEFAULT_TEACHER_DASHBOARD;
 
   return (

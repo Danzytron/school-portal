@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -13,7 +13,11 @@ export default function AnnouncementsDispatcher() {
     if (isLoading) return;
 
     if (!isAuthenticated || !user) {
-      router.replace('/login?redirect=/announcements');
+      if (typeof window !== 'undefined') {
+        window.location.replace('/login');
+      } else {
+        router.replace('/login');
+      }
       return;
     }
 
@@ -27,5 +31,5 @@ export default function AnnouncementsDispatcher() {
     }
   }, [user, isAuthenticated, isLoading, router]);
 
-  return <LoadingState message="Redirecting to your authorized announcement center..." />;
+  return null;
 }

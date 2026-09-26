@@ -72,8 +72,6 @@ export default function TeacherProfile() {
     }
   };
 
-  if (loading) return <LoadingState message="Loading faculty dossier..." />;
-
   const prof = profile || DEFAULT_FACULTY_PROFILE;
 
   return (

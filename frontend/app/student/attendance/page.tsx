@@ -119,8 +119,6 @@ export default function StudentAttendancePage() {
     ? (((stats.present + stats.late) / stats.total) * 100).toFixed(1) 
     : '96.5';
 
-  if (loading) return <LoadingState message="Compiling official student attendance records..." />;
-
   return (
     <div className="space-y-6 font-sans">
       

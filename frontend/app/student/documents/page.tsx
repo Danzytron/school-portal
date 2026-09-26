@@ -145,8 +145,6 @@ export default function StudentDocumentsPage() {
     ? documents 
     : documents.filter(d => d.subject_id?.toString() === selectedSubject);
 
-  if (loading) return <LoadingState message="Connecting to Registrar Document Archives..." />;
-
   return (
     <div className="space-y-6 font-sans">
       

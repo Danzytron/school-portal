@@ -47,7 +47,15 @@ interface HomeworkItem {
 
 export default function StudentDashboardPage() {
   const { user } = useAuth();
-  const [data, setData] = useState<StudentDashboard | null>(null);
+  const [data, setData] = useState<StudentDashboard>({
+    enrolled_subjects: 14,
+    gpa: '1.25',
+    attendance_rate: 98.5,
+    current_semester: '1st Semester A.Y. 2026-2027',
+    enrollment_status: 'enrolled',
+    upcoming_classes: [],
+    recent_announcements: []
+  } as any);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -55,25 +63,17 @@ export default function StudentDashboardPage() {
       try {
         const response = await api.get<StudentDashboard>('/student/dashboard');
         const dashboardData = (response as any).data || response;
-        setData(dashboardData);
+        if (dashboardData) {
+          setData(dashboardData);
+        }
       } catch {
-        setData({
-          enrolled_subjects: 14,
-          gpa: '1.25',
-          attendance_rate: 98.5,
-          current_semester: '1st Semester A.Y. 2026-2027',
-          enrollment_status: 'enrolled',
-          upcoming_classes: [],
-          recent_announcements: []
-        } as any);
+        // Keep initial state
       } finally {
         setLoading(false);
       }
     };
     fetchDashboard();
   }, []);
-
-  if (loading) return <LoadingState message="Loading student academic dashboard..." />;
 
   const todayClasses = [
     {

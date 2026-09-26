@@ -254,8 +254,6 @@ export default function StudentSubjectsPage() {
     fetchSubjects();
   }, [selectedSemester]);
 
-  if (loadingSemesters) return <LoadingState message="Loading academic course catalog..." />;
-
   const totalUnits = subjects.reduce((sum, s) => sum + (s.subject?.units || 3), 0);
 
   const columns = [

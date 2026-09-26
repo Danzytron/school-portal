@@ -79,8 +79,6 @@ export default function StudentFeesPage() {
     fetchFees();
   }, [selectedSemester]);
 
-  if (loadingSemesters) return <LoadingState message="Retrieving University Treasury accounts..." />;
-
   const formatCurrency = (val?: number) => {
     if (val === undefined || val === null || isNaN(val)) return '₱0.00';
     return `₱${val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;

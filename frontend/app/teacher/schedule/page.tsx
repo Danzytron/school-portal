@@ -23,19 +23,6 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
-export default function TeacherSchedulePage() {
-  const [schedules, setSchedules] = useState<Schedule[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [selectedClass, setSelectedClass] = useState<Schedule | null>(null);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-
-  const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const TIME_SLOTS = [
-    '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', 
-    '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM'
-  ];
-
   // Default faculty timetable fallback if backend returns empty
   const DEFAULT_FACULTY_SCHEDULES: any[] = [
     {
@@ -85,6 +72,19 @@ export default function TeacherSchedulePage() {
     }
   ];
 
+export default function TeacherSchedulePage() {
+  const [schedules, setSchedules] = useState<Schedule[]>(DEFAULT_FACULTY_SCHEDULES);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [selectedClass, setSelectedClass] = useState<Schedule | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+
+  const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const TIME_SLOTS = [
+    '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', 
+    '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM'
+  ];
+
   useEffect(() => {
     const fetchSchedule = async () => {
       setLoading(true);
@@ -130,8 +130,6 @@ export default function TeacherSchedulePage() {
     ];
     return colors[index % colors.length];
   };
-
-  if (loading) return <LoadingState message="Retrieving faculty teaching schedule..." />;
 
   return (
     <div className="space-y-6 font-sans">

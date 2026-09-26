@@ -128,8 +128,6 @@ export default function StudentSchedulePage() {
     fetchSchedule();
   }, [selectedSemester]);
 
-  if (loadingSemesters) return <LoadingState message="Retrieving institutional class schedule..." />;
-
   const getSchedulesForDayAndTime = (day: string, timeSlot: string) => {
     if (!Array.isArray(schedules)) return [];
     return schedules.filter(s => {

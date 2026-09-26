@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
@@ -343,14 +343,14 @@ export default function FeesManagement() {
               <button
                 type="button"
                 onClick={() => setShowAssessModal(false)}
-                className="px-4 py-2 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-md font-medium text-sm"
+                className="btn-secondary"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-4 py-2 bg-brand-primary text-white hover:bg-brand-secondary rounded-md font-medium text-sm transition-colors disabled:opacity-50"
+                className="btn-primary"
               >
                 {submitting ? 'Assessing...' : 'Save Assessment'}
               </button>
@@ -421,14 +421,14 @@ export default function FeesManagement() {
                   setShowPaymentModal(false);
                   setSelectedFeeForPayment(null);
                 }}
-                className="px-4 py-2 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-md font-medium text-sm"
+                className="btn-secondary"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-4 py-2 bg-emerald-600 text-white hover:bg-emerald-700 rounded-md font-medium text-sm transition-colors disabled:opacity-50"
+                className="btn-primary bg-emerald-600 hover:bg-emerald-700 border-emerald-600"
               >
                 {submitting ? 'Posting Payment...' : 'Post & Print Receipt'}
               </button>

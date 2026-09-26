@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
@@ -107,16 +107,16 @@ export default function TeacherAttendance() {
         subtitle="Log student attendance, record late arrivals, and submit official roll call reports"
       />
       
-      <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-2xs flex flex-wrap gap-4 items-center justify-between">
+      <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs flex flex-wrap gap-4 items-center justify-between">
         <div className="flex flex-wrap items-center gap-4">
           <div className="w-64">
-            <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">
+            <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
               Course Offering
             </label>
             <select
               value={subjectId}
               onChange={(e) => setSubjectId(e.target.value)}
-              className="w-full text-xs font-semibold text-slate-900 py-1.5 px-2 border border-slate-300 rounded focus:ring-brand-primary"
+              className="form-control text-xs font-semibold text-slate-900 py-1.5 cursor-pointer"
             >
               {subjects.length > 0 ? (
                 subjects.map(s => (
@@ -135,13 +135,13 @@ export default function TeacherAttendance() {
           </div>
 
           <div className="w-48">
-            <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">
+            <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
               Class Section
             </label>
             <select
               value={sectionId}
               onChange={(e) => setSectionId(e.target.value)}
-              className="w-full text-xs font-semibold text-slate-900 py-1.5 px-2 border border-slate-300 rounded focus:ring-brand-primary"
+              className="form-control text-xs font-semibold text-slate-900 py-1.5 cursor-pointer"
             >
               <option value="1">BSIT 3-A</option>
               <option value="2">BSIT 3-B</option>
@@ -150,14 +150,14 @@ export default function TeacherAttendance() {
           </div>
 
           <div className="w-40">
-            <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">
+            <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
               Session Date
             </label>
             <input
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full text-xs font-semibold text-slate-900 py-1.5 px-2 border border-slate-300 rounded focus:ring-brand-primary"
+              className="form-control text-xs font-semibold text-slate-900 py-1.5 cursor-pointer"
             />
           </div>
         </div>
@@ -166,7 +166,7 @@ export default function TeacherAttendance() {
           <button
             type="button"
             onClick={() => markAll('present')}
-            className="px-3 py-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-md transition-colors"
+            className="btn-secondary"
           >
             Mark All Present
           </button>
@@ -174,7 +174,7 @@ export default function TeacherAttendance() {
             type="button"
             onClick={handleSubmit}
             disabled={submitting}
-            className="px-4 py-1.5 text-xs font-bold text-white bg-brand-primary hover:bg-brand-secondary rounded-md shadow-xs transition-colors disabled:opacity-50 flex items-center gap-1.5"
+            className="btn-primary flex items-center gap-1.5"
           >
             <CheckCircle2 className="w-4 h-4" />
             <span>{submitting ? 'Saving Roll Call...' : 'Save & Submit Roll Call'}</span>
@@ -184,38 +184,38 @@ export default function TeacherAttendance() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="p-3 bg-white border border-slate-200 rounded-lg shadow-2xs">
-          <div className="text-xs text-slate-500 font-medium">Present</div>
-          <div className="text-xl font-bold text-emerald-600 mt-0.5">{presentCount}</div>
+        <div className="p-3 bg-white border border-slate-200/90 rounded-lg shadow-2xs">
+          <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Present</div>
+          <div className="text-xl font-bold text-emerald-700 font-heading mt-0.5">{presentCount}</div>
         </div>
-        <div className="p-3 bg-white border border-slate-200 rounded-lg shadow-2xs">
-          <div className="text-xs text-slate-500 font-medium">Late</div>
-          <div className="text-xl font-bold text-amber-600 mt-0.5">{lateCount}</div>
+        <div className="p-3 bg-white border border-slate-200/90 rounded-lg shadow-2xs">
+          <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Late</div>
+          <div className="text-xl font-bold text-amber-700 font-heading mt-0.5">{lateCount}</div>
         </div>
-        <div className="p-3 bg-white border border-slate-200 rounded-lg shadow-2xs">
-          <div className="text-xs text-slate-500 font-medium">Absent</div>
-          <div className="text-xl font-bold text-red-600 mt-0.5">{absentCount}</div>
+        <div className="p-3 bg-white border border-slate-200/90 rounded-lg shadow-2xs">
+          <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Absent</div>
+          <div className="text-xl font-bold text-rose-700 font-heading mt-0.5">{absentCount}</div>
         </div>
-        <div className="p-3 bg-white border border-slate-200 rounded-lg shadow-2xs">
-          <div className="text-xs text-slate-500 font-medium">Excused</div>
-          <div className="text-xl font-bold text-blue-600 mt-0.5">{excusedCount}</div>
+        <div className="p-3 bg-white border border-slate-200/90 rounded-lg shadow-2xs">
+          <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Excused</div>
+          <div className="text-xl font-bold text-blue-700 font-heading mt-0.5">{excusedCount}</div>
         </div>
       </div>
 
       {/* Roster Roll Call List */}
-      <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-2xs">
-        <div className="px-4 py-3 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-          <h3 className="font-bold text-sm text-slate-800 flex items-center gap-2">
-            <ClipboardList className="w-4 h-4 text-brand-primary" />
-            <span>Official Class Roster Attendance ({students.length} Students)</span>
-          </h3>
+      <div className="panel">
+        <div className="panel-heading">
+          <div className="flex items-center gap-2">
+            <ClipboardList className="w-4 h-4 text-[#1D4ED8]" />
+            <span className="font-heading font-bold text-slate-900">Official Class Roster Attendance ({students.length} Students)</span>
+          </div>
         </div>
 
-        <div className="divide-y divide-slate-200">
+        <div className="divide-y divide-slate-200/80">
           {students.map((student) => (
             <div key={student.id} className="p-3.5 flex flex-wrap items-center justify-between gap-3 hover:bg-slate-50/80 transition-colors">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-700 flex items-center justify-center font-bold text-xs">
+                <div className="w-8 h-8 rounded-full bg-blue-50 text-[#1D4ED8] border border-blue-100 flex items-center justify-center font-bold text-xs">
                   {student.name?.charAt(0) || 'S'}
                 </div>
                 <div>
@@ -230,12 +230,12 @@ export default function TeacherAttendance() {
                     key={status}
                     type="button"
                     onClick={() => handleStatusChange(student.id, status)}
-                    className={`px-3 py-1 text-xs font-semibold rounded-md capitalize transition-colors ${
+                    className={`px-3 py-1 text-xs font-semibold rounded-md capitalize transition-colors cursor-pointer ${
                       student.status === status
                         ? status === 'present' ? 'bg-emerald-600 text-white'
                         : status === 'late' ? 'bg-amber-500 text-white'
-                        : status === 'absent' ? 'bg-red-600 text-white'
-                        : 'bg-blue-600 text-white'
+                        : status === 'absent' ? 'bg-rose-600 text-white'
+                        : 'bg-[#1D4ED8] text-white'
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                     }`}
                   >

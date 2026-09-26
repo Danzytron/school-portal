@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
@@ -120,7 +120,7 @@ export default function TeacherDocuments() {
       label: 'Document Title & Details',
       render: (row: any) => (
         <div className="flex items-center gap-2">
-          <div className="p-2 rounded bg-brand-primary/10 text-brand-primary">
+          <div className="p-2 rounded bg-blue-50 text-[#1D4ED8] border border-blue-100">
             <FileText className="w-4 h-4" />
           </div>
           <div>
@@ -239,7 +239,7 @@ export default function TeacherDocuments() {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 placeholder="Brief summary or reading instructions for students..."
-                className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                className="form-control text-xs"
               />
             </div>
 
@@ -253,14 +253,14 @@ export default function TeacherDocuments() {
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="px-4 py-2 border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-md font-medium text-sm"
+                className="btn-secondary"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={submitting}
-                className="px-4 py-2 bg-brand-primary text-white hover:bg-brand-secondary rounded-md font-medium text-sm transition-colors disabled:opacity-50"
+                className="btn-primary"
               >
                 {submitting ? 'Uploading...' : 'Upload Document'}
               </button>

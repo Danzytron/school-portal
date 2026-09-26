@@ -919,7 +919,8 @@ export default function TeacherGrades() {
                INDIVIDUAL READ-ONLY TABLE (WITH CRUD ACTIONS)
                ─────────────────────────────────── */
             <>
-              <div className="overflow-x-auto">
+              {/* Desktop Table (>= md) */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full border-collapse text-xs text-left">
                   <thead>
                     <tr className="bg-slate-50/90 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
@@ -1065,6 +1066,82 @@ export default function TeacherGrades() {
                 </table>
               </div>
 
+              {/* Mobile Card List (< md) */}
+              <div className="block md:hidden divide-y divide-slate-100 font-sans">
+                {filteredGrades.map((grade) => {
+                  const passStatus = getPassStatus(grade.finalGrade);
+
+                  return (
+                    <div key={grade.id} className="p-3.5 space-y-2 hover:bg-slate-50/50">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <span className="font-mono font-bold text-xs text-[#1D4ED8] block">
+                            {grade.studentId}
+                          </span>
+                          <h4 className="font-medium text-slate-900 text-xs mt-0.5">
+                            {grade.name}
+                          </h4>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => handleOpenEdit(grade)}
+                            className="p-1.5 rounded hover:bg-blue-50 text-slate-500 hover:text-[#1D4ED8] transition-colors"
+                            title="Edit"
+                          >
+                            <Pencil size={14} />
+                          </button>
+                          <button
+                            onClick={() => setDeleteTarget(grade)}
+                            className="p-1.5 rounded hover:bg-rose-50 text-slate-500 hover:text-rose-600 transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-3 gap-2 bg-slate-50 p-2.5 rounded-md text-center text-xs">
+                        <div>
+                          <span className="text-[10px] text-slate-400 uppercase block font-semibold">Midterm</span>
+                          <span className="font-mono font-bold text-slate-800">{grade.midterm || '—'}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-slate-400 uppercase block font-semibold">Final</span>
+                          <span className="font-mono font-bold text-slate-800">{grade.final || '—'}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-slate-400 uppercase block font-semibold">Final Grade</span>
+                          <div className="font-mono font-bold text-[#1D4ED8]">
+                            {grade.finalGrade || '—'}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between text-[11px] pt-1 text-slate-500">
+                        <div className="flex items-center gap-1.5">
+                          {passStatus === 'passed' && (
+                            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase">
+                              PASSED
+                            </span>
+                          )}
+                          {passStatus === 'failed' && (
+                            <span className="bg-rose-50 text-rose-700 border border-rose-200 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase">
+                              FAILED
+                            </span>
+                          )}
+                          <span className="text-[10px] text-slate-400 truncate max-w-[140px]">
+                            {grade.remarks || 'No remarks'}
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-semibold uppercase text-slate-500">
+                          {grade.status}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
               {/* Bottom Actions Bar */}
               <div className="p-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
                 <span className="text-slate-500 font-sans">
@@ -1087,7 +1164,8 @@ export default function TeacherGrades() {
                BULK GRADE ENTRY MODE
                ─────────────────────────────────── */
             <>
-              <div className="overflow-x-auto">
+              {/* Desktop Table (>= md) */}
+              <div className="hidden md:block overflow-x-auto">
                 <table className="w-full border-collapse text-xs text-left">
                   <thead>
                     <tr className="bg-slate-50/90 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
@@ -1170,6 +1248,88 @@ export default function TeacherGrades() {
                     })}
                   </tbody>
                 </table>
+              </div>
+
+              {/* Mobile Bulk Card Inputs (< md) */}
+              <div className="block md:hidden divide-y divide-slate-100 font-sans">
+                {filteredBulkRows.map((grade) => {
+                  const passStatus = getPassStatus(grade.finalGrade);
+
+                  return (
+                    <div key={grade.id} className="p-3.5 space-y-2.5 hover:bg-slate-50/50">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <span className="font-mono font-bold text-xs text-[#1D4ED8] block">
+                            {grade.studentId}
+                          </span>
+                          <h4 className="font-medium text-slate-900 text-xs mt-0.5">
+                            {grade.name}
+                          </h4>
+                        </div>
+                        {grade.finalGrade && (
+                          <div className="text-right">
+                            <span className="font-mono font-bold text-slate-900 text-xs block">
+                              Grade: {grade.finalGrade}
+                            </span>
+                            {passStatus === 'passed' && (
+                              <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase">
+                                PASSED
+                              </span>
+                            )}
+                            {passStatus === 'failed' && (
+                              <span className="bg-rose-50 text-rose-700 border border-rose-200 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase">
+                                FAILED
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
+                            Midterm (1.0–5.0)
+                          </label>
+                          <input
+                            type="number"
+                            step="0.25"
+                            min="1.00"
+                            max="5.00"
+                            className="form-control text-xs font-mono text-center py-1.5"
+                            placeholder="Midterm"
+                            value={grade.midterm || ''}
+                            onChange={(e) => handleBulkGradeChange(grade.id, 'midterm', e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
+                            Final (1.0–5.0)
+                          </label>
+                          <input
+                            type="number"
+                            step="0.25"
+                            min="1.00"
+                            max="5.00"
+                            className="form-control text-xs font-mono text-center py-1.5"
+                            placeholder="Final"
+                            value={grade.final || ''}
+                            onChange={(e) => handleBulkGradeChange(grade.id, 'final', e.target.value)}
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <input
+                          type="text"
+                          placeholder="Add remark or note..."
+                          className="form-control text-xs py-1"
+                          value={grade.remarks || ''}
+                          onChange={(e) => handleBulkRemarksChange(grade.id, e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
 
               {/* Bulk Entry Footer */}

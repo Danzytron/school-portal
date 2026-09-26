@@ -20,6 +20,7 @@ interface DataTableProps {
   loading?: boolean;
   emptyMessage?: string;
   caption?: string;
+  renderCard?: (row: any, index: number) => React.ReactNode;
 }
 
 export function DataTable({ 
@@ -29,7 +30,8 @@ export function DataTable({
   keyField = "id",
   loading = false,
   emptyMessage = "No academic records available",
-  caption
+  caption,
+  renderCard
 }: DataTableProps) {
   if (loading) {
     return <LoadingState />;
@@ -46,7 +48,9 @@ export function DataTable({
           {caption}
         </div>
       )}
-      <div className="overflow-x-auto">
+
+      {/* ── Desktop Table View (≥ md) ── */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
             <tr className="bg-slate-50/90 border-b border-slate-200">
@@ -108,6 +112,74 @@ export function DataTable({
             })}
           </tbody>
         </table>
+      </div>
+
+      {/* ── Mobile Card / List View (< md) ── */}
+      <div className="block md:hidden divide-y divide-slate-200/80">
+        {data.map((row, rowIdx) => {
+          const rowKey = row[keyField] !== undefined ? row[keyField] : rowIdx;
+
+          if (renderCard) {
+            return (
+              <div key={rowKey} className="p-3.5 hover:bg-slate-50/60 transition-colors">
+                {renderCard(row, rowIdx)}
+              </div>
+            );
+          }
+
+          const primaryCol = columns[0];
+          const otherCols = columns.slice(1);
+
+          let primaryVal = primaryCol?.accessor || primaryCol?.key ? row[primaryCol.accessor || primaryCol.key!] : null;
+          if (primaryCol?.render) {
+            primaryVal = primaryCol.render(row);
+          }
+
+          return (
+            <div key={rowKey} className="p-3.5 space-y-2.5 bg-white hover:bg-slate-50/60 transition-colors">
+              {/* Primary Header Item */}
+              {primaryCol && (
+                <div className="font-semibold text-slate-900 text-sm break-words">
+                  {primaryVal !== null && primaryVal !== undefined ? primaryVal : "—"}
+                </div>
+              )}
+
+              {/* Other Column Details */}
+              {otherCols.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs pt-1.5 border-t border-slate-100">
+                  {otherCols.map((col, cIdx) => {
+                    const fieldKey = col.accessor || col.key;
+                    const label = col.label || col.header || fieldKey || `Field ${cIdx + 1}`;
+                    let val = fieldKey && row[fieldKey] !== undefined ? row[fieldKey] : null;
+
+                    if (col.render) {
+                      val = col.render(row);
+                    }
+                    if (val === null || val === undefined) val = "—";
+
+                    return (
+                      <div key={cIdx} className="flex items-center justify-between gap-2 py-0.5 min-w-0">
+                        <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider shrink-0">
+                          {label}
+                        </span>
+                        <div className="text-slate-800 font-medium text-right truncate">
+                          {val}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Actions Row */}
+              {actions && (
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-end gap-2">
+                  {actions(row)}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

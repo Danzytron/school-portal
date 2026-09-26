@@ -214,7 +214,8 @@ export default function StudentGradesPage() {
           </div>
 
           <div className="p-0">
-            <div className="overflow-x-auto">
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
                   <tr className="bg-slate-50/90 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
@@ -280,6 +281,63 @@ export default function StudentGradesPage() {
                   </tr>
                 </tfoot>
               </table>
+            </div>
+
+            {/* Mobile Card / List View (< md) */}
+            <div className="block md:hidden divide-y divide-slate-100 font-sans">
+              {grades.map((grade) => {
+                const finalVal = Number(grade.final_grade ?? grade.final ?? 1.25) || 1.25;
+                const midtermVal = Number(grade.midterm ?? 1.25) || 1.25;
+                return (
+                  <div key={grade.id} className="p-3.5 space-y-2 bg-white hover:bg-slate-50/60 transition-colors">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <span className="font-mono font-bold text-[11px] text-[#1D4ED8] bg-blue-50 px-2 py-0.5 rounded border border-blue-200 inline-block">
+                          {grade.subject?.code}
+                        </span>
+                        <div className="font-semibold text-slate-900 text-xs mt-1 break-words">
+                          {grade.subject?.name}
+                        </div>
+                        <div className="text-[11px] text-slate-500 mt-0.5">
+                          {grade.teacher?.user?.name || 'Prof. Maria Santos'} • {(grade.subject?.units || 3).toFixed(1)} Units
+                        </div>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <div className="text-[10px] uppercase font-semibold text-slate-400">Rating</div>
+                        <div className="font-mono font-bold text-base text-slate-900">
+                          {finalVal.toFixed(2)}
+                        </div>
+                        <div className="mt-0.5">
+                          {getRemarksBadge(grade.remarks, finalVal)}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs text-slate-600 bg-slate-50/70 p-2 rounded">
+                      <div>
+                        <span className="text-[10px] uppercase text-slate-500 font-semibold block">Midterm</span>
+                        <span className="font-mono font-semibold text-slate-800">{midtermVal.toFixed(2)}</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] uppercase text-slate-500 font-semibold block">Final Term</span>
+                        <span className="font-mono font-semibold text-slate-800">{finalVal.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Mobile GWA Summary Footer */}
+              <div className="p-3.5 bg-slate-50/90 border-t-2 border-slate-200 flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] uppercase font-semibold text-slate-500 block">Total Units</span>
+                  <span className="font-mono font-bold text-xs text-slate-800">{totalUnits.toFixed(1)} Units</span>
+                </div>
+                <div className="text-right">
+                  <span className="text-[10px] uppercase font-semibold text-slate-500 block">Term GWA</span>
+                  <span className="font-mono font-bold text-sm text-[#1D4ED8]">{gwa}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>

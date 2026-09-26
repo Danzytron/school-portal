@@ -220,9 +220,10 @@ export default function StudentEnrollmentPage() {
             </div>
           </div>
 
-          {/* Enrolled Courses Table */}
+          {/* Enrolled Courses Section */}
           <div className="p-0">
-            <div className="overflow-x-auto">
+            {/* Desktop Table View (>= md) */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
                   <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
@@ -408,6 +409,68 @@ export default function StudentEnrollmentPage() {
                 </tfoot>
               </table>
             </div>
+
+            {/* Mobile Card List View (< md) */}
+            <div className="block md:hidden divide-y divide-slate-100 font-sans">
+              {(enrollment?.subjects && enrollment.subjects.length > 0 ? enrollment.subjects : [
+                { id: 1, subject: { code: 'FREE ELEC 1', name: 'FREE ELECTIVE 1', units: 3 }, section: { name: 'BSIT 3-A' }, schedule: { day_of_week: 'MW', start_time: '10:30', end_time: '12:00 PM', room: { name: 'H 204' }, teacher: { user: { name: 'Sir Vincent John Cababan' } } } },
+                { id: 2, subject: { code: 'GE ELEC 5', name: 'ANG PANITIKAN NG PILIPINAS', units: 3 }, section: { name: 'BSIT 3-A' }, schedule: { day_of_week: 'TThS', start_time: '06:30', end_time: '07:30 PM', room: { name: 'K 104' }, teacher: { user: { name: 'Ms. Lindy Enaldo' } } } },
+                { id: 3, subject: { code: 'GE ELEC 6', name: 'PHILIPPINE POPULAR CULTURE', units: 3 }, section: { name: 'BSIT 3-A' }, schedule: { day_of_week: 'TThS', start_time: '05:30', end_time: '06:30 PM', room: { name: 'H 301' }, teacher: { user: { name: 'Ms. Krystel Hurboda' } } } },
+                { id: 4, subject: { code: 'IT ELEC 1', name: 'ELECTIVE 1 (LECTURE)', units: 2 }, section: { name: 'BSIT 3-A' }, schedule: { day_of_week: 'FS', start_time: '03:00', end_time: '04:00 PM', room: { name: 'OL 111' }, teacher: { user: { name: 'Ms. En Catarungan' } } } },
+                { id: 5, subject: { code: 'IT ELEC 1 LAB', name: 'ELECTIVE 1 (LABORATORY)', units: 1 }, section: { name: 'BSIT 3-A' }, schedule: { day_of_week: 'FS', start_time: '01:30', end_time: '03:00 PM', room: { name: 'CL 1' }, teacher: { user: { name: 'Ms. En Catarungan' } } } },
+                { id: 6, subject: { code: 'IT EVD31', name: 'EVENT DRIVEN PROGRAMMING (LECTURE)', units: 2 }, section: { name: 'BSIT 3-A' }, schedule: { day_of_week: 'MW', start_time: '08:30', end_time: '09:30 AM', room: { name: 'OL 107' }, teacher: { user: { name: 'Sir Yestin Prado' } } } },
+                { id: 7, subject: { code: 'IT EVD31 LAB', name: 'EVENT DRIVEN PROGRAMMING (LABORATORY)', units: 1 }, section: { name: 'BSIT 3-A' }, schedule: { day_of_week: 'FS', start_time: '09:00', end_time: '10:30 AM', room: { name: 'CL 1' }, teacher: { user: { name: 'Sir Yestin Prado' } } } },
+                { id: 8, subject: { code: 'IT IAS31', name: 'INFORMATION ASSURANCE AND SECURITY 1 (LECTURE)', units: 2 }, section: { name: 'BSIT 3-A' }, schedule: { day_of_week: 'MW', start_time: '09:30', end_time: '10:30 AM', room: { name: 'OL 108' }, teacher: { user: { name: 'Sir Jay-ar Base' } } } },
+                { id: 9, subject: { code: 'IT IAS31 LAB', name: 'INFORMATION ASSURANCE AND SECURITY 1 (LABORATORY)', units: 1 }, section: { name: 'BSIT 3-A' }, schedule: { day_of_week: 'FS', start_time: '07:30', end_time: '09:00 AM', room: { name: 'CL 1' }, teacher: { user: { name: 'Sir Jay-ar Base' } } } },
+                { id: 10, subject: { code: 'IT NET31', name: 'NETWORKING 1 (LECTURE)', units: 2 }, section: { name: 'BSIT 3-A' }, schedule: { day_of_week: 'MW', start_time: '10:30', end_time: '11:30 AM', room: { name: 'OL 109' }, teacher: { user: { name: 'Sir Arnel L. Villanueva' } } } },
+                { id: 11, subject: { code: 'IT NET31 LAB', name: 'NETWORKING 1 (LABORATORY)', units: 1 }, section: { name: 'BSIT 3-A' }, schedule: { day_of_week: 'TTh', start_time: '03:00', end_time: '04:30 PM', room: { name: 'CL 3' }, teacher: { user: { name: 'Sir Arnel L. Villanueva' } } } },
+                { id: 12, subject: { code: 'IT SIA31', name: 'SYSTEM INTEGRATION AND ARCHITECTURE 2 (LECTURE)', units: 2 }, section: { name: 'BSIT 3-A' }, schedule: { day_of_week: 'MW', start_time: '07:30', end_time: '08:30 AM', room: { name: 'OL 110' }, teacher: { user: { name: 'Sir Charles Bacotot' } } } },
+                { id: 13, subject: { code: 'IT SIA31 LAB', name: 'SYSTEM INTEGRATION AND ARCHITECTURE 2 (LABORATORY)', units: 1 }, section: { name: 'BSIT 3-A' }, schedule: { day_of_week: 'FS', start_time: '10:30', end_time: '12:00 PM', room: { name: 'CL 1' }, teacher: { user: { name: 'Sir Charles Bacotot' } } } },
+                { id: 14, subject: { code: 'IT SP131', name: 'SOCIAL AND PROFESSIONAL ISSUES 1', units: 3 }, section: { name: 'BSIT 3-A' }, schedule: { day_of_week: 'TTh', start_time: '07:30', end_time: '09:00 PM', room: { name: 'A 202' }, teacher: { user: { name: 'Sir Arjay Alangcas' } } } }
+              ] as any[]).map((es) => (
+                <div key={es.id} className="p-3.5 space-y-2 hover:bg-slate-50/50 transition-colors">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <span className="font-mono font-bold text-xs text-[#1D4ED8] block">
+                        {es.subject?.code}
+                      </span>
+                      <h4 className="font-semibold text-slate-900 text-xs mt-0.5 leading-snug">
+                        {es.subject?.name}
+                      </h4>
+                    </div>
+                    <span className="bg-blue-50 text-[#1D4ED8] border border-blue-200 text-[10px] font-mono font-bold px-2 py-0.5 rounded shrink-0">
+                      {(es.subject?.units || 3).toFixed(1)} Units
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 text-[11px] pt-1 border-t border-slate-100">
+                    <div>
+                      <span className="text-slate-400 text-[10px] uppercase block">Section & Room</span>
+                      <span className="font-semibold text-slate-700">
+                        {es.section?.name || 'BSIT 3-A'} • {es.schedule?.room?.name ? `Room ${es.schedule.room.name}` : 'OL 110'}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-slate-400 text-[10px] uppercase block">Schedule</span>
+                      <span className="font-mono text-slate-700 text-[10px]">
+                        {es.schedule ? `${es.schedule.day_of_week} ${es.schedule.start_time}–${es.schedule.end_time}` : 'MW 07:30–08:30'}
+                      </span>
+                    </div>
+                    <div className="col-span-2">
+                      <span className="text-slate-400 text-[10px] uppercase block">Faculty Instructor</span>
+                      <span className="text-slate-600 text-[11px]">
+                        {es.schedule?.teacher?.user?.name || 'Assigned Faculty'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <div className="p-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs">
+                <span className="font-semibold text-slate-700 uppercase text-[10px]">Total Validated Load:</span>
+                <span className="font-mono font-bold text-[#1D4ED8]">27.0 Units (14 Subjects)</span>
+              </div>
+            </div>
           </div>
 
           {/* Assessment & Institutional Validation Footer */}
@@ -462,56 +525,102 @@ export default function StudentEnrollmentPage() {
             </div>
 
             <div className="p-0">
-              <table className="w-full text-left border-collapse text-xs">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
-                    <th className="w-12 px-4 py-3 text-center">Select</th>
-                    <th className="px-4 py-3">Code</th>
-                    <th className="px-4 py-3">Course Description</th>
-                    <th className="px-4 py-3 text-center">Units</th>
-                    <th className="px-4 py-3">Year Level</th>
-                    <th className="px-4 py-3">Prerequisites</th>
-                    <th className="px-4 py-3 text-center">Slots</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-sans">
-                  {availableSubjects
-                    .filter(s => s.code.toLowerCase().includes(searchTerm.toLowerCase()) || s.name.toLowerCase().includes(searchTerm.toLowerCase()))
-                    .map(subj => {
-                      const isSelected = selectedSubjectIds.includes(subj.id);
-                      return (
-                        <tr key={subj.id} className={`hover:bg-blue-50/30 ${isSelected ? 'bg-blue-50/40' : ''}`}>
-                          <td className="px-4 py-3 text-center">
+              {/* Desktop Table (>= md) */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-left border-collapse text-xs">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
+                      <th className="w-12 px-4 py-3 text-center">Select</th>
+                      <th className="px-4 py-3">Code</th>
+                      <th className="px-4 py-3">Course Description</th>
+                      <th className="px-4 py-3 text-center">Units</th>
+                      <th className="px-4 py-3">Year Level</th>
+                      <th className="px-4 py-3">Prerequisites</th>
+                      <th className="px-4 py-3 text-center">Slots</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-sans">
+                    {availableSubjects
+                      .filter(s => s.code.toLowerCase().includes(searchTerm.toLowerCase()) || s.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                      .map(subj => {
+                        const isSelected = selectedSubjectIds.includes(subj.id);
+                        return (
+                          <tr key={subj.id} className={`hover:bg-blue-50/30 ${isSelected ? 'bg-blue-50/40' : ''}`}>
+                            <td className="px-4 py-3 text-center">
+                              <input
+                                type="checkbox"
+                                checked={isSelected}
+                                onChange={() => handleToggleSubject(subj.id)}
+                                className="rounded border-slate-300 text-[#1D4ED8] focus:ring-[#1D4ED8]/30 cursor-pointer"
+                              />
+                            </td>
+                            <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">
+                              {subj.code}
+                            </td>
+                            <td className="px-4 py-3 font-medium text-slate-900">
+                              {subj.name}
+                            </td>
+                            <td className="px-4 py-3 text-center font-mono text-slate-700">
+                              {(subj.units || 3).toFixed(1)}
+                            </td>
+                            <td className="px-4 py-3 text-slate-600">
+                              Year {subj.year_level || 3}
+                            </td>
+                            <td className="px-4 py-3 text-slate-500 text-[11px]">
+                              None / Standing
+                            </td>
+                            <td className="px-4 py-3 text-center font-mono text-emerald-700 font-semibold">
+                              38 / 40 Open
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile Cards (< md) */}
+              <div className="block md:hidden divide-y divide-slate-100">
+                {availableSubjects
+                  .filter(s => s.code.toLowerCase().includes(searchTerm.toLowerCase()) || s.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                  .map(subj => {
+                    const isSelected = selectedSubjectIds.includes(subj.id);
+                    return (
+                      <div
+                        key={subj.id}
+                        onClick={() => handleToggleSubject(subj.id)}
+                        className={`p-3.5 space-y-2 cursor-pointer transition-colors ${isSelected ? 'bg-blue-50/50' : 'hover:bg-slate-50/60'}`}
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex items-start gap-2.5">
                             <input
                               type="checkbox"
                               checked={isSelected}
-                              onChange={() => handleToggleSubject(subj.id)}
-                              className="rounded border-slate-300 text-[#1D4ED8] focus:ring-[#1D4ED8]/30 cursor-pointer"
+                              onChange={() => {}} // Handled by parent container click
+                              className="mt-0.5 rounded border-slate-300 text-[#1D4ED8] focus:ring-[#1D4ED8]/30 cursor-pointer pointer-events-none"
                             />
-                          </td>
-                          <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">
-                            {subj.code}
-                          </td>
-                          <td className="px-4 py-3 font-medium text-slate-900">
-                            {subj.name}
-                          </td>
-                          <td className="px-4 py-3 text-center font-mono text-slate-700">
-                            {(subj.units || 3).toFixed(1)}
-                          </td>
-                          <td className="px-4 py-3 text-slate-600">
-                            Year {subj.year_level || 3}
-                          </td>
-                          <td className="px-4 py-3 text-slate-500 text-[11px]">
-                            None / Standing
-                          </td>
-                          <td className="px-4 py-3 text-center font-mono text-emerald-700 font-semibold">
-                            38 / 40 Open
-                          </td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
+                            <div>
+                              <span className="font-mono font-bold text-xs text-[#1D4ED8]">
+                                {subj.code}
+                              </span>
+                              <h4 className="font-semibold text-slate-900 text-xs mt-0.5 leading-snug">
+                                {subj.name}
+                              </h4>
+                            </div>
+                          </div>
+                          <span className="bg-blue-50 text-[#1D4ED8] border border-blue-200 text-[10px] font-mono font-bold px-2 py-0.5 rounded shrink-0">
+                            {(subj.units || 3).toFixed(1)} Units
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between text-[11px] pt-1 border-t border-slate-100 text-slate-500">
+                          <span>Year {subj.year_level || 3}</span>
+                          <span className="font-mono text-emerald-700 font-semibold">38 / 40 Slots Open</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
           </div>
         </div>

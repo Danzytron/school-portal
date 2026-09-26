@@ -185,13 +185,13 @@ export function Navbar({ onMenuToggle }: { onMenuToggle: () => void }) {
 
   return (
     <>
-      <header className="bg-white text-slate-800 h-[60px] flex items-center justify-between px-3 sm:px-6 fixed top-0 left-0 lg:left-[240px] right-0 z-20 shadow-2xs border-b border-slate-200">
+      <header className="bg-white text-slate-800 h-[60px] flex items-center justify-between px-2.5 sm:px-6 fixed top-0 left-0 lg:left-[240px] right-0 z-20 shadow-2xs border-b border-slate-200 max-w-full min-w-0">
         
         {/* Left: Mobile Toggle + Search Bar */}
-        <div className="flex items-center gap-2 sm:gap-3 flex-1 max-w-md min-w-0">
+        <div className="flex items-center gap-1.5 sm:gap-3 flex-1 min-w-0 mr-2">
           <button 
             onClick={onMenuToggle} 
-            className="lg:hidden text-slate-600 hover:text-slate-900 p-2 -ml-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
+            className="lg:hidden text-slate-600 hover:text-slate-900 p-1.5 -ml-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
             aria-label="Toggle Navigation Menu"
           >
             <Menu size={20} />
@@ -210,32 +210,32 @@ export function Navbar({ onMenuToggle }: { onMenuToggle: () => void }) {
           </div>
 
           {/* Mobile title on small screens */}
-          <div className="sm:hidden font-heading font-bold text-xs text-slate-900 truncate">
+          <div className="sm:hidden font-heading font-bold text-xs text-slate-900 truncate min-w-0">
             Cebu Eastern College
           </div>
         </div>
 
         {/* Right Action Icons & User Profile */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-3 shrink-0">
           
           {/* Notification Center */}
           <div className="relative">
             <button 
               onClick={() => setNotificationOpen(!notificationOpen)} 
-              className="w-9 h-9 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-600 hover:text-slate-900 transition-colors relative cursor-pointer shrink-0"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-600 hover:text-slate-900 transition-colors relative cursor-pointer shrink-0"
               title="Official Announcements & Bulletins"
               aria-label="Official Announcements & Bulletins"
             >
               <Bell size={18} />
               {unreadCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 bg-rose-600 text-white font-bold text-[9px] min-w-[17px] h-[17px] rounded-full flex items-center justify-center px-1 border-2 border-white shadow-xs pointer-events-none">
+                <span className="absolute -top-0.5 -right-0.5 bg-rose-600 text-white font-bold text-[9px] min-w-[16px] h-[16px] rounded-full flex items-center justify-center px-1 border-2 border-white shadow-xs pointer-events-none">
                   {unreadCount > 99 ? '99+' : unreadCount}
                 </span>
               )}
             </button>
 
             {notificationOpen && (
-              <div className="fixed sm:absolute top-[64px] sm:top-auto left-4 right-4 sm:left-auto sm:right-0 sm:mt-2 sm:w-96 bg-white border border-slate-200 rounded-xl shadow-xl z-50 overflow-hidden text-xs font-sans">
+              <div className="fixed sm:absolute top-[62px] sm:top-auto left-2 right-2 sm:left-auto sm:right-0 sm:mt-2 sm:w-96 max-w-[calc(100vw-16px)] bg-white border border-slate-200 rounded-xl shadow-xl z-50 overflow-hidden text-xs font-sans">
                 {/* Notification Dropdown Header */}
                 <div className="bg-slate-50 px-4 py-3 border-b border-slate-200 flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -322,15 +322,16 @@ export function Navbar({ onMenuToggle }: { onMenuToggle: () => void }) {
             )}
           </div>
 
-          <div className="h-6 w-[1px] bg-slate-200 mx-0.5 sm:mx-1"></div>
+          <div className="h-5 w-[1px] bg-slate-200 mx-0.5 sm:mx-1"></div>
 
           {/* User Profile Avatar Capsule */}
           <div className="relative">
             <button 
               onClick={() => setDropdownOpen(!dropdownOpen)} 
-              className="flex items-center gap-2 p-1 sm:px-2 py-1 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 p-0.5 sm:px-2 py-1 rounded-full hover:bg-slate-100 transition-colors cursor-pointer shrink-0"
+              aria-label="User Account Menu"
             >
-              <div className="w-8 h-8 rounded-full bg-[#1E3A8A] text-white flex items-center justify-center font-heading font-bold text-xs shadow-2xs shrink-0">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#1E3A8A] text-white flex items-center justify-center font-heading font-bold text-xs shadow-2xs shrink-0">
                 {user?.name ? user.name.charAt(0).toUpperCase() : 'R'}
               </div>
 
@@ -347,7 +348,7 @@ export function Navbar({ onMenuToggle }: { onMenuToggle: () => void }) {
             </button>
 
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-56 max-w-[calc(100vw-32px)] bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden text-xs font-sans">
+              <div className="absolute right-0 mt-2 w-56 max-w-[calc(100vw-20px)] bg-white border border-slate-200 rounded-xl shadow-lg z-50 overflow-hidden text-xs font-sans">
                 <div className="p-3.5 bg-slate-50 border-b border-slate-200">
                   <div className="font-heading font-bold text-slate-900 truncate">
                     {user?.name}

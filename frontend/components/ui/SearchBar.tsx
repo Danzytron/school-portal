@@ -10,14 +10,14 @@ interface SearchBarProps {
 
 export function SearchBar({ value, onChange, placeholder = "Search records...", className = "" }: SearchBarProps) {
   return (
-    <div className={`relative flex items-center w-full max-w-xs ${className}`}>
-      <Search size={14} className="absolute left-2.5 text-slate-400 pointer-events-none" />
+    <div className={`relative flex items-center w-full min-w-0 ${className}`}>
+      <Search size={14} className="absolute left-2.5 text-slate-400 pointer-events-none shrink-0" />
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="form-control pl-8 pr-7 text-xs shadow-2xs"
+        className="form-control pl-8 pr-7 text-xs shadow-2xs w-full"
       />
       {value && (
         <button

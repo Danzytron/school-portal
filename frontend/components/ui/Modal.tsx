@@ -21,7 +21,7 @@ export function Modal({ isOpen = true, onClose, title, children, footer, size = 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
       {/* Backdrop */}
       <div 
         className="fixed inset-0 bg-slate-900/50 backdrop-blur-2xs transition-opacity" 
@@ -29,7 +29,7 @@ export function Modal({ isOpen = true, onClose, title, children, footer, size = 
       />
 
       {/* Modal Dialog */}
-      <div className={`relative bg-white rounded-lg border border-slate-200 shadow-xl w-full ${sizeMap[size]} z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-150`}>
+      <div className={`relative bg-white rounded-lg border border-slate-200 shadow-xl w-full max-w-[calc(100vw-24px)] ${sizeMap[size]} z-10 overflow-hidden animate-in fade-in zoom-in-95 duration-150 my-auto max-h-[calc(100vh-32px)] flex flex-col`}>
         {/* Header */}
         <div className="bg-slate-50 border-b border-slate-200 px-4 py-3 flex items-center justify-between">
           <h3 className="text-sm font-heading font-bold text-slate-900 m-0 tracking-tight">{title}</h3>

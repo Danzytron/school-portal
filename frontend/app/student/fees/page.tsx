@@ -212,66 +212,89 @@ export default function StudentFeesPage() {
                   </div>
 
                   <div className="p-0">
-                    <table className="w-full text-left border-collapse text-xs">
-                      <thead>
-                        <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
-                          <th className="px-4 py-3">Fee Item Description</th>
-                          <th className="px-4 py-3 text-right">Assessment Amount</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-slate-100 font-sans">
-                        <tr className="hover:bg-slate-50/50">
-                          <td className="px-4 py-3 font-medium text-slate-900">
-                            Tuition Fee (21 Academic Units @ ₱850.00 / unit)
-                          </td>
-                          <td className="px-4 py-3 text-right font-mono font-semibold text-slate-800">
-                            ₱17,850.00
-                          </td>
-                        </tr>
-                        <tr className="hover:bg-slate-50/50">
-                          <td className="px-4 py-3 font-medium text-slate-900">
-                            Computer Laboratory & Software Licensing Fee
-                          </td>
-                          <td className="px-4 py-3 text-right font-mono font-semibold text-slate-800">
-                            ₱3,600.00
-                          </td>
-                        </tr>
-                        <tr className="hover:bg-slate-50/50">
-                          <td className="px-4 py-3 font-medium text-slate-900">
-                            Miscellaneous & Registration Fee
-                          </td>
-                          <td className="px-4 py-3 text-right font-mono font-semibold text-slate-800">
-                            ₱2,800.00
-                          </td>
-                        </tr>
-                        <tr className="hover:bg-slate-50/50">
-                          <td className="px-4 py-3 font-medium text-slate-900">
-                            Library Fund, Digital Research & Journal Access
-                          </td>
-                          <td className="px-4 py-3 text-right font-mono font-semibold text-slate-800">
-                            ₱1,200.00
-                          </td>
-                        </tr>
-                        <tr className="hover:bg-slate-50/50">
-                          <td className="px-4 py-3 font-medium text-slate-900">
-                            Student Athletics & Cultural Development Fund
-                          </td>
-                          <td className="px-4 py-3 text-right font-mono font-semibold text-slate-800">
-                            ₱1,000.00
-                          </td>
-                        </tr>
-                      </tbody>
-                      <tfoot>
-                        <tr className="bg-slate-50/90 border-t-2 border-slate-200 font-semibold text-slate-900">
-                          <td className="px-4 py-3 text-right text-xs uppercase tracking-wider">
-                            Total Semester Assessment:
-                          </td>
-                          <td className="px-4 py-3 text-right font-mono font-bold text-[#1D4ED8] text-sm">
-                            ₱26,450.00
-                          </td>
-                        </tr>
-                      </tfoot>
-                    </table>
+                    {/* Desktop Table (>= md) */}
+                    <div className="hidden md:block overflow-x-auto">
+                      <table className="w-full text-left border-collapse text-xs">
+                        <thead>
+                          <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
+                            <th className="px-4 py-3">Fee Item Description</th>
+                            <th className="px-4 py-3 text-right">Assessment Amount</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 font-sans">
+                          <tr className="hover:bg-slate-50/50">
+                            <td className="px-4 py-3 font-medium text-slate-900">
+                              Tuition Fee (21 Academic Units @ ₱850.00 / unit)
+                            </td>
+                            <td className="px-4 py-3 text-right font-mono font-semibold text-slate-800">
+                              ₱17,850.00
+                            </td>
+                          </tr>
+                          <tr className="hover:bg-slate-50/50">
+                            <td className="px-4 py-3 font-medium text-slate-900">
+                              Computer Laboratory & Software Licensing Fee
+                            </td>
+                            <td className="px-4 py-3 text-right font-mono font-semibold text-slate-800">
+                              ₱3,600.00
+                            </td>
+                          </tr>
+                          <tr className="hover:bg-slate-50/50">
+                            <td className="px-4 py-3 font-medium text-slate-900">
+                              Miscellaneous & Registration Fee
+                            </td>
+                            <td className="px-4 py-3 text-right font-mono font-semibold text-slate-800">
+                              ₱2,800.00
+                            </td>
+                          </tr>
+                          <tr className="hover:bg-slate-50/50">
+                            <td className="px-4 py-3 font-medium text-slate-900">
+                              Library Fund, Digital Research & Journal Access
+                            </td>
+                            <td className="px-4 py-3 text-right font-mono font-semibold text-slate-800">
+                              ₱1,200.00
+                            </td>
+                          </tr>
+                          <tr className="hover:bg-slate-50/50">
+                            <td className="px-4 py-3 font-medium text-slate-900">
+                              Student Athletics & Cultural Development Fund
+                            </td>
+                            <td className="px-4 py-3 text-right font-mono font-semibold text-slate-800">
+                              ₱1,000.00
+                            </td>
+                          </tr>
+                        </tbody>
+                        <tfoot>
+                          <tr className="bg-slate-50/90 border-t-2 border-slate-200 font-semibold text-slate-900">
+                            <td className="px-4 py-3 text-right text-xs uppercase tracking-wider">
+                              Total Semester Assessment:
+                            </td>
+                            <td className="px-4 py-3 text-right font-mono font-bold text-[#1D4ED8] text-sm">
+                              ₱26,450.00
+                            </td>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+
+                    {/* Mobile Fee Items List (< md) */}
+                    <div className="block md:hidden divide-y divide-slate-100 font-sans">
+                      {[
+                        { title: 'Tuition Fee (21 Units @ ₱850.00)', amount: '₱17,850.00' },
+                        { title: 'Computer Laboratory & Software Fee', amount: '₱3,600.00' },
+                        { title: 'Miscellaneous & Registration Fee', amount: '₱2,800.00' },
+                        { title: 'Library Fund & Research Journals', amount: '₱1,200.00' },
+                        { title: 'Athletics & Cultural Development', amount: '₱1,000.00' },
+                      ].map((item, idx) => (
+                        <div key={idx} className="p-3.5 flex items-center justify-between gap-3 hover:bg-slate-50/50">
+                          <span className="text-xs font-medium text-slate-800">{item.title}</span>
+                          <span className="text-xs font-mono font-semibold text-slate-900 shrink-0">{item.amount}</span>
+                        </div>
+                      ))}
+                      <div className="p-3.5 bg-slate-50 flex items-center justify-between text-xs">
+                        <span className="font-semibold uppercase text-slate-700 text-[10px]">Total Semester Assessment:</span>
+                        <span className="font-mono font-bold text-[#1D4ED8] text-sm">₱26,450.00</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -347,7 +370,8 @@ export default function StudentFeesPage() {
               </div>
 
               <div className="p-0">
-                <div className="overflow-x-auto">
+                {/* Desktop Table (>= md) */}
+                <div className="hidden md:block overflow-x-auto">
                   <table className="w-full text-left border-collapse text-xs">
                     <thead>
                       <tr className="bg-slate-50 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
@@ -386,6 +410,31 @@ export default function StudentFeesPage() {
                       </tr>
                     </tbody>
                   </table>
+                </div>
+
+                {/* Mobile Transaction Cards (< md) */}
+                <div className="block md:hidden divide-y divide-slate-100 font-sans">
+                  {[
+                    { or: 'OR-2026-08149', date: 'Aug 14, 2026', channel: 'BDO Online Bills Payment', ref: 'TXN-882910394', amount: '₱7,000.00' },
+                    { or: 'OR-2026-09012', date: 'Aug 22, 2026', channel: 'University Cashier Window 2', ref: 'CSH-2026-4402', amount: '₱19,450.00' }
+                  ].map((tx, idx) => (
+                    <div key={idx} className="p-3.5 space-y-2 hover:bg-slate-50/50">
+                      <div className="flex items-center justify-between">
+                        <span className="font-mono font-bold text-xs text-[#1D4ED8]">{tx.or}</span>
+                        <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-semibold uppercase">
+                          Validated
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="text-slate-800 font-medium">{tx.channel}</span>
+                        <span className="font-mono font-bold text-slate-900">{tx.amount}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100">
+                        <span>Date: {tx.date}</span>
+                        <span className="font-mono">Ref: {tx.ref}</span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

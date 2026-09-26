@@ -250,7 +250,8 @@ export default function StudentAttendancePage() {
         </div>
 
         <div className="p-0">
-          <div className="overflow-x-auto">
+          {/* Desktop Table (>= md) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="bg-slate-50/90 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
@@ -317,6 +318,45 @@ export default function StudentAttendancePage() {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Card List View (< md) */}
+          <div className="block md:hidden divide-y divide-slate-100 font-sans">
+            {filteredRecords.length > 0 ? (
+              filteredRecords.map((rec) => (
+                <div key={rec.id} className="p-3.5 space-y-2 hover:bg-slate-50/50 transition-colors">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono font-bold text-xs text-[#1D4ED8]">
+                          {rec.attendance?.subject?.code || 'IT 311'}
+                        </span>
+                        <span className="font-mono text-[11px] text-slate-400">
+                          {new Date(rec.attendance?.date || '2026-08-20').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </span>
+                      </div>
+                      <h4 className="font-medium text-slate-900 text-xs mt-0.5 leading-snug">
+                        {rec.attendance?.subject?.name || 'Advanced Database Systems'}
+                      </h4>
+                    </div>
+                    <StatusBadge status={rec.status || 'present'} />
+                  </div>
+
+                  <div className="flex items-center justify-between text-[11px] pt-1 border-t border-slate-100 text-slate-500">
+                    <span className="font-mono text-slate-600">
+                      Time Logged: <strong>{rec.time_recorded || '08:02 AM'}</strong>
+                    </span>
+                    <span className="text-[10px] text-slate-400 truncate max-w-[150px]">
+                      {rec.remarks || 'Regular lecture'}
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-6 text-center text-xs text-slate-400">
+                No attendance records match your filter criteria.
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -246,7 +246,8 @@ export default function StudentSchedulePage() {
             <span className="text-[11px] font-mono text-slate-500">Mon–Sat • 7:30 AM – 9:00 PM</span>
           </div>
 
-          <div className="p-0 overflow-x-auto">
+          {/* Desktop Matrix View (≥ md) */}
+          <div className="p-0 overflow-x-auto hidden md:block">
             <table className="w-full border-collapse text-xs min-w-[850px]">
               <thead>
                 <tr className="bg-slate-50/90 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
@@ -296,6 +297,59 @@ export default function StudentSchedulePage() {
               </tbody>
             </table>
           </div>
+
+          {/* Mobile Chronological Cards (< md) */}
+          <div className="block md:hidden divide-y divide-slate-100 font-sans">
+            {DAYS.map(day => {
+              const dayClasses = schedules.filter(s => s.day_of_week && s.day_of_week.toLowerCase() === day.toLowerCase());
+              if (dayClasses.length === 0) return null;
+
+              return (
+                <div key={day} className="p-3.5 bg-white space-y-2.5">
+                  <div className="flex items-center gap-2">
+                    <span className="font-heading font-bold text-xs text-slate-900 bg-slate-100 px-2 py-0.5 rounded uppercase tracking-wider">
+                      {day}
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-mono">
+                      {dayClasses.length} {dayClasses.length === 1 ? 'class' : 'classes'}
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    {dayClasses.map(s => (
+                      <div 
+                        key={s.id} 
+                        onClick={() => setSelectedClass(s)}
+                        className="p-3 rounded-lg border border-slate-200/90 bg-slate-50/50 hover:bg-blue-50/40 transition-colors cursor-pointer space-y-1.5"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0 flex-1">
+                            <span className="font-mono font-bold text-xs text-[#1D4ED8] bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200 inline-block">
+                              {s.subject?.code}
+                            </span>
+                            <div className="font-semibold text-slate-900 text-xs mt-1 break-words">
+                              {s.subject?.name}
+                            </div>
+                          </div>
+                          <span className="font-mono text-[11px] font-semibold text-slate-700 shrink-0 bg-white px-2 py-0.5 rounded border border-slate-200">
+                            {formatScheduleTime(s)}
+                          </span>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-500 pt-1 border-t border-slate-200/60">
+                          <span>Room: <strong className="text-slate-700">{s.room?.name || 'TBA'}</strong></span>
+                          <span>•</span>
+                          <span>Instructor: <strong className="text-slate-700">{s.teacher?.user?.name || 'Faculty'}</strong></span>
+                          <span>•</span>
+                          <span>Section: <strong className="text-slate-700">{s.section?.name || 'BSIT 3-A'}</strong></span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       ) : (
         /* 2. Chronological Course List */
@@ -306,7 +360,8 @@ export default function StudentSchedulePage() {
           </div>
 
           <div className="p-0">
-            <div className="overflow-x-auto">
+            {/* Desktop Table View */}
+            <div className="overflow-x-auto hidden md:block">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
                   <tr className="bg-slate-50/90 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
@@ -348,6 +403,44 @@ export default function StudentSchedulePage() {
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile Card List View (< md) */}
+            <div className="block md:hidden divide-y divide-slate-100 font-sans">
+              {schedules.map((s) => (
+                <div 
+                  key={s.id} 
+                  onClick={() => setSelectedClass(s)}
+                  className="p-3.5 space-y-2 bg-white hover:bg-slate-50/60 transition-colors cursor-pointer"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <span className="font-mono font-bold text-xs text-[#1D4ED8] bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200 inline-block">
+                        {s.subject?.code}
+                      </span>
+                      <div className="font-semibold text-slate-900 text-xs mt-1 break-words">
+                        {s.subject?.name}
+                      </div>
+                    </div>
+                    <span className="font-mono text-[11px] font-semibold text-slate-700 shrink-0 bg-slate-50 px-2 py-0.5 rounded border border-slate-200">
+                      {s.section?.name || 'BSIT 3-A'}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100 text-xs text-slate-600 bg-slate-50/70 p-2 rounded">
+                    <div>
+                      <span className="text-[10px] uppercase text-slate-500 font-semibold block">Day & Time</span>
+                      <span className="font-semibold text-slate-900 capitalize">{s.day_of_week}</span>
+                      <div className="text-[10px] text-slate-500 font-mono mt-0.5">{formatScheduleTime(s)}</div>
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase text-slate-500 font-semibold block">Facility / Room</span>
+                      <span className="font-semibold text-slate-900">{s.room?.name || 'Room TBA'}</span>
+                      <div className="text-[10px] text-slate-500 truncate mt-0.5">{s.teacher?.user?.name || 'Faculty'}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

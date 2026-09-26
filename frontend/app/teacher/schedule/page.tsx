@@ -201,12 +201,13 @@ export default function TeacherSchedulePage() {
             <span className="font-heading font-bold text-slate-800">
               Weekly Timetable Grid (Monday to Saturday)
             </span>
-            <span className="text-[11px] text-slate-500 font-mono">
+            <span className="text-[11px] text-slate-500 font-mono hidden sm:inline">
               Click any class block to view syllabus & section details
             </span>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Desktop Table View (>= md) */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full border-collapse text-left min-w-[760px]">
               <thead>
                 <tr className="bg-slate-100/80 border-b border-slate-200 text-[11px] font-semibold text-slate-700 uppercase">
@@ -258,6 +259,58 @@ export default function TeacherSchedulePage() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Chronological Cards (< md) */}
+          <div className="block md:hidden divide-y divide-slate-100 font-sans">
+            {DAYS.map((day) => {
+              const daySchedules = schedules.filter(s => s.day_of_week?.toLowerCase() === day.toLowerCase());
+              if (daySchedules.length === 0) return null;
+
+              return (
+                <div key={day} className="p-3.5 space-y-2.5">
+                  <div className="flex items-center gap-2">
+                    <span className="bg-[#1D4ED8] text-white text-[10px] font-bold px-2 py-0.5 rounded font-sans uppercase">
+                      {day}
+                    </span>
+                    <span className="text-[11px] text-slate-500 font-mono">
+                      {daySchedules.length} Class Session(s)
+                    </span>
+                  </div>
+
+                  <div className="space-y-2">
+                    {daySchedules.map((item, idx) => (
+                      <div
+                        key={item.id || idx}
+                        onClick={() => setSelectedClass(item)}
+                        className="p-3 rounded-lg border border-slate-200 bg-slate-50/70 hover:bg-blue-50/40 transition-colors cursor-pointer space-y-1.5"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <span className="font-mono font-bold text-xs text-[#1D4ED8] block">
+                              {item.subject?.code}
+                            </span>
+                            <h4 className="font-medium text-slate-900 text-xs mt-0.5">
+                              {item.subject?.name}
+                            </h4>
+                          </div>
+                          <span className="bg-slate-200 text-slate-700 text-[10px] font-semibold px-2 py-0.5 rounded shrink-0">
+                            {item.section?.name}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-200/60 font-sans">
+                          <span className="font-mono text-slate-700">
+                            {item.start_time?.substring(0, 5)} - {item.end_time?.substring(0, 5)}
+                          </span>
+                          <span>{item.room?.name}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       ) : (

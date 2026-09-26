@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { formatTimeAgo } from '@/lib/utils';
+import { DashboardBanner } from '@/components/ui/DashboardBanner';
 
 interface ExamItem {
   id: string;
@@ -199,43 +200,8 @@ export default function StudentDashboardPage() {
   return (
     <div className="space-y-6 font-sans">
       
-      {/* ── 1. Editorial Welcome Dossier ────────── */}
-      <div className="bg-white border border-slate-200/80 rounded-lg p-5 sm:p-6 shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="font-heading text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
-              Good day, {user?.name ? user.name.split(' ')[0] : 'Roldan'}
-            </span>
-            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
-              Officially Enrolled
-            </span>
-          </div>
-          <div className="text-xs text-slate-500 font-sans flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="font-mono text-slate-700 font-semibold">SN: 2026-00001</span>
-            <span>•</span>
-            <span>Bachelor of Science in Information Technology (Year 3)</span>
-            <span>•</span>
-            <span className="text-[#1D4ED8] font-medium">1st Semester A.Y. 2026–2027</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 self-start sm:self-center">
-          <Link
-            href="/student/grades"
-            className="btn-outline text-xs inline-flex items-center gap-1.5"
-          >
-            <GraduationCap size={13} />
-            <span>Grade Report</span>
-          </Link>
-          <Link
-            href="/student/schedule"
-            className="btn-primary text-xs inline-flex items-center gap-1.5"
-          >
-            <CalendarIcon size={13} />
-            <span>My Schedule</span>
-          </Link>
-        </div>
-      </div>
+      {/* ── 1. School Building Dashboard Header Banner ── */}
+      <DashboardBanner />
 
       {/* ── 2. Subtle Academic Metrics Strip ────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

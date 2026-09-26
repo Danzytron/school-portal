@@ -21,6 +21,7 @@ import {
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import api from '@/lib/api';
 import Link from 'next/link';
+import { DashboardBanner } from '@/components/ui/DashboardBanner';
 
 export default function AdminDashboard() {
   const [data, setData] = useState<any>(null);
@@ -70,41 +71,8 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6 font-sans">
       
-      {/* ── 1. Executive Editorial Header ──────── */}
-      <div className="bg-white border border-slate-200/80 rounded-lg p-5 sm:p-6 shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="font-heading text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
-              Institutional Administration
-            </span>
-            <span className="bg-rose-50 text-rose-700 border border-rose-200 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
-              System Console
-            </span>
-          </div>
-          <div className="text-xs text-slate-500 font-sans flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span>Cebu Eastern College Official Registry</span>
-            <span>•</span>
-            <span className="text-[#1D4ED8] font-medium">1st Semester A.Y. 2026–2027</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 self-start sm:self-center">
-          <Link
-            href="/admin/enrollment"
-            className="btn-primary text-xs inline-flex items-center gap-1.5"
-          >
-            <FileText size={13} />
-            <span>Enrollment Approvals</span>
-          </Link>
-          <Link
-            href="/admin/grades"
-            className="btn-secondary text-xs inline-flex items-center gap-1.5"
-          >
-            <GraduationCap size={13} />
-            <span>Grade Review</span>
-          </Link>
-        </div>
-      </div>
+      {/* ── 1. School Building Dashboard Header Banner ── */}
+      <DashboardBanner />
 
       {/* ── 2. Subtle Executive Metrics ──────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

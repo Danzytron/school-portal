@@ -23,6 +23,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import Link from 'next/link';
+import { DashboardBanner } from '@/components/ui/DashboardBanner';
 
 function getSafeString(val: any, fallback = ''): string {
   if (val === null || val === undefined) return fallback;
@@ -206,41 +207,8 @@ export default function TeacherDashboard() {
   return (
     <div className="space-y-6 font-sans">
       
-      {/* ── 1. Faculty Editorial Dossier Header ──── */}
-      <div className="bg-white border border-slate-200/80 rounded-lg p-5 sm:p-6 shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="font-heading text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
-              Faculty Workspace — {user?.name || 'Prof. Alexander Cruz'}
-            </span>
-            <span className="bg-blue-50 text-[#1D4ED8] border border-blue-200 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
-              Faculty Member
-            </span>
-          </div>
-          <div className="text-xs text-slate-500 font-sans flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span>College of Information Technology & Computer Studies</span>
-            <span>•</span>
-            <span className="text-[#1D4ED8] font-medium">1st Semester A.Y. 2026–2027</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 self-start sm:self-center">
-          <Link
-            href="/teacher/grades"
-            className="btn-primary text-xs inline-flex items-center gap-1.5"
-          >
-            <GraduationCap size={13} />
-            <span>Grade Management</span>
-          </Link>
-          <Link
-            href="/teacher/attendance"
-            className="btn-secondary text-xs inline-flex items-center gap-1.5"
-          >
-            <ClipboardList size={13} />
-            <span>Attendance Entry</span>
-          </Link>
-        </div>
-      </div>
+      {/* ── 1. School Building Dashboard Header Banner ── */}
+      <DashboardBanner />
 
       {/* ── 2. Subtle Faculty Metrics ────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

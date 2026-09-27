@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import PageHeader from '@/components/ui/PageHeader';
 import LoadingState from '@/components/ui/LoadingState';
+import { OfficialCampusBulletins } from '@/components/dashboard/OfficialCampusBulletins';
 import { useAuth } from '@/lib/auth';
 import { 
   BookOpen, 
@@ -242,7 +243,10 @@ export default function TeacherDashboard() {
         </div>
       </div>
 
-      {/* ── 2. Subtle Faculty Metrics ────────────── */}
+      {/* ── 2. Official Campus Bulletins (Prominent Top Section) ── */}
+      <OfficialCampusBulletins role="teacher" />
+
+      {/* ── 3. Subtle Faculty Metrics ────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: 'Assigned Courses', value: facultyData.stats?.assignedSubjects || 4, sub: 'Active Teaching Load', icon: BookOpen, color: 'text-[#1D4ED8] bg-blue-50 border-blue-200' },

@@ -15,12 +15,16 @@ class Announcement extends Model
         'content',
         'author_id',
         'target_audience',
+        'category',
+        'priority',
+        'is_important',
         'is_published',
         'published_at',
     ];
 
     protected $casts = [
         'is_published' => 'boolean',
+        'is_important' => 'boolean',
         'published_at' => 'datetime',
     ];
 

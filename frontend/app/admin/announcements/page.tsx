@@ -32,6 +32,9 @@ export default function AnnouncementManagement() {
     title: '',
     content: '',
     target_audience: 'all',
+    category: 'general',
+    priority: 'normal',
+    is_important: false,
   });
 
   const audienceOptions = [
@@ -39,6 +42,22 @@ export default function AnnouncementManagement() {
     { value: 'students', label: 'Students Only' },
     { value: 'teachers', label: 'Teachers / Faculty Only' },
     { value: 'admin', label: 'Administration Only' },
+  ];
+
+  const categoryOptions = [
+    { value: 'general', label: '📢 General Announcement' },
+    { value: 'academic', label: '📚 Academic' },
+    { value: 'enrollment', label: '📝 Enrollment' },
+    { value: 'student_affairs', label: '🎓 Student Affairs' },
+    { value: 'faculty', label: '👨‍🏫 Faculty Advisory' },
+    { value: 'important', label: '🚨 Important Notice' },
+    { value: 'event', label: '📅 Campus Event' },
+  ];
+
+  const priorityOptions = [
+    { value: 'normal', label: 'Normal Priority' },
+    { value: 'high', label: 'High Priority' },
+    { value: 'urgent', label: '🔴 Urgent / High Alert' },
   ];
 
   const fetchAnnouncements = useCallback(async (silent = false) => {
@@ -85,6 +104,9 @@ export default function AnnouncementManagement() {
       title: '',
       content: '',
       target_audience: 'all',
+      category: 'general',
+      priority: 'normal',
+      is_important: false,
     });
     setShowModal(true);
   };
@@ -95,6 +117,9 @@ export default function AnnouncementManagement() {
       title: item.title || '',
       content: item.content || '',
       target_audience: item.target_audience || 'all',
+      category: item.category || 'general',
+      priority: item.priority || 'normal',
+      is_important: Boolean(item.is_important),
     });
     setShowModal(true);
   };
@@ -121,6 +146,9 @@ export default function AnnouncementManagement() {
         title: trimmedTitle,
         content: trimmedContent,
         target_audience: formData.target_audience,
+        category: formData.category,
+        priority: formData.priority,
+        is_important: formData.is_important,
       };
 
       if (editingAnnouncement) {
@@ -138,6 +166,9 @@ export default function AnnouncementManagement() {
         title: '',
         content: '',
         target_audience: 'all',
+        category: 'general',
+        priority: 'normal',
+        is_important: false,
       });
 
       // Broadcast real-time sync event across all tabs & roles
@@ -229,9 +260,19 @@ export default function AnnouncementManagement() {
       label: 'Bulletin Title',
       render: (row: any) => (
         <div>
-          <div className="font-semibold text-slate-900 flex items-center gap-1.5">
-            <Megaphone className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
+          <div className="font-semibold text-slate-900 flex items-center gap-1.5 flex-wrap">
+            <Megaphone className="w-3.5 h-3.5 text-blue-600 flex-shrink-0" />
             <span>{row.title || 'Untitled'}</span>
+            {Boolean(row.is_important || row.priority === 'urgent') && (
+              <span className="px-1.5 py-0.2 rounded text-[10px] font-bold uppercase bg-rose-100 text-rose-800 border border-rose-200">
+                Important
+              </span>
+            )}
+            {row.category && row.category !== 'general' && (
+              <span className="px-1.5 py-0.2 rounded text-[10px] font-medium bg-blue-50 text-blue-800 border border-blue-200 capitalize">
+                {row.category.replace('_', ' ')}
+              </span>
+            )}
           </div>
           <div className="text-xs text-slate-500 line-clamp-1 mt-0.5">{row.content || ''}</div>
         </div>
@@ -373,13 +414,47 @@ export default function AnnouncementManagement() {
               required
             />
 
-            <FormSelect
-              label="Target Audience"
-              value={formData.target_audience}
-              onChange={(e) => setFormData({ ...formData, target_audience: e.target.value })}
-              options={audienceOptions}
-              required
-            />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <FormSelect
+                label="Announcement Category"
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                options={categoryOptions}
+                required
+              />
+
+              <FormSelect
+                label="Target Audience"
+                value={formData.target_audience}
+                onChange={(e) => setFormData({ ...formData, target_audience: e.target.value })}
+                options={audienceOptions}
+                required
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <FormSelect
+                label="Priority Level"
+                value={formData.priority}
+                onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                options={priorityOptions}
+                required
+              />
+
+              <div className="flex items-center pt-5">
+                <label className="flex items-center gap-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={formData.is_important}
+                    onChange={(e) => setFormData({ ...formData, is_important: e.target.checked })}
+                    className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500 border-slate-300"
+                  />
+                  <span className="text-xs font-semibold text-rose-700">
+                    Mark as Important Notice (Top Banner Highlight)
+                  </span>
+                </label>
+              </div>
+            </div>
 
             <div className="space-y-1">
               <label className="block text-xs font-semibold text-slate-700">

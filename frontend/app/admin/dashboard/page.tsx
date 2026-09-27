@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
 import LoadingState from '@/components/ui/LoadingState';
+import { OfficialCampusBulletins } from '@/components/dashboard/OfficialCampusBulletins';
 import { 
   Users, 
   UserCheck, 
@@ -106,7 +107,10 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* ── 2. Subtle Executive Metrics ──────────── */}
+      {/* ── 2. Official Campus Bulletins (Prominent Top Section) ── */}
+      <OfficialCampusBulletins role="admin" />
+
+      {/* ── 3. Subtle Executive Metrics ──────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: 'Registered Students', value: stats.totalStudents, sub: 'Active Population', icon: Users, color: 'text-[#1D4ED8] bg-blue-50 border-blue-200' },

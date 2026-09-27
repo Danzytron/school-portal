@@ -77,14 +77,21 @@ class AnnouncementController extends Controller
             'title' => 'required|string',
             'content' => 'required|string',
             'target_audience' => 'nullable|in:all,students,teachers,admin',
+            'category' => 'nullable|string|max:50',
+            'priority' => 'nullable|string|max:50',
+            'is_important' => 'nullable|boolean',
+            'is_published' => 'nullable|boolean',
         ]);
         
         $announcement = Announcement::create([
             'title' => $validated['title'],
             'content' => $validated['content'],
             'target_audience' => $validated['target_audience'] ?? 'all',
+            'category' => $validated['category'] ?? 'general',
+            'priority' => $validated['priority'] ?? 'normal',
+            'is_important' => (bool)($validated['is_important'] ?? false),
             'author_id' => $request->user()->id,
-            'is_published' => true,
+            'is_published' => $validated['is_published'] ?? true,
             'published_at' => now(),
         ]);
 
@@ -100,7 +107,16 @@ class AnnouncementController extends Controller
         }
 
         $announcement = Announcement::findOrFail($id);
-        $announcement->update($request->only(['title', 'content', 'target_audience', 'is_published']));
+        $announcement->update($request->only([
+            'title',
+            'content',
+            'target_audience',
+            'category',
+            'priority',
+            'is_important',
+            'is_published',
+            'published_at',
+        ]));
         
         $this->dispatchAnnouncementNotifications($announcement);
 

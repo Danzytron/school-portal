@@ -32,7 +32,23 @@ export interface Attendance { id: number; subject_id: number; section_id: number
 export interface AttendanceRecord { id: number; attendance_id: number; student_id: number; status: string; time_recorded: string; remarks: string; student?: Student; attendance?: Attendance; }
 
 // Announcement
-export interface Announcement { id: number; title: string; content: string; author_id: number; target_audience: string; is_published: boolean; published_at: string; created_at: string; author?: User; }
+export interface Announcement { 
+  id: number; 
+  title: string; 
+  content: string; 
+  author_id: number; 
+  target_audience: string; 
+  category?: string;
+  priority?: string;
+  is_important?: boolean;
+  is_published: boolean; 
+  published_at?: string; 
+  created_at: string; 
+  updated_at?: string;
+  isRead?: boolean;
+  is_read?: boolean;
+  author?: User; 
+}
 
 // Financial
 export interface SchoolFee { id: number; student_id: number; semester_id: number; tuition: number; miscellaneous: number; laboratory: number; library: number; other_fees: number; total_amount: number; amount_paid: number; balance: number; status: string; }

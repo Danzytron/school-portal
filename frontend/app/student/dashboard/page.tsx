@@ -5,6 +5,7 @@ import { useAuth } from '@/lib/auth';
 import { api } from '@/lib/api';
 import { StudentDashboard } from '@/types';
 import { LoadingState } from '@/components/ui/LoadingState';
+import { OfficialCampusBulletins } from '@/components/dashboard/OfficialCampusBulletins';
 import { 
   BookOpen, 
   Clock, 
@@ -237,7 +238,10 @@ export default function StudentDashboardPage() {
         </div>
       </div>
 
-      {/* ── 2. Subtle Academic Metrics Strip ────── */}
+      {/* ── 2. Official Campus Bulletins (Prominent Top Section) ── */}
+      <OfficialCampusBulletins role="student" />
+
+      {/* ── 3. Subtle Academic Metrics Strip ────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
           { label: 'General Weighted Average', value: '1.25', sub: "Dean's Honor List", icon: Award, color: 'text-blue-700 bg-blue-50 border-blue-200' },

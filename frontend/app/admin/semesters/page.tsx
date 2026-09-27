@@ -237,11 +237,7 @@ export default function SemesterManagement() {
         }}
       />
 
-      {loading ? (
-        <LoadingState message="Loading academic terms from database..." />
-      ) : (
-        <DataTable columns={columns} data={semesters} emptyMessage="No academic semesters found." />
-      )}
+      <DataTable columns={columns} data={semesters} loading={loading} emptyMessage="No academic semesters found." />
 
       {/* Add/Edit Modal */}
       {showModal && (

@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
@@ -213,11 +213,7 @@ export default function GradeReview() {
         </div>
       </div>
 
-      {loading ? (
-        <LoadingState message="Loading student grades from database..." />
-      ) : (
-        <DataTable columns={columns} data={filteredGrades} emptyMessage="No grade records found." />
-      )}
+      <DataTable columns={columns} data={filteredGrades} loading={loading} emptyMessage="No grade records found." />
     </div>
   );
 }

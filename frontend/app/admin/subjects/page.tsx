@@ -274,11 +274,7 @@ export default function SubjectManagement() {
         </div>
       </div>
 
-      {loading ? (
-        <LoadingState message="Loading subjects from database..." />
-      ) : (
-        <DataTable columns={columns} data={filteredSubjects} emptyMessage="No subjects found matching your criteria." />
-      )}
+      <DataTable columns={columns} data={filteredSubjects} loading={loading} emptyMessage="No subjects found matching your criteria." />
 
       {/* Add/Edit Subject Modal */}
       {showModal && (

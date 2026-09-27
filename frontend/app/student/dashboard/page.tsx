@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { StudentDashboard } from '@/types';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { OfficialCampusBulletins } from '@/components/dashboard/OfficialCampusBulletins';
+import { StudentDashboardSkeleton } from '@/components/ui/skeleton';
 import { 
   BookOpen, 
   Clock, 
@@ -196,6 +197,10 @@ export default function StudentDashboardPage() {
   ];
 
   const recentBulletins = Array.isArray(data?.recent_announcements) ? data.recent_announcements : [];
+
+  if (loading) {
+    return <StudentDashboardSkeleton />;
+  }
 
   return (
     <div className="space-y-6 font-sans">

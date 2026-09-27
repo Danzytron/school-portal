@@ -5,6 +5,7 @@ import { api } from '@/lib/api';
 import PageHeader from '@/components/ui/PageHeader';
 import LoadingState from '@/components/ui/LoadingState';
 import { OfficialCampusBulletins } from '@/components/dashboard/OfficialCampusBulletins';
+import { TeacherDashboardSkeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/lib/auth';
 import { 
   BookOpen, 
@@ -203,6 +204,10 @@ export default function TeacherDashboard() {
   }, []);
 
   const facultyData = data || DEFAULT_TEACHER_DASHBOARD;
+
+  if (loading) {
+    return <TeacherDashboardSkeleton />;
+  }
 
   return (
     <div className="space-y-6 font-sans">

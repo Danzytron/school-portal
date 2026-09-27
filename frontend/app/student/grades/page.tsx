@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { Grade, Semester } from '@/types';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { SkeletonTable } from '@/components/ui/skeleton';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { StatusBadge } from '@/components/ui/StatusBadge';
@@ -195,7 +196,21 @@ export default function StudentGradesPage() {
       </div>
 
       {loadingGrades ? (
-        <LoadingState message="Loading official course ratings..." />
+        <div className="panel p-4">
+          <SkeletonTable
+            columns={[
+              { header: 'Course Code', width: 'w-24' },
+              { header: 'Descriptive Course Title', width: 'w-60' },
+              { header: 'Units', width: 'w-12' },
+              { header: 'Midterm', width: 'w-16' },
+              { header: 'Final', width: 'w-16' },
+              { header: 'Rating', width: 'w-16' },
+              { header: 'Remarks', width: 'w-20' },
+              { header: 'Instructor', width: 'w-36' },
+            ]}
+            rows={6}
+          />
+        </div>
       ) : error ? (
         <EmptyState title="Error" description={error} icon={<BookOpen size={48} />} />
       ) : grades.length === 0 ? (

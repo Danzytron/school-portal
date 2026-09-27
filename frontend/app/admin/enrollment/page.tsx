@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
@@ -203,11 +203,7 @@ export default function EnrollmentManagement() {
         </div>
       </div>
 
-      {loading ? (
-        <LoadingState message="Loading enrollment applications from database..." />
-      ) : (
-        <DataTable columns={columns} data={filteredEnrollments} emptyMessage="No enrollment applications found." />
-      )}
+      <DataTable columns={columns} data={filteredEnrollments} loading={loading} emptyMessage="No enrollment applications found." />
 
       {/* Reject Remarks Confirmation Dialog */}
       {rejectDialog && (

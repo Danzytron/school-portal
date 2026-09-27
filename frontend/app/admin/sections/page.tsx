@@ -244,11 +244,7 @@ export default function SectionManagement() {
         </div>
       </div>
 
-      {loading ? (
-        <LoadingState message="Loading class sections from database..." />
-      ) : (
-        <DataTable columns={columns} data={filteredSections} emptyMessage="No class sections found." />
-      )}
+      <DataTable columns={columns} data={filteredSections} loading={loading} emptyMessage="No class sections found." />
 
       {/* Add/Edit Modal */}
       {showModal && (

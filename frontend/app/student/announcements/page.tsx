@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { api } from '@/lib/api';
 import PageHeader from '@/components/ui/PageHeader';
+import { SkeletonBulletins } from '@/components/ui/skeleton';
 import LoadingState from '@/components/ui/LoadingState';
 import { 
   Megaphone, 
@@ -285,7 +286,7 @@ export default function StudentAnnouncementsPage() {
 
       {/* Main Content Area */}
       {loading ? (
-        <LoadingState message="Loading announcements..." />
+        <SkeletonBulletins count={4} />
       ) : error ? (
         /* Error State with required text and working Retry button */
         <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center space-y-4">

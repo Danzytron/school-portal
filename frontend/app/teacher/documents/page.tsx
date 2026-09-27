@@ -200,11 +200,7 @@ export default function TeacherDocuments() {
         }}
       />
 
-      {loading ? (
-        <LoadingState message="Loading documents..." />
-      ) : (
-        <DataTable columns={columns} data={documents} emptyMessage="No course materials uploaded yet." />
-      )}
+      <DataTable columns={columns} data={documents} loading={loading} emptyMessage="No course materials uploaded yet." />
 
       {/* Upload Modal */}
       {modalOpen && (

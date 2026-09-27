@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
 import LoadingState from '@/components/ui/LoadingState';
 import { OfficialCampusBulletins } from '@/components/dashboard/OfficialCampusBulletins';
+import { AdminDashboardSkeleton } from '@/components/ui/skeleton';
 import { 
   Users, 
   UserCheck, 
@@ -67,6 +68,10 @@ export default function AdminDashboard() {
     { id: 3, action: 'Master Timetable Updated', details: 'Computer Laboratory 3 assigned to BSCS 2-B for practicals.', user: 'Academic Head', time: '3 hours ago' },
     { id: 4, action: 'Matriculation Clearance', details: 'Batch processing completed for 45 3rd-year engineering clearances.', user: 'Treasury Office', time: '5 hours ago' },
   ];
+
+  if (loading) {
+    return <AdminDashboardSkeleton />;
+  }
 
   return (
     <div className="space-y-6 font-sans">

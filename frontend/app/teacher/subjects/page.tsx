@@ -169,16 +169,13 @@ export default function TeacherSubjects() {
         </div>
 
         <div className="p-0">
-          {loading ? (
-            <div className="p-8"><LoadingState message="Retrieving faculty class load..." /></div>
-          ) : (
-            <DataTable
-              columns={columns}
-              data={subjects}
-              keyField="id"
-              emptyMessage="No subjects assigned for this semester."
-            />
-          )}
+          <DataTable
+            columns={columns}
+            data={subjects}
+            keyField="id"
+            loading={loading}
+            emptyMessage="No subjects assigned for this semester."
+          />
         </div>
       </div>
     </div>

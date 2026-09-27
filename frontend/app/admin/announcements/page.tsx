@@ -392,11 +392,7 @@ export default function AnnouncementManagement() {
         </div>
       </div>
 
-      {loading ? (
-        <LoadingState message="Loading announcements from database..." />
-      ) : (
-        <DataTable columns={columns} data={filteredAnnouncements} emptyMessage="No bulletins found." />
-      )}
+      <DataTable columns={columns} data={filteredAnnouncements} loading={loading} emptyMessage="No bulletins found." />
 
       {/* Add/Edit Modal */}
       {showModal && (

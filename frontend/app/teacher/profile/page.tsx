@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { Skeleton, SkeletonCard } from '@/components/ui/skeleton';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { Toast } from '@/components/ui/Toast';
 import { User, Mail, Phone, Building2, Award, Shield, Edit2, Save } from 'lucide-react';
@@ -73,6 +74,45 @@ export default function TeacherProfile() {
   };
 
   const prof = profile || DEFAULT_FACULTY_PROFILE;
+
+  if (loading) {
+    return (
+      <div className="space-y-6 font-sans max-w-4xl">
+        <PageHeader 
+          title="Faculty Member Dossier" 
+          subtitle="Official instructional appointment records, departmental credentials, and institutional contact information."
+          badge="Faculty Registry"
+        />
+        <div className="bg-white border border-slate-200/90 rounded-xl p-6 shadow-2xs flex flex-col sm:flex-row items-center sm:items-start gap-5">
+          <Skeleton className="w-20 h-20 rounded-xl shrink-0" />
+          <div className="flex-1 space-y-2 w-full">
+            <div className="flex gap-2">
+              <Skeleton className="h-5 w-28 rounded" />
+              <Skeleton className="h-5 w-36 rounded" />
+            </div>
+            <Skeleton className="h-6 w-64 rounded" />
+            <Skeleton className="h-4 w-48 rounded" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <SkeletonCard header={<Skeleton className="h-5 w-40" />}>
+            <div className="space-y-4">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
+            </div>
+          </SkeletonCard>
+          <SkeletonCard header={<Skeleton className="h-5 w-40" />}>
+            <div className="space-y-4">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
+            </div>
+          </SkeletonCard>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 font-sans max-w-4xl">

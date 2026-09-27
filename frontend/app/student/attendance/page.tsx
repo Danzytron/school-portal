@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { AttendanceRecord, Subject } from '@/types';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { SkeletonMetric, SkeletonTable } from '@/components/ui/skeleton';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { StatusBadge } from '@/components/ui/StatusBadge';
@@ -118,6 +119,31 @@ export default function StudentAttendancePage() {
   const attendanceRate = stats.total > 0 
     ? (((stats.present + stats.late) / stats.total) * 100).toFixed(1) 
     : '96.5';
+
+  if (loading) {
+    return (
+      <div className="space-y-6 font-sans">
+        <PageHeader 
+          title="Class Attendance Audit & Academic Standing" 
+          subtitle="Official daily attendance log and Commission on Higher Education (CHED) threshold tracking."
+          badge="Official Registrar Audit"
+        />
+        <SkeletonMetric count={4} />
+        <div className="panel p-4">
+          <SkeletonTable
+            columns={[
+              { header: 'Date', width: 'w-28' },
+              { header: 'Course Code & Description', width: 'w-60' },
+              { header: 'Time Logged', width: 'w-24' },
+              { header: 'Verification Status', width: 'w-24' },
+              { header: 'Official Remark', width: 'w-48' },
+            ]}
+            rows={6}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 font-sans">

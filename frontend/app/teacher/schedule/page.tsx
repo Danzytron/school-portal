@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { Schedule } from '@/types';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { Skeleton, SkeletonTable } from '@/components/ui/skeleton';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Modal } from '@/components/ui/Modal';
@@ -130,6 +131,41 @@ export default function TeacherSchedulePage() {
     ];
     return colors[index % colors.length];
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-6 font-sans">
+        <PageHeader 
+          title="Teaching Schedule & Timetable" 
+          subtitle="Weekly classroom lecture matrix, laboratory assignments, and section allocations."
+          badge="Faculty Academic Load"
+        />
+        <div className="bg-white border border-slate-200/90 rounded-xl p-4 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Skeleton className="w-10 h-10 rounded-lg" />
+            <div className="space-y-1">
+              <Skeleton className="h-3 w-28 rounded" />
+              <Skeleton className="h-4 w-64 rounded" />
+            </div>
+          </div>
+          <Skeleton className="h-8 w-48 rounded-lg" />
+        </div>
+        <div className="bg-white border border-slate-200/90 rounded-xl shadow-2xs p-4">
+          <SkeletonTable
+            columns={[
+              { header: 'Time Slot', width: 'w-24' },
+              { header: 'Monday', width: 'w-36' },
+              { header: 'Tuesday', width: 'w-36' },
+              { header: 'Wednesday', width: 'w-36' },
+              { header: 'Thursday', width: 'w-36' },
+              { header: 'Friday', width: 'w-36' },
+            ]}
+            rows={5}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 font-sans">

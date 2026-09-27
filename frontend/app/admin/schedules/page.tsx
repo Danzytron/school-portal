@@ -298,11 +298,7 @@ export default function ScheduleManagement() {
         </div>
       </div>
 
-      {loading ? (
-        <LoadingState message="Loading timetable schedules from database..." />
-      ) : (
-        <DataTable columns={columns} data={filteredSchedules} emptyMessage="No class schedules found." />
-      )}
+      <DataTable columns={columns} data={filteredSchedules} loading={loading} emptyMessage="No class schedules found." />
 
       {/* Add/Edit Modal */}
       {showModal && (

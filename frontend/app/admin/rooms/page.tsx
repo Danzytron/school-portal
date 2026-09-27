@@ -252,11 +252,7 @@ export default function RoomManagement() {
         </div>
       </div>
 
-      {loading ? (
-        <LoadingState message="Loading room directory from database..." />
-      ) : (
-        <DataTable columns={columns} data={filteredRooms} emptyMessage="No classrooms or laboratories found." />
-      )}
+      <DataTable columns={columns} data={filteredRooms} loading={loading} emptyMessage="No classrooms or laboratories found." />
 
       {/* Add/Edit Modal */}
       {showModal && (

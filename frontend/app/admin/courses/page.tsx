@@ -242,11 +242,7 @@ export default function CourseManagement() {
         </div>
       </div>
 
-      {loading ? (
-        <LoadingState message="Loading degree programs from database..." />
-      ) : (
-        <DataTable columns={columns} data={filteredCourses} emptyMessage="No degree programs found." />
-      )}
+      <DataTable columns={columns} data={filteredCourses} loading={loading} emptyMessage="No degree programs found." />
 
       {/* Add/Edit Modal */}
       {showModal && (

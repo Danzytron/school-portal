@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { Document, Subject } from '@/types';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { SkeletonTable } from '@/components/ui/skeleton';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Modal } from '@/components/ui/Modal';
@@ -144,6 +145,43 @@ export default function StudentDocumentsPage() {
   const filteredDocs = selectedSubject === 'all' 
     ? documents 
     : documents.filter(d => d.subject_id?.toString() === selectedSubject);
+
+  if (loading) {
+    return (
+      <div className="space-y-6 font-sans">
+        <PageHeader 
+          title="Registrar Document Services & Course Archives" 
+          subtitle="Official credential request tracker, authentic certification issuance, and course materials."
+          badge="Office of the University Registrar"
+        />
+        <div className="panel p-4">
+          <SkeletonTable
+            columns={[
+              { header: 'Tracking Reference', width: 'w-32' },
+              { header: 'Requested Credential Document', width: 'w-60' },
+              { header: 'Declared Purpose', width: 'w-48' },
+              { header: 'Date Filed', width: 'w-24' },
+              { header: 'Processing Status', width: 'w-28' },
+              { header: 'Issuance Action', width: 'w-28' },
+            ]}
+            rows={3}
+          />
+        </div>
+        <div className="panel p-4">
+          <SkeletonTable
+            columns={[
+              { header: 'Resource Title', width: 'w-60' },
+              { header: 'Subject / Department', width: 'w-40' },
+              { header: 'File Format', width: 'w-24' },
+              { header: 'Size', width: 'w-20' },
+              { header: 'Download', width: 'w-20' },
+            ]}
+            rows={4}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 font-sans">

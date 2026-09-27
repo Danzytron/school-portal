@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import api from '@/lib/api';
 import PageHeader from '@/components/ui/PageHeader';
-import LoadingState from '@/components/ui/LoadingState';
+import { Skeleton, SkeletonMetric, SkeletonTable } from '@/components/ui/skeleton';
 import Toast from '@/components/ui/Toast';
 import { ClipboardList, CheckCircle2, UserCheck, Clock, Check, X, AlertCircle } from 'lucide-react';
 
@@ -13,7 +13,7 @@ export default function TeacherAttendance() {
   const [sectionId, setSectionId] = useState('1');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [students, setStudents] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
@@ -53,6 +53,8 @@ export default function TeacherAttendance() {
       }
     } catch (e) {
       console.error('Failed to load initial teacher attendance data', e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -97,6 +99,50 @@ export default function TeacherAttendance() {
   const lateCount = students.filter(s => s.status === 'late').length;
   const absentCount = students.filter(s => s.status === 'absent').length;
   const excusedCount = students.filter(s => s.status === 'excused').length;
+
+  if (loading) {
+    return (
+      <div className="space-y-6 font-sans">
+        <PageHeader 
+          title="Classroom Attendance Registry" 
+          subtitle="Log student attendance, record late arrivals, and submit official roll call reports"
+        />
+        
+        <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs flex flex-wrap gap-4 items-center justify-between">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="w-64 space-y-1">
+              <div className="h-3 w-20 bg-slate-200 rounded animate-pulse" />
+              <div className="h-8 w-full bg-slate-200 rounded-md animate-pulse" />
+            </div>
+            <div className="w-48 space-y-1">
+              <div className="h-3 w-16 bg-slate-200 rounded animate-pulse" />
+              <div className="h-8 w-full bg-slate-200 rounded-md animate-pulse" />
+            </div>
+            <div className="w-40 space-y-1">
+              <div className="h-3 w-16 bg-slate-200 rounded animate-pulse" />
+              <div className="h-8 w-full bg-slate-200 rounded-md animate-pulse" />
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-32 bg-slate-200 rounded-md animate-pulse" />
+            <div className="h-8 w-44 bg-slate-200 rounded-md animate-pulse" />
+          </div>
+        </div>
+
+        <SkeletonMetric count={4} />
+
+        <div className="panel p-4">
+          <SkeletonTable
+            columns={[
+              { header: 'Student Name & ID', width: 'w-60' },
+              { header: 'Attendance Status Selector', width: 'w-72' },
+            ]}
+            rows={5}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 font-sans">

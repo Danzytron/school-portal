@@ -1,5 +1,5 @@
 import React from "react";
-import LoadingState from "./LoadingState";
+import { SkeletonTable } from "./skeleton/SkeletonTable";
 import EmptyState from "./EmptyState";
 
 export interface ColumnDef {
@@ -34,7 +34,7 @@ export function DataTable({
   renderCard
 }: DataTableProps) {
   if (loading) {
-    return <LoadingState />;
+    return <SkeletonTable columns={columns} caption={caption} rows={5} />;
   }
 
   if (!data || data.length === 0) {

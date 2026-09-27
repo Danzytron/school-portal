@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { SchoolFee, Semester } from '@/types';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { Skeleton, SkeletonCard, SkeletonMetric, SkeletonTable } from '@/components/ui/skeleton';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { StatusBadge } from '@/components/ui/StatusBadge';
@@ -100,6 +101,41 @@ export default function StudentFeesPage() {
   const handlePrint = () => {
     window.print();
   };
+
+  if (loadingFees) {
+    return (
+      <div className="space-y-6 font-sans">
+        <PageHeader 
+          title="Student Statement of Account & Assessment" 
+          subtitle="Itemized assessment of tuition and fees certified by the University Cashier."
+          badge="Official Treasury Record"
+        />
+        <SkeletonMetric count={3} />
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div className="lg:col-span-7">
+            <div className="panel p-4">
+              <SkeletonTable
+                columns={[
+                  { header: 'Fee Item Description', width: 'w-64' },
+                  { header: 'Assessment Amount', width: 'w-28' },
+                ]}
+                rows={6}
+              />
+            </div>
+          </div>
+          <div className="lg:col-span-5">
+            <SkeletonCard header={<Skeleton className="h-5 w-44" />}>
+              <div className="space-y-4">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+                <Skeleton className="h-10 w-full rounded-md" />
+              </div>
+            </SkeletonCard>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 font-sans">

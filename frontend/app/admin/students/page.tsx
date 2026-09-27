@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
@@ -314,19 +314,15 @@ export default function StudentManagement() {
         </div>
       </div>
 
-      {loading ? (
-        <LoadingState message="Retrieving student registry from PostgreSQL database..." />
-      ) : (
-        <div className="panel overflow-hidden">
-          <div className="panel-heading">
-            <div className="flex items-center gap-2">
-              <Users size={15} className="text-[#1D4ED8]" />
-              <span>Official Student Roster ({filteredStudents.length} Records)</span>
-            </div>
+      <div className="panel overflow-hidden">
+        <div className="panel-heading">
+          <div className="flex items-center gap-2">
+            <Users size={15} className="text-[#1D4ED8]" />
+            <span>Official Student Roster {loading ? '' : `(${filteredStudents.length} Records)`}</span>
           </div>
-          <DataTable columns={columns} data={filteredStudents} actions={actions} />
         </div>
-      )}
+        <DataTable columns={columns} data={filteredStudents} actions={actions} loading={loading} />
+      </div>
 
       {/* Add / Edit Student Modal */}
       <Modal

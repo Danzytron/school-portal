@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { Student } from '@/types';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { Skeleton, SkeletonCard } from '@/components/ui/skeleton';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { 
@@ -102,6 +103,45 @@ export default function StudentProfilePage() {
   };
 
   const initials = student?.user?.name ? student.user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'RD';
+
+  if (loading) {
+    return (
+      <div className="space-y-6 font-sans">
+        <PageHeader 
+          title="Student Permanent Dossier & Registrar Records" 
+          subtitle="Official student academic registry, personal background, and certified contacts."
+          badge="Official Student Record"
+        />
+        <div className="bg-white border border-slate-200/90 rounded-lg p-6 shadow-2xs flex flex-col sm:flex-row items-center sm:items-start gap-5">
+          <Skeleton className="w-20 h-20 rounded-xl shrink-0" />
+          <div className="flex-1 space-y-2 w-full">
+            <div className="flex gap-2">
+              <Skeleton className="h-5 w-28 rounded" />
+              <Skeleton className="h-5 w-32 rounded" />
+            </div>
+            <Skeleton className="h-7 w-64 rounded" />
+            <Skeleton className="h-4 w-48 rounded" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <SkeletonCard header={<Skeleton className="h-5 w-40" />}>
+            <div className="space-y-4">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
+            </div>
+          </SkeletonCard>
+          <SkeletonCard header={<Skeleton className="h-5 w-40" />}>
+            <div className="space-y-4">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-1/2" />
+            </div>
+          </SkeletonCard>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 font-sans">

@@ -260,11 +260,7 @@ export default function FeesManagement() {
         </div>
       </div>
 
-      {loading ? (
-        <LoadingState message="Loading financial ledgers from database..." />
-      ) : (
-        <DataTable columns={columns} data={filteredFees} emptyMessage="No fee assessments found." />
-      )}
+      <DataTable columns={columns} data={filteredFees} loading={loading} emptyMessage="No fee assessments found." />
 
       {/* Assess New Student Fee Modal */}
       {showAssessModal && (

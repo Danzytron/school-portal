@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import PageHeader from '@/components/ui/PageHeader';
@@ -159,11 +159,7 @@ export default function AttendanceOverview() {
         <SearchBar value={search} onChange={setSearch} placeholder="Search attendance by subject, section, or teacher..." />
       </div>
 
-      {loading ? (
-        <LoadingState message="Loading attendance logs from database..." />
-      ) : (
-        <DataTable columns={columns} data={filteredAttendance} emptyMessage="No attendance session logs found." />
-      )}
+      <DataTable columns={columns} data={filteredAttendance} loading={loading} emptyMessage="No attendance session logs found." />
     </div>
   );
 }

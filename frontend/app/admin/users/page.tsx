@@ -248,11 +248,7 @@ export default function UserManagement() {
         </div>
       </div>
 
-      {loading ? (
-        <LoadingState message="Loading system accounts from database..." />
-      ) : (
-        <DataTable columns={columns} data={filteredUsers} emptyMessage="No user accounts found." />
-      )}
+      <DataTable columns={columns} data={filteredUsers} loading={loading} emptyMessage="No user accounts found." />
 
       {/* Add/Edit Modal */}
       {showModal && (

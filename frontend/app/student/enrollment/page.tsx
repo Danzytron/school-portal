@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { Enrollment, Subject, Semester } from '@/types';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { Skeleton, SkeletonTable } from '@/components/ui/skeleton';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { StatusBadge } from '@/components/ui/StatusBadge';
@@ -102,6 +103,53 @@ export default function StudentEnrollmentPage() {
   const totalSelectedUnits = availableSubjects
     .filter(s => selectedSubjectIds.includes(s.id))
     .reduce((sum, s) => sum + (s.units || 3), 0);
+
+  if (loading) {
+    return (
+      <div className="space-y-6 font-sans">
+        <PageHeader 
+          title="Enrollment, Advising & Assessment" 
+          subtitle="Official course advisement, unit validation, and Enrollment Assessment Form (EAF)."
+          badge="Office of the University Registrar"
+        />
+        <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs font-sans">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="flex items-center gap-2.5 p-2 rounded bg-slate-50 border border-slate-200">
+                <Skeleton className="w-5 h-5 rounded-full" />
+                <div className="space-y-1 flex-1">
+                  <Skeleton className="h-3 w-28" />
+                  <Skeleton className="h-2.5 w-16" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="bg-white border border-slate-200/90 rounded-lg shadow-sm p-6 space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Skeleton className="w-14 h-14 rounded-full" />
+              <div className="space-y-2">
+                <Skeleton className="h-5 w-48" />
+                <Skeleton className="h-3 w-64" />
+              </div>
+            </div>
+            <Skeleton className="h-8 w-36 rounded" />
+          </div>
+          <SkeletonTable
+            columns={[
+              { header: 'Course Code', width: 'w-24' },
+              { header: 'Descriptive Course Title', width: 'w-60' },
+              { header: 'Units', width: 'w-16' },
+              { header: 'Day & Time', width: 'w-36' },
+              { header: 'Room', width: 'w-20' },
+            ]}
+            rows={5}
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

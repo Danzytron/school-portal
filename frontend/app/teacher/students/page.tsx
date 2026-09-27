@@ -204,16 +204,13 @@ export default function TeacherStudents() {
         </div>
 
         <div className="p-0">
-          {loading ? (
-            <div className="p-8"><LoadingState message="Compiling student directory..." /></div>
-          ) : (
-            <DataTable
-              columns={columns}
-              data={filteredStudents}
-              keyField="id"
-              emptyMessage="No students found matching the selected filters."
-            />
-          )}
+          <DataTable
+            columns={columns}
+            data={filteredStudents}
+            keyField="id"
+            loading={loading}
+            emptyMessage="No students found matching the selected filters."
+          />
         </div>
       </div>
     </div>

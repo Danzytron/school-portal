@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { EnrollmentSubject, Semester } from '@/types';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { SkeletonTable } from '@/components/ui/skeleton';
 import { DataTable } from '@/components/ui/DataTable';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -395,7 +396,21 @@ export default function StudentSubjectsPage() {
       </div>
 
       {loadingSubjects ? (
-        <LoadingState message="Fetching enrolled courses from academic records..." />
+        <div className="panel p-4">
+          <SkeletonTable
+            columns={[
+              { header: 'Course Code', width: 'w-24' },
+              { header: 'Descriptive Course Title', width: 'w-60' },
+              { header: 'Units', width: 'w-16' },
+              { header: 'Day & Time', width: 'w-36' },
+              { header: 'Room', width: 'w-20' },
+              { header: 'Instructor', width: 'w-36' },
+              { header: 'Status', width: 'w-20' },
+              { header: 'Action', width: 'w-28' },
+            ]}
+            rows={6}
+          />
+        </div>
       ) : error && subjects.length === 0 ? (
         <EmptyState title="Error" description={error} icon={<BookOpen size={48} />} />
       ) : subjects.length === 0 ? (

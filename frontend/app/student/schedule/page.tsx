@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { Schedule, Semester } from '@/types';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { SkeletonTable } from '@/components/ui/skeleton';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Modal } from '@/components/ui/Modal';
@@ -227,7 +228,20 @@ export default function StudentSchedulePage() {
       </div>
 
       {loadingSchedule ? (
-        <LoadingState message="Compiling weekly timetable grid..." />
+        <div className="panel p-4">
+          <SkeletonTable
+            columns={[
+              { header: 'Time Slot', width: 'w-24' },
+              { header: 'Monday', width: 'w-36' },
+              { header: 'Tuesday', width: 'w-36' },
+              { header: 'Wednesday', width: 'w-36' },
+              { header: 'Thursday', width: 'w-36' },
+              { header: 'Friday', width: 'w-36' },
+              { header: 'Saturday', width: 'w-36' },
+            ]}
+            rows={6}
+          />
+        </div>
       ) : error ? (
         <EmptyState title="Error" description={error} icon={<BookOpen size={48} />} />
       ) : schedules.length === 0 ? (

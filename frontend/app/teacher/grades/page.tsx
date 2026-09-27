@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { api } from '@/lib/api';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { LoadingState } from '@/components/ui/LoadingState';
+import { SkeletonTable } from '@/components/ui/skeleton';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Toast } from '@/components/ui/Toast';
@@ -891,8 +892,19 @@ export default function TeacherGrades() {
 
         <div className="p-0">
           {loading ? (
-            <div className="p-8">
-              <LoadingState message="Loading student grades from database..." />
+            <div className="p-4">
+              <SkeletonTable
+                columns={[
+                  { header: 'Student Information', width: 'w-48' },
+                  { header: 'Assessment / Raw', width: 'w-24' },
+                  { header: 'Midterm Mark', width: 'w-20' },
+                  { header: 'Final Mark', width: 'w-20' },
+                  { header: 'Final Rating', width: 'w-20' },
+                  { header: 'Status', width: 'w-24' },
+                  { header: 'Actions', width: 'w-28' },
+                ]}
+                rows={6}
+              />
             </div>
           ) : viewMode === 'list' && filteredGrades.length === 0 ? (
             <div className="p-8">

@@ -87,7 +87,7 @@ export default function StudentSettingsPage() {
       )}
 
       {/* Security Advisory */}
-      <div className="bg-slate-50 border border-slate-200/90 rounded-lg p-4 flex items-start gap-3 border-t-2 border-t-[#1D4ED8]">
+      <div className="bg-slate-50 border border-slate-200/90 rounded-lg p-4 flex items-start gap-3">
         <div className="p-2 rounded bg-blue-50 text-[#1D4ED8] border border-blue-200 mt-0.5">
           <ShieldCheck size={18} />
         </div>

@@ -24,30 +24,25 @@ export function StatCard({
   subtitle
 }: StatCardProps) {
   
-  const colorMap: Record<string, { iconBg: string, borderTop: string, text: string }> = {
+  const colorMap: Record<string, { iconBg: string, text: string }> = {
     primary: {
       iconBg: "bg-blue-50 text-[#1D4ED8] border-blue-200",
-      borderTop: "border-t-[#1D4ED8]",
       text: "text-[#1D4ED8]"
     },
     success: {
       iconBg: "bg-emerald-50 text-emerald-700 border-emerald-200",
-      borderTop: "border-t-emerald-600",
       text: "text-emerald-700"
     },
     warning: {
       iconBg: "bg-amber-50 text-amber-800 border-amber-200",
-      borderTop: "border-t-amber-500",
       text: "text-amber-700"
     },
     danger: {
       iconBg: "bg-rose-50 text-rose-700 border-rose-200",
-      borderTop: "border-t-rose-600",
       text: "text-rose-700"
     },
     info: {
       iconBg: "bg-sky-50 text-sky-700 border-sky-200",
-      borderTop: "border-t-sky-500",
       text: "text-sky-700"
     }
   };
@@ -67,7 +62,7 @@ export function StatCard({
   };
 
   return (
-    <div className={`bg-white border border-slate-200/90 border-t-2 ${theme.borderTop} rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden flex flex-col justify-between ${className}`}>
+    <div className={`bg-white border border-slate-200/90 rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden flex flex-col justify-between ${className}`}>
       <div className="p-4 sm:p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">

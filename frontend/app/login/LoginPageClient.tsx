@@ -198,7 +198,7 @@ export default function LoginPageClient() {
 
           {/* Right Column / Mobile Centered Authentication Card */}
           <div className="w-full lg:col-span-6 flex justify-center lg:justify-end">
-            <div className="w-full max-w-md bg-white border border-slate-200/90 rounded-xl shadow-md lg:shadow-2xl overflow-hidden border-t-4 border-t-[#1D4ED8]">
+            <div className="relative z-10 w-full max-w-md bg-white border border-slate-200/90 rounded-xl shadow-md lg:shadow-2xl overflow-hidden">
               
               <div className="p-5 sm:p-8">
                 

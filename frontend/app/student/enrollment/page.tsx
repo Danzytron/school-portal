@@ -211,7 +211,7 @@ export default function StudentEnrollmentPage() {
 
       {isApproved ? (
         /* OFFICIAL ENROLLMENT ASSESSMENT FORM (EAF) */
-        <div className="bg-white border border-slate-200/90 rounded-lg shadow-sm overflow-hidden font-sans border-t-2 border-t-[#1D4ED8]">
+        <div className="bg-white border border-slate-200/90 rounded-lg shadow-sm overflow-hidden font-sans">
           {/* Official EAF Document Header */}
           <div className="p-4 sm:p-8 border-b border-slate-200 bg-slate-50/40">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">

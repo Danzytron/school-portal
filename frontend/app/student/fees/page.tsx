@@ -167,7 +167,7 @@ export default function StudentFeesPage() {
 
         {/* Financial Summary Strip */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-sans">
-          <div className="bg-white border border-slate-200/90 rounded-lg p-5 shadow-2xs border-t-2 border-t-[#1D4ED8]">
+          <div className="bg-white border border-slate-200/90 rounded-lg p-5 shadow-2xs">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Total Assessed Fees</span>
             <div className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1 font-heading tabular-nums">
               {formatCurrency(totalAmount)}
@@ -175,7 +175,7 @@ export default function StudentFeesPage() {
             <span className="text-[11px] text-slate-500 mt-1 block">Full Term Assessment</span>
           </div>
 
-          <div className="bg-white border border-slate-200/90 rounded-lg p-5 shadow-2xs border-t-2 border-t-emerald-600">
+          <div className="bg-white border border-slate-200/90 rounded-lg p-5 shadow-2xs">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Total Payments Received</span>
             <div className="text-2xl sm:text-3xl font-bold text-emerald-700 mt-1 font-heading tabular-nums">
               {formatCurrency(amountPaid)}
@@ -183,7 +183,7 @@ export default function StudentFeesPage() {
             <span className="text-[11px] text-emerald-700 font-semibold mt-1 block">Posted Official Receipts</span>
           </div>
 
-          <div className="bg-white border border-slate-200/90 rounded-lg p-5 shadow-2xs border-t-2 border-t-slate-700">
+          <div className="bg-white border border-slate-200/90 rounded-lg p-5 shadow-2xs">
             <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Current Outstanding Balance</span>
             <div className={`text-2xl sm:text-3xl font-bold mt-1 font-heading tabular-nums ${isPaid ? 'text-[#1D4ED8]' : 'text-rose-600'}`}>
               {formatCurrency(balance)}

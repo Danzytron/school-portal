@@ -156,7 +156,7 @@ export default function StudentAttendancePage() {
       />
 
       {/* CHED Institutional Policy Notice */}
-      <div className="bg-slate-50 border border-slate-200/90 rounded-lg p-4 sm:p-5 flex flex-col sm:flex-row items-start gap-3.5 border-t-2 border-t-[#1D4ED8]">
+      <div className="bg-slate-50 border border-slate-200/90 rounded-lg p-4 sm:p-5 flex flex-col sm:flex-row items-start gap-3.5">
         <div className="p-2 rounded bg-blue-50 text-[#1D4ED8] border border-blue-200 shrink-0 mt-0.5">
           <ShieldCheck size={18} />
         </div>
@@ -170,7 +170,7 @@ export default function StudentAttendancePage() {
 
       {/* Attendance Metrics Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs border-t-2 border-t-[#1D4ED8]">
+        <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Overall Attendance</span>
           <div className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1 font-heading tabular-nums">
             {attendanceRate}%
@@ -178,7 +178,7 @@ export default function StudentAttendancePage() {
           <span className="text-[11px] text-emerald-700 font-semibold mt-1 block">Good Academic Standing</span>
         </div>
 
-        <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs border-t-2 border-t-emerald-600">
+        <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Present Count</span>
           <div className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1 font-heading tabular-nums">
             {stats.present || 38} <span className="text-xs font-normal text-slate-500">Days</span>
@@ -186,7 +186,7 @@ export default function StudentAttendancePage() {
           <span className="text-[11px] text-slate-500 mt-1 block">On-Time Lecture Presence</span>
         </div>
 
-        <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs border-t-2 border-t-amber-500">
+        <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Late Incidents</span>
           <div className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1 font-heading tabular-nums">
             {stats.late || 2} <span className="text-xs font-normal text-slate-500">Days</span>
@@ -194,7 +194,7 @@ export default function StudentAttendancePage() {
           <span className="text-[11px] text-amber-700 font-semibold mt-1 block">Within Grace Period</span>
         </div>
 
-        <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs border-t-2 border-t-rose-600">
+        <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Unexcused Absences</span>
           <div className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1 font-heading tabular-nums">
             {stats.absent || 0} <span className="text-xs font-normal text-slate-500">Days</span>

@@ -185,7 +185,7 @@ export default function StudentProfilePage() {
       )}
 
       {/* 1. Official Student Identity Card */}
-      <div className="bg-white border border-slate-200/90 rounded-lg shadow-2xs overflow-hidden border-t-2 border-t-[#1D4ED8]">
+      <div className="bg-white border border-slate-200/90 rounded-lg shadow-2xs overflow-hidden">
         <div className="p-6 flex flex-col sm:flex-row items-center sm:items-start gap-5">
           <div className="w-20 h-20 rounded-xl bg-[#1E3A8A] text-white flex flex-col items-center justify-center font-heading font-bold text-2xl border border-blue-400/30 shadow-2xs shrink-0">
             <span>{initials}</span>

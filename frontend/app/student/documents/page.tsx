@@ -212,7 +212,7 @@ export default function StudentDocumentsPage() {
       <div className="panel">
         <div className="panel-heading">
           <div className="flex items-center gap-2">
-            <ShieldCheck size={16} className="text-[#1D4ED8]" />
+            <ShieldCheck size={16} className="text-[#2563EB]" />
             <span className="font-heading font-bold text-slate-900">Active Credential Request Tracker</span>
           </div>
           <span className="text-[11px] font-mono text-slate-500">Official Registrar Queue</span>
@@ -234,7 +234,7 @@ export default function StudentDocumentsPage() {
               <tbody className="divide-y divide-slate-100 font-sans">
                 {requests.map((req) => (
                   <tr key={req.id} className="hover:bg-blue-50/30 transition-colors">
-                    <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8] whitespace-nowrap">
+                    <td className="px-4 py-3 font-mono font-bold text-[#2563EB] whitespace-nowrap">
                       {req.id}
                     </td>
                     <td className="px-4 py-3 font-medium text-slate-900">
@@ -251,7 +251,7 @@ export default function StudentDocumentsPage() {
                     </td>
                     <td className="px-4 py-3 text-right">
                       {req.status === 'ready' ? (
-                        <span className="text-[11px] font-semibold text-[#1D4ED8] bg-blue-50 px-2 py-1 rounded border border-blue-200">
+                        <span className="text-[11px] font-semibold text-[#2563EB] bg-blue-50 px-2 py-1 rounded border border-blue-200">
                           Claim at Window 2
                         </span>
                       ) : req.status === 'released' ? (
@@ -272,7 +272,7 @@ export default function StudentDocumentsPage() {
       <div className="panel">
         <div className="panel-heading">
           <div className="flex items-center gap-2">
-            <FileText size={16} className="text-[#1D4ED8]" />
+            <FileText size={16} className="text-[#2563EB]" />
             <span className="font-heading font-bold text-slate-900">Curriculum Syllabi & Learning Resources</span>
           </div>
           
@@ -310,7 +310,7 @@ export default function StudentDocumentsPage() {
                     <tr key={doc.id} className="hover:bg-blue-50/30 transition-colors">
                       <td className="px-4 py-3 font-medium text-slate-900">
                         <div className="flex items-center gap-2">
-                          <FileText size={15} className="text-[#1D4ED8]" />
+                          <FileText size={15} className="text-[#2563EB]" />
                           <span>{doc.title}</span>
                         </div>
                       </td>
@@ -339,7 +339,7 @@ export default function StudentDocumentsPage() {
                     <tr className="hover:bg-blue-50/30">
                       <td className="px-4 py-3 font-medium text-slate-900">
                         <div className="flex items-center gap-2">
-                          <FileText size={15} className="text-[#1D4ED8]" />
+                          <FileText size={15} className="text-[#2563EB]" />
                           <span>IT 311 - Advanced Database Systems Official Course Syllabus</span>
                         </div>
                       </td>
@@ -356,7 +356,7 @@ export default function StudentDocumentsPage() {
                     <tr className="hover:bg-blue-50/30">
                       <td className="px-4 py-3 font-medium text-slate-900">
                         <div className="flex items-center gap-2">
-                          <FileText size={15} className="text-[#1D4ED8]" />
+                          <FileText size={15} className="text-[#2563EB]" />
                           <span>IT 312 - Web Systems Laboratory Exercise Manual & Guidelines</span>
                         </div>
                       </td>

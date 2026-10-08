@@ -89,7 +89,7 @@ export function PageHeader({ title, subtitle, description, badge, actions, actio
             {title}
           </h1>
           {badge && (
-            <span className="bg-blue-50 text-[#1D4ED8] border border-blue-200 text-[10px] font-semibold px-2 py-0.5 rounded tracking-wide uppercase shrink-0">
+            <span className="bg-blue-50 text-[#2563EB] border border-blue-200 text-[10px] font-bold px-2.5 py-0.5 rounded-md tracking-wider uppercase shrink-0">
               {badge}
             </span>
           )}

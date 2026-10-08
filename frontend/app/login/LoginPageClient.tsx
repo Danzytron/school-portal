@@ -198,9 +198,9 @@ export default function LoginPageClient() {
 
           {/* Right Column / Mobile Centered Authentication Card */}
           <div className="w-full lg:col-span-6 flex justify-center lg:justify-end">
-            <div className="relative z-10 w-full max-w-md bg-white border border-slate-200/90 rounded-xl shadow-md lg:shadow-2xl overflow-hidden">
+            <div className="relative z-10 w-full max-w-md bg-white border border-slate-200/90 rounded-2xl shadow-xl overflow-hidden">
               
-              <div className="p-5 sm:p-8">
+              <div className="p-6 sm:p-8">
                 
                 {/* Mobile-Only Institution Header Capsule */}
                 <div className="lg:hidden flex items-center gap-3 pb-4 mb-4 border-b border-slate-100">
@@ -245,7 +245,7 @@ export default function LoginPageClient() {
                   {/* Floating Label Input: Email / Username */}
                   <div className="relative">
                     <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-slate-400 z-10 transition-colors">
-                      <User size={18} className={error ? 'text-red-500' : (emailFocused ? 'text-[#1D4ED8]' : 'text-slate-400')} />
+                      <User size={18} className={error ? 'text-red-500' : (emailFocused ? 'text-[#2563EB]' : 'text-slate-400')} />
                     </div>
                     
                     <input
@@ -253,11 +253,11 @@ export default function LoginPageClient() {
                       id="institutional-email"
                       name="email"
                       type="text"
-                      className={`w-full h-12 pl-10 pr-3.5 bg-white border rounded-lg text-sm text-slate-900 focus:outline-none transition-all ${
+                      className={`w-full h-12 pl-10 pr-3.5 bg-white border rounded-xl text-sm text-slate-900 focus:outline-none transition-all ${
                         error
                           ? 'border-red-500 ring-2 ring-red-500/15'
                           : (emailFocused 
-                              ? 'border-[#1D4ED8] ring-2 ring-[#1D4ED8]/15' 
+                              ? 'border-[#2563EB] ring-2 ring-[#2563EB]/15' 
                               : 'border-slate-300 hover:border-slate-400')
                       }`}
                       value={email}
@@ -284,7 +284,7 @@ export default function LoginPageClient() {
                   {/* Floating Label Input: Password */}
                   <div className="relative">
                     <div className="absolute left-3.5 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-slate-400 z-10 transition-colors">
-                      <Lock size={18} className={error ? 'text-red-500' : (passwordFocused ? 'text-[#1D4ED8]' : 'text-slate-400')} />
+                      <Lock size={18} className={error ? 'text-red-500' : (passwordFocused ? 'text-[#2563EB]' : 'text-slate-400')} />
                     </div>
                     
                     <input
@@ -292,11 +292,11 @@ export default function LoginPageClient() {
                       id="security-password"
                       name="password"
                       type={showPassword ? "text" : "password"}
-                      className={`w-full h-12 pl-10 pr-10 bg-white border rounded-lg text-sm text-slate-900 focus:outline-none transition-all ${
+                      className={`w-full h-12 pl-10 pr-10 bg-white border rounded-xl text-sm text-slate-900 focus:outline-none transition-all ${
                         error
                           ? 'border-red-500 ring-2 ring-red-500/15'
                           : (passwordFocused 
-                              ? 'border-[#1D4ED8] ring-2 ring-[#1D4ED8]/15' 
+                              ? 'border-[#2563EB] ring-2 ring-[#2563EB]/15' 
                               : 'border-slate-300 hover:border-slate-400')
                       }`}
                       value={password}
@@ -311,7 +311,7 @@ export default function LoginPageClient() {
                       htmlFor="security-password"
                       className={`absolute transition-all duration-200 pointer-events-none ${
                         passwordFocused || password
-                          ? '-top-2.5 left-8 bg-white px-1.5 text-xs font-bold ' + (error ? 'text-red-600' : (passwordFocused ? 'text-[#1D4ED8]' : 'text-slate-700'))
+                          ? '-top-2.5 left-8 bg-white px-1.5 text-xs font-bold ' + (error ? 'text-red-600' : (passwordFocused ? 'text-[#2563EB]' : 'text-slate-700'))
                           : (error ? 'left-10 top-1/2 -translate-y-1/2 text-sm text-red-500 font-normal' : 'left-10 top-1/2 -translate-y-1/2 text-sm text-slate-500 font-normal')
                       }`}
                     >
@@ -321,7 +321,7 @@ export default function LoginPageClient() {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5 rounded-md hover:bg-slate-100 transition-colors cursor-pointer z-10"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer z-10"
                       title={showPassword ? "Hide password" : "Show password"}
                       tabIndex={-1}
                     >
@@ -341,7 +341,7 @@ export default function LoginPageClient() {
                     <a 
                       href="#" 
                       onClick={(e) => { e.preventDefault(); alert('Please contact the Registrar IT Helpdesk (registrar@cebueasterncollege.edu.ph) to reset your password.'); }}
-                      className="text-xs text-[#1D4ED8] hover:text-[#1E40AF] hover:underline font-medium"
+                      className="text-xs text-[#2563EB] hover:text-[#1D4ED8] hover:underline font-medium"
                     >
                       Forgot Password?
                     </a>
@@ -361,7 +361,7 @@ export default function LoginPageClient() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-[#1D4ED8] hover:bg-[#1E40AF] active:bg-[#172554] text-white py-2.5 sm:py-3 px-4 rounded-lg text-xs sm:text-sm font-bold uppercase tracking-wider transition-colors border border-[#1E40AF] shadow-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-2 font-sans min-h-[44px]"
+                    className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] active:bg-[#1E40AF] text-white py-2.5 sm:py-3 px-4 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-all shadow-[0_4px_14px_rgba(37,99,235,0.25)] hover:shadow-[0_6px_20px_rgba(37,99,235,0.35)] flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 mt-2 font-sans min-h-[44px]"
                   >
                     {loading ? (
                       <span>Signing In...</span>

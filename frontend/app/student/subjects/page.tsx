@@ -262,7 +262,7 @@ export default function StudentSubjectsPage() {
       header: 'Course Code', 
       accessor: 'subject.code',
       render: (row: any) => (
-        <span className="font-mono font-bold text-[#1D4ED8]">
+        <span className="font-mono font-bold text-[#2563EB]">
           {row.subject?.code}
         </span>
       )
@@ -364,9 +364,9 @@ export default function StudentSubjectsPage() {
       />
 
       {/* Term Selector Ribbon */}
-      <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded bg-blue-50 text-[#1D4ED8] border border-blue-200">
+          <div className="p-2.5 rounded-xl bg-blue-50 text-[#2563EB] border border-blue-200">
             <Building2 size={18} />
           </div>
           <div>
@@ -386,10 +386,10 @@ export default function StudentSubjectsPage() {
         </div>
 
         <div className="flex items-center gap-4 text-xs font-mono">
-          <div className="bg-slate-50 px-3 py-1.5 rounded border border-slate-200 text-slate-700">
+          <div className="bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 text-slate-700">
             Total Subjects: <strong className="text-slate-900">{subjects.length} Courses</strong>
           </div>
-          <div className="bg-blue-50 px-3 py-1.5 rounded border border-blue-200 text-[#1D4ED8] font-bold">
+          <div className="bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200 text-[#2563EB] font-bold">
             Total Units: {totalUnits.toFixed(1)} Units
           </div>
         </div>

@@ -212,7 +212,7 @@ export default function StudentAnnouncementsPage() {
       />
 
       {/* Control Bar: Search and Category Filter */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs space-y-3">
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-[0_1px_3px_rgba(0,0,0,0.03)] space-y-3">
         <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
           {/* Search Input */}
           <div className="relative flex-1">
@@ -222,7 +222,7 @@ export default function StudentAnnouncementsPage() {
               placeholder="Search announcements by title, keyword, or issuer..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-sm border border-slate-200 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#1D4ED8]/20 focus:border-[#1D4ED8] text-slate-800 placeholder-slate-400 transition"
+              className="w-full pl-10 pr-4 py-2 text-sm border border-slate-200 rounded-xl focus:outline-hidden focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] text-slate-800 placeholder-slate-400 transition"
             />
             {searchQuery && (
               <button
@@ -238,10 +238,10 @@ export default function StudentAnnouncementsPage() {
           <button
             onClick={() => fetchAnnouncements(false)}
             disabled={loading}
-            className="inline-flex items-center justify-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition disabled:opacity-50 cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-3.5 py-2 text-sm font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition disabled:opacity-50 cursor-pointer"
             title="Refresh bulletins"
           >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#1D4ED8]' : 'text-slate-500'}`} />
+            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-[#2563EB]' : 'text-slate-500'}`} />
             <span className="hidden sm:inline">Refresh</span>
           </button>
         </div>
@@ -253,9 +253,9 @@ export default function StudentAnnouncementsPage() {
           </span>
           <button
             onClick={() => setAudienceFilter('all')}
-            className={`px-2.5 py-1 rounded-md font-medium transition cursor-pointer ${
+            className={`px-3 py-1 rounded-lg font-medium transition cursor-pointer ${
               audienceFilter === 'all'
-                ? 'bg-[#1D4ED8] text-white shadow-xs'
+                ? 'bg-[#2563EB] text-white shadow-xs font-semibold'
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
           >

@@ -1,5 +1,5 @@
 /**
- * Server-Side Portal Context Builder for CEC AI Assistant
+ * Server-Side Portal Context Builder for Lumi AI Assistant
  * Cebu Eastern College (CEC) UIS
  *
  * Gathers verified, role-specific portal records (grades, schedules, subjects, announcements)

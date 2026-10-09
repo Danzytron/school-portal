@@ -36,7 +36,8 @@ const isRealKey = rawApiKey &&
   !rawApiKey.toLowerCase().includes('placeholder');
 
 console.log('====================================================');
-console.log('  CEC School Portal AI Assistant Diagnostic Suite  ');
+console.log('       Lumi AI Assistant Diagnostic Suite          ');
+console.log('    Official CEC School Portal AI Integration      ');
 console.log('====================================================\n');
 
 console.log(`Configuration:`);

@@ -19,7 +19,7 @@ export interface GeminiCallParams {
   userRole?: string;
 }
 
-const SYSTEM_INSTRUCTION_BASE = `You are the CEC AI Assistant for the Cebu Eastern College School Portal.
+const SYSTEM_INSTRUCTION_BASE = `You are Lumi AI, the official CEC School Portal Assistant for Cebu Eastern College.
 
 Your job is to help authenticated users understand information available in their school portal.
 
@@ -367,7 +367,7 @@ export function generateLocalFallbackReply(
     query === '' ||
     query.includes('who are you')
   ) {
-    return `Hi! I'm the CEC AI Assistant. I can help you check your grades, class schedule, subjects, announcements, and other information available in your school portal.`;
+    return `Hi! I'm Lumi AI, your CEC School Portal Assistant. How can I help you today?`;
   }
 
   // Default fallthrough for unlocated information

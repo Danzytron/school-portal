@@ -24,39 +24,37 @@
     --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     --font-heading: var(--font-poppins), system-ui, sans-serif;
     
-    /* CEC Modern University Pure Blue Identity */
-    --primary: #2563EB;              /* Primary Blue */
-    --primary-hover: #1D4ED8;        /* Deep Blue */
-    --primary-active: #1E40AF;       /* Active Deep Blue */
-    --primary-bright: #3B82F6;       /* Bright Blue */
-    --accent-cyan: #0EA5C9;          /* Gradient Cyan */
+    /* Brighter Premium University Royal Blue Identity */
+    --primary: #1D4ED8;              /* Royal Blue */
+    --primary-hover: #1E40AF;        /* Deep Royal */
+    --primary-active: #2563EB;       /* Vibrant Blue */
     
-    --sidebar-bg: #FFFFFF;           /* Modern Clean White Sidebar */
-    --sidebar-header: #FFFFFF;       /* Clean White Header */
+    --sidebar-bg: #1E3A8A;           /* Medium/Rich University Blue */
+    --sidebar-header: #172554;       /* Deep Academic Navy Accent */
     --sidebar-active: #2563EB;       /* Active Item Highlight */
-    --sidebar-hover: #F8FAFC;        /* Subtle Item Hover */
-    --sidebar-text: #475569;         /* Slate Navigation Text */
-    --sidebar-muted: #94A3B8;
+    --sidebar-hover: rgba(255, 255, 255, 0.1);
+    --sidebar-text: #E0E7FF;
+    --sidebar-muted: #93C5FD;
     
     --accent-blue: #2563EB;
     --accent-light: #EFF6FF;
     --accent-border: #DBEAFE;
     
-    --background: #F8FAFC;          /* Clean slate background */
+    --background: #F8FAFC;          /* Clean, low-fatigue slate canvas */
     --surface: #FFFFFF;             /* Pure white panels */
     --surface-subtle: #F1F5F9;
     --border: #E2E8F0;              /* Crisp 1px borders */
     --border-strong: #CBD5E1;
     
     --text-main: #0F172A;
-    --text-body: #334155;
+    --text-body: #1E293B;
     --text-muted: #64748B;
     --text-light: #94A3B8;
     
     --success: #15803D;
     --warning: #B45309;
-    --danger: #E11D48;
-    --info: #2563EB;
+    --danger: #B91C1C;
+    --info: #1D4ED8;
   }
 
   body {
@@ -85,31 +83,31 @@
 }
 
 @layer components {
-  /* Institutional Panel / Ledger Card (Modern SaaS UI) */
+  /* Institutional Panel / Ledger Card (Linear/Notion inspired clean border and subtle depth) */
   .panel {
-    @apply bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] mb-5 overflow-hidden;
+    @apply bg-white border border-slate-200/80 rounded-lg shadow-[0_1px_2px_rgba(0,0,0,0.03)] mb-5 overflow-hidden;
   }
   .panel-heading {
-    @apply bg-white border-b border-slate-100 px-5 py-4 text-slate-900 font-bold text-xs sm:text-sm flex items-center justify-between tracking-tight;
+    @apply bg-slate-50/70 border-b border-slate-200/80 px-4 sm:px-5 py-3 text-slate-900 font-semibold text-xs sm:text-sm flex items-center justify-between tracking-tight;
     font-family: var(--font-heading);
   }
   .panel-body {
     @apply p-4 sm:p-5;
   }
 
-  /* Academic Buttons (Modern rounded-xl SaaS styling) */
+  /* Academic Buttons (Refined micro-interactions, no neon or glossy gradients) */
   .btn-primary {
-    @apply inline-flex items-center justify-center bg-[#2563EB] hover:bg-[#1D4ED8] active:bg-[#1E40AF] text-white font-semibold px-4 py-2 rounded-xl text-xs transition-all border border-[#2563EB] shadow-[0_1px_2px_rgba(37,99,235,0.12)] focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 disabled:opacity-50 cursor-pointer;
+    @apply inline-flex items-center justify-center bg-[#1D4ED8] hover:bg-[#1E40AF] active:bg-[#1E3A8A] text-white font-medium px-3.5 py-1.5 rounded-md text-xs transition-colors border border-[#1D4ED8] shadow-[0_1px_2px_rgba(0,0,0,0.05)] focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 disabled:opacity-50 cursor-pointer;
   }
   .btn-secondary,
   .btn-default {
-    @apply inline-flex items-center justify-center bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 font-semibold px-4 py-2 rounded-xl text-xs transition-all border border-slate-200 shadow-[0_1px_2px_rgba(0,0,0,0.03)] focus:outline-none focus:ring-2 focus:ring-slate-400/20 disabled:opacity-50 cursor-pointer;
+    @apply inline-flex items-center justify-center bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 font-medium px-3.5 py-1.5 rounded-md text-xs transition-colors border border-slate-300/80 shadow-[0_1px_2px_rgba(0,0,0,0.03)] focus:outline-none focus:ring-2 focus:ring-slate-400/20 disabled:opacity-50 cursor-pointer;
   }
   .btn-outline {
-    @apply inline-flex items-center justify-center bg-transparent hover:bg-blue-50/80 active:bg-blue-100/80 text-[#2563EB] font-semibold px-3.5 py-2 rounded-xl text-xs transition-all border border-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer;
+    @apply inline-flex items-center justify-center bg-transparent hover:bg-blue-50/60 active:bg-blue-100/60 text-[#1D4ED8] font-medium px-3 py-1.5 rounded-md text-xs transition-colors border border-[#1D4ED8]/30 focus:outline-none focus:ring-2 focus:ring-[#1D4ED8]/20 cursor-pointer;
   }
   .btn-danger {
-    @apply inline-flex items-center justify-center bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-semibold px-4 py-2 rounded-xl text-xs transition-all border border-rose-600 shadow-[0_1px_2px_rgba(225,29,72,0.12)] focus:outline-none focus:ring-2 focus:ring-rose-500/20 disabled:opacity-50 cursor-pointer;
+    @apply inline-flex items-center justify-center bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-medium px-3.5 py-1.5 rounded-md text-xs transition-colors border border-rose-700 shadow-[0_1px_2px_rgba(0,0,0,0.05)] focus:outline-none focus:ring-2 focus:ring-rose-500/20 disabled:opacity-50 cursor-pointer;
   }
 
   /* Professional Academic Data Tables */

@@ -45,7 +45,7 @@ export function DashboardLayout({
           />
         )}
 
-        <main className="pt-[64px] lg:ml-[220px] transition-all duration-200 min-h-screen flex flex-col font-sans w-full lg:w-[calc(100%-220px)] min-w-0">
+        <main className="pt-[60px] lg:ml-[240px] transition-all duration-200 min-h-screen flex flex-col font-sans w-full lg:w-[calc(100%-240px)] min-w-0">
           <div className="p-3.5 sm:p-5 lg:p-7 max-w-7xl w-full mx-auto flex-1 min-w-0">
             {children}
           </div>

@@ -156,8 +156,8 @@ export default function StudentAttendancePage() {
       />
 
       {/* CHED Institutional Policy Notice */}
-      <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start gap-3.5 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
-        <div className="p-2 rounded-xl bg-blue-50 text-[#2563EB] border border-blue-100 shrink-0 mt-0.5">
+      <div className="bg-slate-50 border border-slate-200/90 rounded-lg p-4 sm:p-5 flex flex-col sm:flex-row items-start gap-3.5">
+        <div className="p-2 rounded bg-blue-50 text-[#1D4ED8] border border-blue-200 shrink-0 mt-0.5">
           <ShieldCheck size={18} />
         </div>
         <div className="text-xs text-slate-600 leading-relaxed font-sans">
@@ -170,41 +170,41 @@ export default function StudentAttendancePage() {
 
       {/* Attendance Metrics Strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Overall Attendance</span>
+        <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Overall Attendance</span>
           <div className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1 font-heading tabular-nums">
             {attendanceRate}%
           </div>
-          <span className="text-[11px] text-emerald-600 font-semibold mt-1 block">Good Academic Standing</span>
+          <span className="text-[11px] text-emerald-700 font-semibold mt-1 block">Good Academic Standing</span>
         </div>
 
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Present Count</span>
+        <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Present Count</span>
           <div className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1 font-heading tabular-nums">
-            {stats.present || 38} <span className="text-xs font-normal text-slate-400">Days</span>
+            {stats.present || 38} <span className="text-xs font-normal text-slate-500">Days</span>
           </div>
           <span className="text-[11px] text-slate-500 mt-1 block">On-Time Lecture Presence</span>
         </div>
 
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Late Incidents</span>
+        <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Late Incidents</span>
           <div className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1 font-heading tabular-nums">
-            {stats.late || 2} <span className="text-xs font-normal text-slate-400">Days</span>
+            {stats.late || 2} <span className="text-xs font-normal text-slate-500">Days</span>
           </div>
-          <span className="text-[11px] text-amber-600 font-semibold mt-1 block">Within Grace Period</span>
+          <span className="text-[11px] text-amber-700 font-semibold mt-1 block">Within Grace Period</span>
         </div>
 
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Unexcused Absences</span>
+        <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Unexcused Absences</span>
           <div className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1 font-heading tabular-nums">
-            {stats.absent || 0} <span className="text-xs font-normal text-slate-400">Days</span>
+            {stats.absent || 0} <span className="text-xs font-normal text-slate-500">Days</span>
           </div>
-          <span className="text-[11px] text-emerald-600 font-semibold mt-1 block">Safe (0/3 Max Threshold)</span>
+          <span className="text-[11px] text-emerald-700 font-semibold mt-1 block">Safe (0/3 Max Threshold)</span>
         </div>
       </div>
 
       {/* Filter Toolbar */}
-      <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
           <div>
             <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-1">
@@ -267,7 +267,7 @@ export default function StudentAttendancePage() {
       <div className="panel">
         <div className="panel-heading">
           <div className="flex items-center gap-2">
-            <Calendar size={16} className="text-[#2563EB]" />
+            <Calendar size={16} className="text-[#1D4ED8]" />
             <span className="font-heading font-bold text-slate-900">Official Daily Attendance Records</span>
           </div>
           <span className="text-[11px] font-mono text-slate-500">
@@ -296,7 +296,7 @@ export default function StudentAttendancePage() {
                         {new Date(rec.attendance?.date || '2026-08-20').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                       </td>
                       <td className="px-4 py-3">
-                        <div className="font-mono font-bold text-[#2563EB]">
+                        <div className="font-mono font-bold text-[#1D4ED8]">
                           {rec.attendance?.subject?.code || 'IT 311'}
                         </div>
                         <div className="text-[11px] text-slate-500">
@@ -319,7 +319,7 @@ export default function StudentAttendancePage() {
                     <tr className="hover:bg-blue-50/30">
                       <td className="px-4 py-3 font-mono text-slate-700">Aug 24, 2026</td>
                       <td className="px-4 py-3">
-                        <div className="font-mono font-bold text-[#2563EB]">IT 311</div>
+                        <div className="font-mono font-bold text-[#1D4ED8]">IT 311</div>
                         <div className="text-[11px] text-slate-500">Advanced Database Systems</div>
                       </td>
                       <td className="px-4 py-3 font-mono text-slate-600">08:01 AM</td>
@@ -331,7 +331,7 @@ export default function StudentAttendancePage() {
                     <tr className="hover:bg-blue-50/30">
                       <td className="px-4 py-3 font-mono text-slate-700">Aug 22, 2026</td>
                       <td className="px-4 py-3">
-                        <div className="font-mono font-bold text-[#2563EB]">IT 312</div>
+                        <div className="font-mono font-bold text-[#1D4ED8]">IT 312</div>
                         <div className="text-[11px] text-slate-500">Web Systems & Technologies</div>
                       </td>
                       <td className="px-4 py-3 font-mono text-slate-600">10:04 AM</td>
@@ -354,7 +354,7 @@ export default function StudentAttendancePage() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-xs text-[#2563EB]">
+                        <span className="font-mono font-bold text-xs text-[#1D4ED8]">
                           {rec.attendance?.subject?.code || 'IT 311'}
                         </span>
                         <span className="font-mono text-[11px] text-slate-400">

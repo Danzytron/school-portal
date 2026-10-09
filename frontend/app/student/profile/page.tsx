@@ -185,16 +185,16 @@ export default function StudentProfilePage() {
       )}
 
       {/* 1. Official Student Identity Card */}
-      <div className="bg-white border border-slate-200/90 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
+      <div className="bg-white border border-slate-200/90 rounded-lg shadow-2xs overflow-hidden">
         <div className="p-6 flex flex-col sm:flex-row items-center sm:items-start gap-5">
-          <div className="w-20 h-20 rounded-2xl bg-[#2563EB] text-white flex flex-col items-center justify-center font-heading font-bold text-2xl border border-blue-400/30 shadow-2xs shrink-0">
+          <div className="w-20 h-20 rounded-xl bg-[#1E3A8A] text-white flex flex-col items-center justify-center font-heading font-bold text-2xl border border-blue-400/30 shadow-2xs shrink-0">
             <span>{initials}</span>
-            <span className="text-[9px] font-sans text-blue-100 tracking-wider uppercase font-semibold">STUDENT</span>
+            <span className="text-[9px] font-sans text-blue-200 tracking-wider uppercase font-semibold">STUDENT</span>
           </div>
 
           <div className="flex-1 text-center sm:text-left min-w-0">
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
-              <span className="font-mono text-xs font-bold text-[#2563EB] bg-blue-50 px-2.5 py-0.5 rounded-md border border-blue-200">
+              <span className="font-mono text-xs font-bold text-[#1D4ED8] bg-blue-50 px-2.5 py-0.5 rounded border border-blue-200">
                 SN: {student.student_id_number || '2026-00001'}
               </span>
               <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 uppercase">

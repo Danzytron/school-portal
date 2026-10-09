@@ -177,20 +177,20 @@ export default function StudentGradesPage() {
         </div>
 
         {/* Academic Standing Summary Pill */}
-        <div className="flex items-center gap-4 bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-xl text-xs shadow-2xs">
+        <div className="flex items-center gap-4 bg-slate-50 border border-slate-200 px-4 py-2 rounded-md text-xs">
           <div>
-            <span className="text-[10px] text-slate-500 uppercase font-bold block">Term GWA</span>
-            <span className="font-heading font-extrabold text-sm text-[#2563EB] tabular-nums">{gwa}</span>
+            <span className="text-[10px] text-slate-500 uppercase font-semibold block">Term GWA</span>
+            <span className="font-heading font-bold text-sm text-[#1D4ED8] tabular-nums">{gwa}</span>
           </div>
           <div className="h-6 w-px bg-slate-200"></div>
           <div>
-            <span className="text-[10px] text-slate-500 uppercase font-bold block">Registered Units</span>
-            <span className="font-heading font-extrabold text-sm text-slate-800 tabular-nums">{totalUnits || 21}.0 Units</span>
+            <span className="text-[10px] text-slate-500 uppercase font-semibold block">Registered Units</span>
+            <span className="font-heading font-bold text-sm text-slate-800 tabular-nums">{totalUnits || 21}.0 Units</span>
           </div>
           <div className="h-6 w-px bg-slate-200"></div>
           <div>
-            <span className="text-[10px] text-slate-500 uppercase font-bold block">Scholastic Standing</span>
-            <span className="text-[11px] font-bold text-emerald-700">Dean's Honor List</span>
+            <span className="text-[10px] text-slate-500 uppercase font-semibold block">Scholastic Standing</span>
+            <span className="text-[11px] font-semibold text-emerald-700">Dean's Honor List</span>
           </div>
         </div>
       </div>

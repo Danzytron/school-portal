@@ -26,8 +26,8 @@ export function StatCard({
   
   const colorMap: Record<string, { iconBg: string, text: string }> = {
     primary: {
-      iconBg: "bg-blue-50 text-[#2563EB] border-blue-200",
-      text: "text-[#2563EB]"
+      iconBg: "bg-blue-50 text-[#1D4ED8] border-blue-200",
+      text: "text-[#1D4ED8]"
     },
     success: {
       iconBg: "bg-emerald-50 text-emerald-700 border-emerald-200",
@@ -62,14 +62,14 @@ export function StatCard({
   };
 
   return (
-    <div className={`bg-white border border-slate-200/90 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-md transition-all overflow-hidden flex flex-col justify-between ${className}`}>
+    <div className={`bg-white border border-slate-200/90 rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden flex flex-col justify-between ${className}`}>
       <div className="p-4 sm:p-5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block truncate font-sans">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block truncate font-sans">
               {title}
             </span>
-            <div className="text-2xl font-extrabold text-slate-900 mt-1 tracking-tight font-heading tabular-nums">
+            <div className="text-2xl font-bold text-slate-900 mt-1 tracking-tight font-heading tabular-nums">
               {value}
             </div>
             {subtitle && (

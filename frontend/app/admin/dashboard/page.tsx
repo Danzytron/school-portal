@@ -76,119 +76,70 @@ export default function AdminDashboard() {
   return (
     <div className="space-y-6 font-sans">
       
-      {/* ── 1. VIBRANT BLUE EXECUTIVE HERO ──── */}
-      <div 
-        className="relative overflow-hidden rounded-3xl p-6 sm:p-8 lg:p-9 text-white shadow-[0_10px_25px_-5px_rgba(37,99,235,0.28)] border border-blue-400/30"
-        style={{
-          background: 'linear-gradient(135deg, #1D4ED8 0%, #2563EB 55%, #0284C7 100%)'
-        }}
-      >
-        <div className="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-white/10 blur-2xl pointer-events-none" />
-        <div className="absolute left-1/3 -top-24 w-60 h-60 rounded-full bg-cyan-300/15 blur-xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-6 lg:gap-8">
-          <div className="space-y-3.5 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-white/95 text-[11px] font-bold border border-white/20 uppercase tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 animate-pulse" />
-              <span>1ST SEMESTER • EXECUTIVE CONSOLE</span>
-            </div>
-
-            <h1 className="font-heading font-extrabold text-2xl sm:text-3xl lg:text-4xl text-white tracking-tight leading-tight m-0">
-              Institutional Administration 🏛️
-            </h1>
-
-            <p className="text-xs sm:text-sm text-blue-50/95 leading-relaxed font-sans max-w-xl">
-              Cebu Eastern College Official Registry • <strong className="text-white font-semibold">{stats.totalStudents} enrolled students</strong>, <strong className="text-white font-semibold">{stats.totalTeachers} faculty members</strong>, and active registrar pipelines.
-            </p>
-
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <Link
-                href="/admin/enrollment"
-                className="bg-white hover:bg-blue-50 text-[#2563EB] font-bold text-xs px-5 py-3 rounded-xl shadow-xs hover:shadow-md transition-all flex items-center gap-2 cursor-pointer group"
-              >
-                <FileText size={14} className="text-[#2563EB]" />
-                <span>Enrollment Approvals</span>
-                <ChevronRight size={13} className="transition-transform group-hover:translate-x-0.5" />
-              </Link>
-
-              <Link
-                href="/admin/grades"
-                className="bg-white/20 hover:bg-white/30 text-white font-semibold text-xs px-5 py-3 rounded-xl backdrop-blur-md border border-white/25 shadow-2xs hover:shadow-xs transition-all flex items-center gap-2 cursor-pointer"
-              >
-                <GraduationCap size={14} className="text-white/90" />
-                <span>Grade Review</span>
-              </Link>
-            </div>
+      {/* ── 1. Executive Editorial Header ──────── */}
+      <div className="bg-white border border-slate-200/80 rounded-lg p-5 sm:p-6 shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="font-heading text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+              Institutional Administration
+            </span>
+            <span className="bg-rose-50 text-rose-700 border border-rose-200 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+              System Console
+            </span>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full xl:w-auto xl:min-w-[390px] shrink-0">
-            <div className="bg-blue-900/35 hover:bg-blue-900/45 backdrop-blur-md rounded-2xl p-4 border border-white/20 transition-all flex flex-col justify-between">
-              <div className="flex items-center justify-between text-[10px] font-bold tracking-wider text-blue-100 uppercase">
-                <span>Students</span>
-                <Users size={13} className="text-cyan-300" />
-              </div>
-              <div className="font-heading font-extrabold text-2xl sm:text-3xl text-white tracking-tight my-1.5 tabular-nums">
-                {stats.totalStudents}
-              </div>
-              <div className="text-[10px] text-blue-100 font-medium truncate">
-                Active Population
-              </div>
-            </div>
-
-            <div className="bg-blue-900/35 hover:bg-blue-900/45 backdrop-blur-md rounded-2xl p-4 border border-white/20 transition-all flex flex-col justify-between">
-              <div className="flex items-center justify-between text-[10px] font-bold tracking-wider text-blue-100 uppercase">
-                <span>Faculty</span>
-                <UserCheck size={13} className="text-cyan-300" />
-              </div>
-              <div className="font-heading font-extrabold text-2xl sm:text-3xl text-white tracking-tight my-1.5 tabular-nums">
-                {stats.totalTeachers}
-              </div>
-              <div className="text-[10px] text-blue-100 font-medium truncate">
-                Faculty Members
-              </div>
-            </div>
-
-            <div className="bg-blue-900/35 hover:bg-blue-900/45 backdrop-blur-md rounded-2xl p-4 border border-white/20 transition-all flex flex-col justify-between">
-              <div className="flex items-center justify-between text-[10px] font-bold tracking-wider text-blue-100 uppercase">
-                <span>Programs</span>
-                <GraduationCap size={13} className="text-cyan-300" />
-              </div>
-              <div className="font-heading font-extrabold text-2xl sm:text-3xl text-white tracking-tight my-1.5 tabular-nums">
-                {stats.totalCourses}
-              </div>
-              <div className="text-[10px] text-blue-100 font-medium truncate">
-                CHED Accredited
-              </div>
-            </div>
+          <div className="text-xs text-slate-500 font-sans flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span>Cebu Eastern College Official Registry</span>
+            <span>•</span>
+            <span className="text-[#1D4ED8] font-medium">1st Semester A.Y. 2026–2027</span>
           </div>
+        </div>
+
+        <div className="flex items-center gap-2 self-start sm:self-center">
+          <Link
+            href="/admin/enrollment"
+            className="btn-primary text-xs inline-flex items-center gap-1.5"
+          >
+            <FileText size={13} />
+            <span>Enrollment Approvals</span>
+          </Link>
+          <Link
+            href="/admin/grades"
+            className="btn-secondary text-xs inline-flex items-center gap-1.5"
+          >
+            <GraduationCap size={13} />
+            <span>Grade Review</span>
+          </Link>
         </div>
       </div>
 
-      {/* ── 2. FOUR EXECUTIVE STATISTIC CARDS ──────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+      {/* ── 2. Official Campus Bulletins (Prominent Top Section) ── */}
+      <OfficialCampusBulletins role="admin" />
+
+      {/* ── 3. Subtle Executive Metrics ──────────── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'Registered Students', value: stats.totalStudents, sub: 'Active Population', icon: Users, color: 'text-[#2563EB] bg-blue-50 border-blue-100' },
-          { label: 'Academic Faculty', value: stats.totalTeachers, sub: 'Faculty Directory', icon: UserCheck, color: 'text-slate-700 bg-slate-50 border-slate-200' },
+          { label: 'Registered Students', value: stats.totalStudents, sub: 'Active Population', icon: Users, color: 'text-[#1D4ED8] bg-blue-50 border-blue-200' },
+          { label: 'Academic Faculty', value: stats.totalTeachers, sub: 'Faculty Members', icon: UserCheck, color: 'text-slate-700 bg-slate-50 border-slate-200' },
           { label: 'Degree Programs', value: stats.totalCourses, sub: 'CHED Accredited', icon: GraduationCap, color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
           { label: 'Pending Approvals', value: stats.pendingEnrollments, sub: 'Registrar Queue', icon: Clock, color: 'text-amber-700 bg-amber-50 border-amber-200' },
         ].map((item, idx) => (
           <div
             key={idx}
-            className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between"
+            className="bg-white border border-slate-200/80 rounded-lg p-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex items-start gap-3"
           >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-sans truncate">
+            <div className={`p-2 rounded-md border ${item.color} shrink-0 mt-0.5`}>
+              <item.icon size={15} />
+            </div>
+            <div className="min-w-0">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 block truncate">
                 {item.label}
               </span>
-              <div className={`w-8 h-8 rounded-xl border ${item.color} flex items-center justify-center shrink-0`}>
-                <item.icon size={15} />
+              <div className="text-base font-bold text-slate-900 font-heading tabular-nums leading-tight mt-0.5">
+                {item.value}
               </div>
-            </div>
-            <div className="font-heading font-extrabold text-3xl text-slate-900 tracking-tight tabular-nums my-2">
-              {item.value}
-            </div>
-            <div className="pt-2 border-t border-slate-100 text-xs text-slate-500 font-medium truncate">
-              {item.sub}
+              <span className="text-[10px] text-slate-500 block mt-0.5 font-medium truncate">
+                {item.sub}
+              </span>
             </div>
           </div>
         ))}
@@ -203,7 +154,7 @@ export default function AdminDashboard() {
           <div className="panel">
             <div className="panel-heading">
               <div className="flex items-center gap-2">
-                <Activity size={15} className="text-[#2563EB]" />
+                <Activity size={15} className="text-[#1D4ED8]" />
                 <span>Recent System Operations & Audit Log</span>
               </div>
               <span className="text-[11px] font-mono text-slate-500">Real-time Stream</span>
@@ -244,42 +195,42 @@ export default function AdminDashboard() {
                 href="/admin/students"
                 className="p-3 rounded-lg border border-slate-200/80 hover:bg-slate-50 transition-colors flex items-center gap-2"
               >
-                <Users size={15} className="text-[#2563EB]" />
+                <Users size={15} className="text-[#1D4ED8]" />
                 <span className="font-medium text-slate-800">Student Directory</span>
               </Link>
               <Link
                 href="/admin/teachers"
                 className="p-3 rounded-lg border border-slate-200/80 hover:bg-slate-50 transition-colors flex items-center gap-2"
               >
-                <UserCheck size={15} className="text-[#2563EB]" />
+                <UserCheck size={15} className="text-[#1D4ED8]" />
                 <span className="font-medium text-slate-800">Faculty Directory</span>
               </Link>
               <Link
                 href="/admin/courses"
                 className="p-3 rounded-lg border border-slate-200/80 hover:bg-slate-50 transition-colors flex items-center gap-2"
               >
-                <GraduationCap size={15} className="text-[#2563EB]" />
+                <GraduationCap size={15} className="text-[#1D4ED8]" />
                 <span className="font-medium text-slate-800">Degree Programs</span>
               </Link>
               <Link
                 href="/admin/sections"
                 className="p-3 rounded-lg border border-slate-200/80 hover:bg-slate-50 transition-colors flex items-center gap-2"
               >
-                <Building2 size={15} className="text-[#2563EB]" />
+                <Building2 size={15} className="text-[#1D4ED8]" />
                 <span className="font-medium text-slate-800">Class Sections</span>
               </Link>
               <Link
                 href="/admin/schedules"
                 className="p-3 rounded-lg border border-slate-200/80 hover:bg-slate-50 transition-colors flex items-center gap-2"
               >
-                <Calendar size={15} className="text-[#2563EB]" />
+                <Calendar size={15} className="text-[#1D4ED8]" />
                 <span className="font-medium text-slate-800">Master Schedule</span>
               </Link>
               <Link
                 href="/admin/fees"
                 className="p-3 rounded-lg border border-slate-200/80 hover:bg-slate-50 transition-colors flex items-center gap-2"
               >
-                <FileText size={15} className="text-[#2563EB]" />
+                <FileText size={15} className="text-[#1D4ED8]" />
                 <span className="font-medium text-slate-800">Fees & Treasury</span>
               </Link>
             </div>
@@ -301,13 +252,13 @@ export default function AdminDashboard() {
                   <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#64748B' }} axisLine={{ stroke: '#CBD5E1' }} />
                   <YAxis tick={{ fontSize: 11, fill: '#64748B' }} axisLine={{ stroke: '#CBD5E1' }} />
                   <Tooltip contentStyle={{ fontSize: '11px', borderRadius: '6px', border: '1px solid #E2E8F0' }} />
-                  <Bar dataKey="value" fill="#2563EB" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="value" fill="#1D4ED8" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
 
               <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
                 <span>College of Information Technology & Engineering</span>
-                <Link href="/admin/students" className="text-[#2563EB] hover:underline font-semibold">
+                <Link href="/admin/students" className="text-[#1D4ED8] hover:underline font-semibold">
                   Manage Roster →
                 </Link>
               </div>

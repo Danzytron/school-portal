@@ -338,7 +338,7 @@ export function OfficialCampusBulletins({
             return (
               <div
                 key={item.id}
-                className={`group relative bg-white border rounded-2xl p-4 sm:p-5 transition-all duration-200 flex flex-col justify-between shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-md ${
+                className={`group relative bg-white border rounded-xl p-4 sm:p-4.5 transition-all duration-200 flex flex-col justify-between shadow-[0_1px_2px_rgba(0,0,0,0.03)] hover:shadow-sm ${
                   isImportant
                     ? 'border-rose-300/80 bg-linear-to-r from-rose-50/30 via-white to-white'
                     : 'border-slate-200/90 hover:border-blue-300'

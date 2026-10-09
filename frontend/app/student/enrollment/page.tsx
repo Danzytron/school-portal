@@ -173,33 +173,33 @@ export default function StudentEnrollmentPage() {
       />
 
       {/* 4-Step Academic Advising Workflow Tracker */}
-      <div className="no-print bg-white border border-slate-200/80 rounded-2xl p-4 sm:p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)] font-sans">
+      <div className="no-print bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs font-sans">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-          <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-blue-50/70 border border-blue-100">
-            <div className="w-5 h-5 rounded-full bg-[#2563EB] text-white flex items-center justify-center font-bold text-[10px]">1</div>
+          <div className="flex items-center gap-2.5 p-2 rounded bg-blue-50/70 border border-blue-200">
+            <div className="w-5 h-5 rounded-full bg-[#1D4ED8] text-white flex items-center justify-center font-bold text-[10px]">1</div>
             <div>
               <span className="font-semibold text-slate-900 block">Curriculum Advising</span>
               <span className="text-[10px] text-blue-700 font-medium">Courses Selected</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-blue-50/70 border border-blue-100">
-            <div className="w-5 h-5 rounded-full bg-[#2563EB] text-white flex items-center justify-center font-bold text-[10px]">2</div>
+          <div className="flex items-center gap-2.5 p-2 rounded bg-blue-50/70 border border-blue-200">
+            <div className="w-5 h-5 rounded-full bg-[#1D4ED8] text-white flex items-center justify-center font-bold text-[10px]">2</div>
             <div>
               <span className="font-semibold text-slate-900 block">Dean Evaluation</span>
               <span className="text-[10px] text-blue-700 font-medium">Load Evaluated</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-blue-50/70 border border-blue-100">
-            <div className="w-5 h-5 rounded-full bg-[#2563EB] text-white flex items-center justify-center font-bold text-[10px]">3</div>
+          <div className="flex items-center gap-2.5 p-2 rounded bg-blue-50/70 border border-blue-200">
+            <div className="w-5 h-5 rounded-full bg-[#1D4ED8] text-white flex items-center justify-center font-bold text-[10px]">3</div>
             <div>
               <span className="font-semibold text-slate-900 block">Treasury Assessment</span>
               <span className="text-[10px] text-blue-700 font-medium">Fees Assessed</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200/80">
+          <div className="flex items-center gap-2.5 p-2 rounded bg-emerald-50 border border-emerald-200">
             <div className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-[10px]">4</div>
             <div>
               <span className="font-semibold text-slate-900 block">Official Validation</span>
@@ -211,7 +211,7 @@ export default function StudentEnrollmentPage() {
 
       {isApproved ? (
         /* OFFICIAL ENROLLMENT ASSESSMENT FORM (EAF) */
-        <div className="bg-white border border-slate-200/80 rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden font-sans">
+        <div className="bg-white border border-slate-200/90 rounded-lg shadow-sm overflow-hidden font-sans">
           {/* Official EAF Document Header */}
           <div className="p-4 sm:p-8 border-b border-slate-200 bg-slate-50/40">
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -235,7 +235,7 @@ export default function StudentEnrollmentPage() {
               </div>
 
               <div className="text-center sm:text-right border-t sm:border-t-0 pt-3 sm:pt-0 w-full sm:w-auto border-slate-200">
-                <span className="font-mono text-xs font-bold text-[#2563EB] bg-blue-50 px-2.5 py-1 rounded border border-blue-200 inline-block">
+                <span className="font-mono text-xs font-bold text-[#1D4ED8] bg-blue-50 px-2.5 py-1 rounded border border-blue-200 inline-block">
                   FORM EAF-2026-V1
                 </span>
                 <div className="text-xs font-bold text-slate-800 uppercase mt-1">
@@ -288,7 +288,7 @@ export default function StudentEnrollmentPage() {
                   {enrollment?.subjects && enrollment.subjects.length > 0 ? (
                     enrollment.subjects.map((es) => (
                       <tr key={es.id} className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 font-mono font-bold text-[#2563EB]">
+                        <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">
                           {es.subject?.code}
                         </td>
                         <td className="px-4 py-3 font-medium text-slate-900">
@@ -314,7 +314,7 @@ export default function StudentEnrollmentPage() {
                   ) : (
                     <>
                       <tr className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 font-mono font-bold text-[#2563EB]">FREE ELEC 1</td>
+                        <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">FREE ELEC 1</td>
                         <td className="px-4 py-3 font-medium text-slate-900">FREE ELECTIVE 1</td>
                         <td className="px-4 py-3 text-center font-mono text-slate-700">3.0</td>
                         <td className="px-4 py-3 font-mono text-slate-600 text-[11px]">BSIT 3-A</td>
@@ -323,7 +323,7 @@ export default function StudentEnrollmentPage() {
                         <td className="px-4 py-3 text-slate-600 text-[11px]">Sir Vincent John Cababan</td>
                       </tr>
                       <tr className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 font-mono font-bold text-[#2563EB]">GE ELEC 5</td>
+                        <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">GE ELEC 5</td>
                         <td className="px-4 py-3 font-medium text-slate-900">ANG PANITIKAN NG PILIPINAS</td>
                         <td className="px-4 py-3 text-center font-mono text-slate-700">3.0</td>
                         <td className="px-4 py-3 font-mono text-slate-600 text-[11px]">BSIT 3-A</td>
@@ -332,7 +332,7 @@ export default function StudentEnrollmentPage() {
                         <td className="px-4 py-3 text-slate-600 text-[11px]">Ms. Lindy Enaldo</td>
                       </tr>
                       <tr className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 font-mono font-bold text-[#2563EB]">GE ELEC 6</td>
+                        <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">GE ELEC 6</td>
                         <td className="px-4 py-3 font-medium text-slate-900">PHILIPPINE POPULAR CULTURE</td>
                         <td className="px-4 py-3 text-center font-mono text-slate-700">3.0</td>
                         <td className="px-4 py-3 font-mono text-slate-600 text-[11px]">BSIT 3-A</td>
@@ -341,7 +341,7 @@ export default function StudentEnrollmentPage() {
                         <td className="px-4 py-3 text-slate-600 text-[11px]">Ms. Krystel Hurboda</td>
                       </tr>
                       <tr className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 font-mono font-bold text-[#2563EB]">IT ELEC 1</td>
+                        <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">IT ELEC 1</td>
                         <td className="px-4 py-3 font-medium text-slate-900">ELECTIVE 1 (LECTURE)</td>
                         <td className="px-4 py-3 text-center font-mono text-slate-700">2.0</td>
                         <td className="px-4 py-3 font-mono text-slate-600 text-[11px]">BSIT 3-A</td>
@@ -350,7 +350,7 @@ export default function StudentEnrollmentPage() {
                         <td className="px-4 py-3 text-slate-600 text-[11px]">Ms. En Catarungan</td>
                       </tr>
                       <tr className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 font-mono font-bold text-[#2563EB]">IT ELEC 1 LAB</td>
+                        <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">IT ELEC 1 LAB</td>
                         <td className="px-4 py-3 font-medium text-slate-900">ELECTIVE 1 (LABORATORY)</td>
                         <td className="px-4 py-3 text-center font-mono text-slate-700">1.0</td>
                         <td className="px-4 py-3 font-mono text-slate-600 text-[11px]">BSIT 3-A</td>
@@ -359,7 +359,7 @@ export default function StudentEnrollmentPage() {
                         <td className="px-4 py-3 text-slate-600 text-[11px]">Ms. En Catarungan</td>
                       </tr>
                       <tr className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 font-mono font-bold text-[#2563EB]">IT EVD31</td>
+                        <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">IT EVD31</td>
                         <td className="px-4 py-3 font-medium text-slate-900">EVENT DRIVEN PROGRAMMING (LECTURE)</td>
                         <td className="px-4 py-3 text-center font-mono text-slate-700">2.0</td>
                         <td className="px-4 py-3 font-mono text-slate-600 text-[11px]">BSIT 3-A</td>
@@ -368,7 +368,7 @@ export default function StudentEnrollmentPage() {
                         <td className="px-4 py-3 text-slate-600 text-[11px]">Sir Yestin Prado</td>
                       </tr>
                       <tr className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 font-mono font-bold text-[#2563EB]">IT EVD31 LAB</td>
+                        <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">IT EVD31 LAB</td>
                         <td className="px-4 py-3 font-medium text-slate-900">EVENT DRIVEN PROGRAMMING (LABORATORY)</td>
                         <td className="px-4 py-3 text-center font-mono text-slate-700">1.0</td>
                         <td className="px-4 py-3 font-mono text-slate-600 text-[11px]">BSIT 3-A</td>
@@ -377,7 +377,7 @@ export default function StudentEnrollmentPage() {
                         <td className="px-4 py-3 text-slate-600 text-[11px]">Sir Yestin Prado</td>
                       </tr>
                       <tr className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 font-mono font-bold text-[#2563EB]">IT IAS31</td>
+                        <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">IT IAS31</td>
                         <td className="px-4 py-3 font-medium text-slate-900">INFORMATION ASSURANCE AND SECURITY 1 (LECTURE)</td>
                         <td className="px-4 py-3 text-center font-mono text-slate-700">2.0</td>
                         <td className="px-4 py-3 font-mono text-slate-600 text-[11px]">BSIT 3-A</td>
@@ -386,7 +386,7 @@ export default function StudentEnrollmentPage() {
                         <td className="px-4 py-3 text-slate-600 text-[11px]">Sir Jay-ar Base</td>
                       </tr>
                       <tr className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 font-mono font-bold text-[#2563EB]">IT IAS31 LAB</td>
+                        <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">IT IAS31 LAB</td>
                         <td className="px-4 py-3 font-medium text-slate-900">INFORMATION ASSURANCE AND SECURITY 1 (LABORATORY)</td>
                         <td className="px-4 py-3 text-center font-mono text-slate-700">1.0</td>
                         <td className="px-4 py-3 font-mono text-slate-600 text-[11px]">BSIT 3-A</td>
@@ -395,7 +395,7 @@ export default function StudentEnrollmentPage() {
                         <td className="px-4 py-3 text-slate-600 text-[11px]">Sir Jay-ar Base</td>
                       </tr>
                       <tr className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 font-mono font-bold text-[#2563EB]">IT NET31</td>
+                        <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">IT NET31</td>
                         <td className="px-4 py-3 font-medium text-slate-900">NETWORKING 1 (LECTURE)</td>
                         <td className="px-4 py-3 text-center font-mono text-slate-700">2.0</td>
                         <td className="px-4 py-3 font-mono text-slate-600 text-[11px]">BSIT 3-A</td>
@@ -404,7 +404,7 @@ export default function StudentEnrollmentPage() {
                         <td className="px-4 py-3 text-slate-600 text-[11px]">Sir Arnel L. Villanueva</td>
                       </tr>
                       <tr className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 font-mono font-bold text-[#2563EB]">IT NET31 LAB</td>
+                        <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">IT NET31 LAB</td>
                         <td className="px-4 py-3 font-medium text-slate-900">NETWORKING 1 (LABORATORY)</td>
                         <td className="px-4 py-3 text-center font-mono text-slate-700">1.0</td>
                         <td className="px-4 py-3 font-mono text-slate-600 text-[11px]">BSIT 3-A</td>
@@ -413,7 +413,7 @@ export default function StudentEnrollmentPage() {
                         <td className="px-4 py-3 text-slate-600 text-[11px]">Sir Arnel L. Villanueva</td>
                       </tr>
                       <tr className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 font-mono font-bold text-[#2563EB]">IT SIA31</td>
+                        <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">IT SIA31</td>
                         <td className="px-4 py-3 font-medium text-slate-900">SYSTEM INTEGRATION AND ARCHITECTURE 2 (LECTURE)</td>
                         <td className="px-4 py-3 text-center font-mono text-slate-700">2.0</td>
                         <td className="px-4 py-3 font-mono text-slate-600 text-[11px]">BSIT 3-A</td>
@@ -422,7 +422,7 @@ export default function StudentEnrollmentPage() {
                         <td className="px-4 py-3 text-slate-600 text-[11px]">Sir Charles Bacotot</td>
                       </tr>
                       <tr className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 font-mono font-bold text-[#2563EB]">IT SIA31 LAB</td>
+                        <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">IT SIA31 LAB</td>
                         <td className="px-4 py-3 font-medium text-slate-900">SYSTEM INTEGRATION AND ARCHITECTURE 2 (LABORATORY)</td>
                         <td className="px-4 py-3 text-center font-mono text-slate-700">1.0</td>
                         <td className="px-4 py-3 font-mono text-slate-600 text-[11px]">BSIT 3-A</td>
@@ -431,7 +431,7 @@ export default function StudentEnrollmentPage() {
                         <td className="px-4 py-3 text-slate-600 text-[11px]">Sir Charles Bacotot</td>
                       </tr>
                       <tr className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 font-mono font-bold text-[#2563EB]">IT SP131</td>
+                        <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">IT SP131</td>
                         <td className="px-4 py-3 font-medium text-slate-900">SOCIAL AND PROFESSIONAL ISSUES 1</td>
                         <td className="px-4 py-3 text-center font-mono text-slate-700">3.0</td>
                         <td className="px-4 py-3 font-mono text-slate-600 text-[11px]">BSIT 3-A</td>
@@ -447,7 +447,7 @@ export default function StudentEnrollmentPage() {
                     <td colSpan={2} className="px-4 py-3 text-right text-xs uppercase tracking-wider">
                       Total Validated Academic Load:
                     </td>
-                    <td className="px-4 py-3 text-center font-mono font-bold text-[#2563EB] text-sm">
+                    <td className="px-4 py-3 text-center font-mono font-bold text-[#1D4ED8] text-sm">
                       27.0 Units
                     </td>
                     <td colSpan={4} className="px-4 py-3 text-xs text-slate-500">
@@ -479,14 +479,14 @@ export default function StudentEnrollmentPage() {
                 <div key={es.id} className="p-3.5 space-y-2 hover:bg-slate-50/50 transition-colors">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <span className="font-mono font-bold text-xs text-[#2563EB] block">
+                      <span className="font-mono font-bold text-xs text-[#1D4ED8] block">
                         {es.subject?.code}
                       </span>
                       <h4 className="font-semibold text-slate-900 text-xs mt-0.5 leading-snug">
                         {es.subject?.name}
                       </h4>
                     </div>
-                    <span className="bg-blue-50 text-[#2563EB] border border-blue-200 text-[10px] font-mono font-bold px-2 py-0.5 rounded shrink-0">
+                    <span className="bg-blue-50 text-[#1D4ED8] border border-blue-200 text-[10px] font-mono font-bold px-2 py-0.5 rounded shrink-0">
                       {(es.subject?.units || 3).toFixed(1)} Units
                     </span>
                   </div>
@@ -516,7 +516,7 @@ export default function StudentEnrollmentPage() {
 
               <div className="p-3.5 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs">
                 <span className="font-semibold text-slate-700 uppercase text-[10px]">Total Validated Load:</span>
-                <span className="font-mono font-bold text-[#2563EB]">27.0 Units (14 Subjects)</span>
+                <span className="font-mono font-bold text-[#1D4ED8]">27.0 Units (14 Subjects)</span>
               </div>
             </div>
           </div>
@@ -553,7 +553,7 @@ export default function StudentEnrollmentPage() {
             <div className="flex items-center gap-4 text-xs">
               <div>
                 <span className="text-slate-500">Selected Load:</span>
-                <span className="font-mono font-bold text-[#2563EB] ml-1">{totalSelectedUnits}.0 / 24.0 Max Units</span>
+                <span className="font-mono font-bold text-[#1D4ED8] ml-1">{totalSelectedUnits}.0 / 24.0 Max Units</span>
               </div>
               <button
                 onClick={handleEnrollSubmit}

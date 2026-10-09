@@ -87,12 +87,12 @@ export default function StudentSettingsPage() {
       )}
 
       {/* Security Advisory */}
-      <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 sm:p-5 flex items-start gap-3 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
-        <div className="p-2.5 rounded-xl bg-blue-50 text-[#2563EB] border border-blue-100 mt-0.5">
+      <div className="bg-slate-50 border border-slate-200/90 rounded-lg p-4 flex items-start gap-3">
+        <div className="p-2 rounded bg-blue-50 text-[#1D4ED8] border border-blue-200 mt-0.5">
           <ShieldCheck size={18} />
         </div>
         <div className="text-xs text-slate-600 leading-relaxed font-sans">
-          <span className="font-heading font-bold text-slate-900 block mb-0.5">
+          <span className="font-heading font-bold text-slate-900 block">
             Philippine Data Privacy Act (RA 10173) Compliance Notice
           </span>
           Your student information credentials grant access to official academic records and financial statements. Never disclose your security password to unauthorized personnel.
@@ -103,7 +103,7 @@ export default function StudentSettingsPage() {
       <div className="panel">
         <div className="panel-heading">
           <div className="flex items-center gap-2">
-            <KeyRound size={16} className="text-[#2563EB]" />
+            <KeyRound size={16} className="text-[#1D4ED8]" />
             <span className="font-heading font-bold text-slate-900">Update Security Password</span>
           </div>
           <span className="text-[10px] text-slate-400 font-mono">256-Bit Cryptographic Hash</span>

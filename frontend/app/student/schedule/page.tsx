@@ -174,9 +174,9 @@ export default function StudentSchedulePage() {
       />
 
       {/* Control Bar: Term Selector & View Mode Switcher */}
-      <div className="bg-white border border-slate-200/90 rounded-2xl p-4 shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-blue-50 text-[#2563EB] border border-blue-200 shrink-0">
+          <div className="p-2 rounded bg-blue-50 text-[#1D4ED8] border border-blue-200 shrink-0">
             <CalendarIcon size={18} />
           </div>
           <div>
@@ -200,12 +200,12 @@ export default function StudentSchedulePage() {
         {/* View Toggle */}
         <div className="flex items-center gap-2 self-end sm:self-center">
           <span className="text-xs text-slate-500 font-medium">Layout:</span>
-          <div className="flex bg-slate-100 p-0.5 rounded-xl border border-slate-200 text-xs">
+          <div className="flex bg-slate-100 p-0.5 rounded-md border border-slate-200 text-xs">
             <button
               onClick={() => setViewMode('grid')}
-              className={`px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded font-medium flex items-center gap-1.5 transition-all cursor-pointer ${
                 viewMode === 'grid' 
-                  ? 'bg-white text-[#2563EB] shadow-2xs font-bold' 
+                  ? 'bg-white text-[#1D4ED8] shadow-2xs font-semibold' 
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >
@@ -214,9 +214,9 @@ export default function StudentSchedulePage() {
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5 transition-all cursor-pointer ${
+              className={`px-3 py-1 rounded font-medium flex items-center gap-1.5 transition-all cursor-pointer ${
                 viewMode === 'list' 
-                  ? 'bg-white text-[#2563EB] shadow-2xs font-bold' 
+                  ? 'bg-white text-[#1D4ED8] shadow-2xs font-semibold' 
                   : 'text-slate-600 hover:text-slate-900'
               }`}
             >

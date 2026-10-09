@@ -3,7 +3,9 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/lib/auth';
 import { api } from '@/lib/api';
-import { StudentDashboard, Announcement } from '@/types';
+import { StudentDashboard } from '@/types';
+import { LoadingState } from '@/components/ui/LoadingState';
+import { OfficialCampusBulletins } from '@/components/dashboard/OfficialCampusBulletins';
 import { StudentDashboardSkeleton } from '@/components/ui/skeleton';
 import { 
   BookOpen, 
@@ -22,18 +24,20 @@ import {
   Megaphone,
   Sparkles,
   ClipboardList,
-  AlertCircle,
-  Star,
-  UserCheck,
-  Bell,
-  ArrowUpRight,
-  TrendingUp,
-  Video,
-  ExternalLink,
-  Tag
+  AlertCircle
 } from 'lucide-react';
 import Link from 'next/link';
 import { formatTimeAgo } from '@/lib/utils';
+
+interface ExamItem {
+  id: string;
+  name: string;
+  course: string;
+  date: string;
+  time: string;
+  location: string;
+  status: 'Completed' | 'Upcoming';
+}
 
 interface HomeworkItem {
   id: string;
@@ -54,38 +58,23 @@ export default function StudentDashboardPage() {
     upcoming_classes: [],
     recent_announcements: []
   } as any);
-  const [bulletins, setBulletins] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDashboardAndBulletins = async () => {
+    const fetchDashboard = async () => {
       try {
-        const [dashRes, annRes] = await Promise.allSettled([
-          api.get<StudentDashboard>('/student/dashboard'),
-          api.get('/announcements')
-        ]);
-
-        if (dashRes.status === 'fulfilled') {
-          const dashboardData = (dashRes.value as any).data || dashRes.value;
-          if (dashboardData) {
-            setData(dashboardData);
-          }
-        }
-
-        if (annRes.status === 'fulfilled') {
-          const annData = Array.isArray(annRes.value) 
-            ? annRes.value 
-            : ((annRes.value as any)?.data && Array.isArray((annRes.value as any).data) ? (annRes.value as any).data : []);
-          setBulletins(annData.filter((a: any) => a.is_published !== false));
+        const response = await api.get<StudentDashboard>('/student/dashboard');
+        const dashboardData = (response as any).data || response;
+        if (dashboardData) {
+          setData(dashboardData);
         }
       } catch {
-        // Retain verified fallback data
+        // Keep initial state
       } finally {
         setLoading(false);
       }
     };
-
-    fetchDashboardAndBulletins();
+    fetchDashboard();
   }, []);
 
   const todayClasses = [
@@ -94,44 +83,85 @@ export default function StudentDashboardPage() {
       name: 'System Integration and Architecture 2',
       instructor: 'Sir Charles Bacotot',
       time: '07:30 AM – 08:30 AM',
-      duration: '60 Mins',
-      room: 'Room OL 110 (Main Bldg)',
-      status: 'In Progress',
-      statusColor: 'bg-blue-50 text-[#2563EB] border-blue-200',
-      actionLabel: 'Join Live Stream'
+      room: 'Room OL 110',
+      status: 'Current Session'
     },
     {
       code: 'IT EVD31',
       name: 'Event Driven Programming (Lecture)',
       instructor: 'Sir Yestin Prado',
       time: '08:30 AM – 09:30 AM',
-      duration: '60 Mins',
-      room: 'Room OL 107 (Tech Wing)',
-      status: 'Next Up',
-      statusColor: 'bg-sky-50 text-sky-700 border-sky-200',
-      actionLabel: 'Class Room OL 107'
+      room: 'Room OL 107',
+      status: 'Next Up'
     },
     {
       code: 'IT IAS31',
       name: 'Information Assurance and Security 1',
       instructor: 'Sir Jay-ar Base',
       time: '09:30 AM – 10:30 AM',
-      duration: '60 Mins',
-      room: 'Room OL 108 (Cyber Lab)',
-      status: 'Upcoming',
-      statusColor: 'bg-slate-100 text-slate-700 border-slate-200',
-      actionLabel: 'Course Syllabus'
+      room: 'Room OL 108',
+      status: 'Upcoming'
     },
     {
       code: 'IT NET31',
       name: 'Networking 1 (Lecture)',
       instructor: 'Sir Arnel L. Villanueva',
       time: '10:30 AM – 11:30 AM',
-      duration: '60 Mins',
-      room: 'Room OL 109 (Cisco Lab)',
-      status: 'Upcoming',
-      statusColor: 'bg-slate-100 text-slate-700 border-slate-200',
-      actionLabel: 'Packet Tracer Lab'
+      room: 'Room OL 109',
+      status: 'Upcoming'
+    }
+  ];
+
+  const enrolledCourses = [
+    {
+      id: '1',
+      code: 'FREE ELEC 1',
+      name: 'Free Elective 1 (Mobile App Development)',
+      instructor: 'Sir Vincent John Cababan',
+      days: 'Mon & Wed',
+      time: '10:30 AM – 12:00 PM',
+      room: 'Room H 204',
+      units: 3.0
+    },
+    {
+      id: '6',
+      code: 'IT EVD31',
+      name: 'Event Driven Programming (Lecture)',
+      instructor: 'Sir Yestin Prado',
+      days: 'Mon & Wed',
+      time: '08:30 AM – 09:30 AM',
+      room: 'Room OL 107',
+      units: 2.0
+    },
+    {
+      id: '8',
+      code: 'IT IAS31',
+      name: 'Information Assurance and Security 1',
+      instructor: 'Sir Jay-ar Base',
+      days: 'Mon & Wed',
+      time: '09:30 AM – 10:30 AM',
+      room: 'Room OL 108',
+      units: 2.0
+    },
+    {
+      id: '10',
+      code: 'IT NET31',
+      name: 'Networking 1 (Lecture & Lab)',
+      instructor: 'Sir Arnel L. Villanueva',
+      days: 'Mon & Wed',
+      time: '10:30 AM – 11:30 AM',
+      room: 'Room OL 109',
+      units: 3.0
+    },
+    {
+      id: '12',
+      code: 'IT SIA31',
+      name: 'System Integration and Architecture 2',
+      instructor: 'Sir Charles Bacotot',
+      days: 'Mon & Wed',
+      time: '07:30 AM – 08:30 AM',
+      room: 'Room OL 110',
+      units: 3.0
     }
   ];
 
@@ -140,7 +170,7 @@ export default function StudentDashboardPage() {
       id: 'hw-1',
       course: 'IT SIA31',
       assignment: 'Milestone 1: Architectural Middleware & API Specification',
-      dueDate: 'Tomorrow • 11:59 PM',
+      dueDate: 'Sep 18, 2026',
       status: 'In Progress'
     },
     {
@@ -166,462 +196,176 @@ export default function StudentDashboardPage() {
     }
   ];
 
-  // Default campus bulletins if API is offline
-  const displayBulletins = bulletins.length > 0 ? bulletins : [
-    {
-      id: 101,
-      title: 'Midterm Examination Schedule for 1st Semester A.Y. 2026-2027',
-      content: 'Midterm examinations are scheduled from October 15-20, 2026. Please settle examination clearances at the Accounting Office before the exam dates.',
-      published_at: '2026-10-01',
-      category: 'Examination',
-      priority: 'high'
-    },
-    {
-      id: 102,
-      title: 'University Library System Digital Access Update',
-      content: 'All enrolled college students now have 24/7 access to IEEE Xplore and ProQuest digital academic repositories via student portal credentials.',
-      published_at: '2026-09-28',
-      category: 'Academic',
-      priority: 'normal'
-    },
-    {
-      id: 103,
-      title: 'Annual CEC Collegiate Hackathon 2026: AI & Systems',
-      content: 'Team registration is officially open for 3rd and 4th year IT/CS students. Mentors from premier tech research labs will conduct workshops.',
-      published_at: '2026-09-22',
-      category: 'Competition',
-      priority: 'normal'
-    }
-  ];
+  const recentBulletins = Array.isArray(data?.recent_announcements) ? data.recent_announcements : [];
 
   if (loading) {
     return <StudentDashboardSkeleton />;
   }
 
-  const studentFirstName = user?.name ? user.name.split(' ')[0] : 'Roldan';
-
   return (
-    <div className="space-y-6 sm:space-y-7 font-sans">
+    <div className="space-y-6 font-sans">
       
-      {/* ── 1. DASHBOARD HERO (Vibrant Blue Welcome Banner matching Reference 1:1) ── */}
-      <div 
-        className="relative overflow-hidden rounded-3xl p-6 sm:p-8 lg:p-9 text-white shadow-[0_10px_25px_-5px_rgba(37,99,235,0.28)] border border-blue-400/30"
-        style={{
-          background: 'linear-gradient(135deg, #1D4ED8 0%, #2563EB 55%, #0284C7 100%)'
-        }}
-      >
-        {/* Subtle Background Glow */}
-        <div className="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-white/10 blur-2xl pointer-events-none" />
-        <div className="absolute left-1/3 -top-24 w-60 h-60 rounded-full bg-cyan-300/15 blur-xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-6 lg:gap-8">
-          
-          {/* Left Hero Column: Greeting & Action Buttons */}
-          <div className="space-y-3.5 max-w-2xl">
-            {/* Translucent Semester Week Chip */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-white/95 text-[11px] font-bold border border-white/20 uppercase tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 animate-pulse" />
-              <span>1ST SEMESTER • WEEK 08</span>
-            </div>
-
-            {/* Main Welcome Heading */}
-            <h1 className="font-heading font-extrabold text-2xl sm:text-3xl lg:text-4xl text-white tracking-tight leading-tight m-0">
-              Welcome back, {studentFirstName}! 👋
-            </h1>
-
-            {/* Subtitle Message */}
-            <p className="text-xs sm:text-sm text-blue-50/95 leading-relaxed font-sans max-w-xl">
-              You have <strong className="text-white font-semibold">2 classes today</strong> and <strong className="text-white font-semibold">3 upcoming assignment deadlines</strong> requiring attention this week.
-            </p>
-
-            {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <Link
-                href="/student/schedule"
-                className="bg-white hover:bg-blue-50 text-[#2563EB] font-bold text-xs px-5 py-3 rounded-xl shadow-xs hover:shadow-md transition-all flex items-center gap-2 cursor-pointer group"
-              >
-                <CalendarIcon size={14} className="text-[#2563EB]" />
-                <span>View Class Schedule</span>
-                <ChevronRight size={13} className="transition-transform group-hover:translate-x-0.5" />
-              </Link>
-
-              <Link
-                href="/student/enrollment"
-                className="bg-white/20 hover:bg-white/30 text-white font-semibold text-xs px-5 py-3 rounded-xl backdrop-blur-md border border-white/25 shadow-2xs hover:shadow-xs transition-all flex items-center gap-2 cursor-pointer"
-              >
-                <FileCheck size={14} className="text-white/90" />
-                <span>Submit Assignments</span>
-              </Link>
-            </div>
+      {/* ── 1. Editorial Welcome Dossier ────────── */}
+      <div className="bg-white border border-slate-200/80 rounded-lg p-5 sm:p-6 shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="font-heading text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+              Good day, {user?.name ? user.name.split(' ')[0] : 'Roldan'}
+            </span>
+            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+              Officially Enrolled
+            </span>
           </div>
-
-          {/* Right Hero Column: 3 Translucent Metric Panels Side-by-Side */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full xl:w-auto xl:min-w-[390px] shrink-0">
-            
-            {/* Box 1: Current GPA */}
-            <div className="bg-blue-900/35 hover:bg-blue-900/45 backdrop-blur-md rounded-2xl p-4 border border-white/20 transition-all flex flex-col justify-between">
-              <div className="flex items-center justify-between text-[10px] font-bold tracking-wider text-blue-100 uppercase">
-                <span>Current GPA</span>
-                <Star size={13} className="text-amber-300 fill-amber-300" />
-              </div>
-              <div className="font-heading font-extrabold text-2xl sm:text-3xl text-white tracking-tight my-1.5 tabular-nums">
-                {data.gpa || '1.25'}
-              </div>
-              <div className="flex items-center gap-1 text-[10px] text-emerald-200 font-medium">
-                <TrendingUp size={11} />
-                <span>+0.12 vs last term</span>
-              </div>
-            </div>
-
-            {/* Box 2: Term Attendance */}
-            <div className="bg-blue-900/35 hover:bg-blue-900/45 backdrop-blur-md rounded-2xl p-4 border border-white/20 transition-all flex flex-col justify-between">
-              <div className="flex items-center justify-between text-[10px] font-bold tracking-wider text-blue-100 uppercase">
-                <span>Term Attendance</span>
-                <CheckCircle2 size={13} className="text-cyan-300" />
-              </div>
-              <div className="font-heading font-extrabold text-2xl sm:text-3xl text-white tracking-tight my-1.5 tabular-nums">
-                {data.attendance_rate || '96.4'}%
-              </div>
-              <div className="text-[10px] text-blue-100 font-medium truncate">
-                2 excused leaves
-              </div>
-            </div>
-
-            {/* Box 3: Credits */}
-            <div className="bg-blue-900/35 hover:bg-blue-900/45 backdrop-blur-md rounded-2xl p-4 border border-white/20 transition-all flex flex-col justify-between">
-              <div className="flex items-center justify-between text-[10px] font-bold tracking-wider text-blue-100 uppercase">
-                <span>Credits</span>
-                <Award size={13} className="text-cyan-300" />
-              </div>
-              <div className="font-heading font-extrabold text-2xl sm:text-3xl text-white tracking-tight my-1.5 tabular-nums">
-                18<span className="text-base text-white/70 font-normal"> / 20</span>
-              </div>
-              <div className="text-[10px] text-blue-100 font-medium truncate">
-                On track for graduation
-              </div>
-            </div>
-
+          <div className="text-xs text-slate-500 font-sans flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="font-mono text-slate-700 font-semibold">SN: 2026-00001</span>
+            <span>•</span>
+            <span>Bachelor of Science in Information Technology (Year 3)</span>
+            <span>•</span>
+            <span className="text-[#1D4ED8] font-medium">1st Semester A.Y. 2026–2027</span>
           </div>
+        </div>
 
+        <div className="flex items-center gap-2 self-start sm:self-center">
+          <Link
+            href="/student/grades"
+            className="btn-outline text-xs inline-flex items-center gap-1.5"
+          >
+            <GraduationCap size={13} />
+            <span>Grade Report</span>
+          </Link>
+          <Link
+            href="/student/schedule"
+            className="btn-primary text-xs inline-flex items-center gap-1.5"
+          >
+            <CalendarIcon size={13} />
+            <span>My Schedule</span>
+          </Link>
         </div>
       </div>
 
-      {/* ── 2. STATISTIC CARDS (4-Column Modern SaaS Metrics) ──── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        
-        {/* Card 1: Cumulative GPA */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-sans">
-                Cumulative GPA
+      {/* ── 2. Official Campus Bulletins (Prominent Top Section) ── */}
+      <OfficialCampusBulletins role="student" />
+
+      {/* ── 3. Subtle Academic Metrics Strip ────── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {[
+          { label: 'General Weighted Average', value: '1.25', sub: "Dean's Honor List", icon: Award, color: 'text-blue-700 bg-blue-50 border-blue-200' },
+          { label: 'Active Enrolled Load', value: '24.0 Units', sub: '8 Subjects (Full Load)', icon: BookOpen, color: 'text-slate-700 bg-slate-50 border-slate-200' },
+          { label: 'Semester Attendance', value: '98.5%', sub: 'Good Standing', icon: ClipboardList, color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
+          { label: 'Matriculation Status', value: 'Settled', sub: 'Cleared for Finals', icon: FileCheck, color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
+        ].map((item, idx) => (
+          <div
+            key={idx}
+            className="bg-white border border-slate-200/80 rounded-lg p-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex items-start gap-3"
+          >
+            <div className={`p-2 rounded-md border ${item.color} shrink-0 mt-0.5`}>
+              <item.icon size={15} />
+            </div>
+            <div className="min-w-0">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 block truncate">
+                {item.label}
               </span>
-              <div className="w-8 h-8 rounded-full bg-blue-50 text-[#2563EB] flex items-center justify-center shrink-0 border border-blue-100">
-                <Star size={15} />
+              <div className="text-base font-bold text-slate-900 font-heading tabular-nums leading-tight mt-0.5">
+                {item.value}
               </div>
-            </div>
-
-            <div className="flex items-baseline gap-2 mt-2">
-              <span className="font-heading font-extrabold text-3xl text-slate-900 tracking-tight tabular-nums">
-                1.25
-              </span>
-              <span className="text-xs text-slate-400 font-mono">/ 1.00 scale</span>
-            </div>
-
-            {/* Miniature Sparkline Line SVG */}
-            <div className="my-2.5">
-              <svg className="w-full h-7 text-[#2563EB]" viewBox="0 0 160 30" fill="none">
-                <path 
-                  d="M0 22 C 25 22, 40 18, 65 14 C 90 10, 115 15, 135 6 C 145 2, 155 4, 160 3" 
-                  stroke="currentColor" 
-                  strokeWidth="2.5" 
-                  strokeLinecap="round" 
-                />
-                <circle cx="160" cy="3" r="3" fill="currentColor" />
-              </svg>
-            </div>
-          </div>
-
-          <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-            <span className="flex items-center gap-1 font-semibold text-[#2563EB]">
-              <ArrowUpRight size={13} />
-              Dean's Honors List
-            </span>
-            <span className="text-slate-400 font-mono">Top 3% percentile</span>
-          </div>
-        </div>
-
-        {/* Card 2: Active Enrollment */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-sans">
-                Active Enrollment
-              </span>
-              <div className="w-8 h-8 rounded-full bg-blue-50 text-[#2563EB] flex items-center justify-center shrink-0 border border-blue-100">
-                <BookOpen size={15} />
-              </div>
-            </div>
-
-            <div className="flex items-baseline gap-2 mt-2">
-              <span className="font-heading font-extrabold text-3xl text-slate-900 tracking-tight tabular-nums">
-                14
-              </span>
-              <span className="text-xs text-slate-500 font-medium">registered modules</span>
-            </div>
-
-            <p className="text-[11px] text-slate-500 mt-2 font-sans">
-              Total academic load of <strong className="text-slate-700">24.0 credit units</strong> across lecture and lab practicums.
-            </p>
-          </div>
-
-          <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-600">
-            <span className="flex items-center gap-1.5 font-medium">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB]" />
-              4 Lectures Today
-            </span>
-            <span className="text-slate-500">3 Lab Practicums</span>
-          </div>
-        </div>
-
-        {/* Card 3: Critical Deadlines */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-sans">
-                Critical Deadlines
-              </span>
-              <div className="w-8 h-8 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 border border-rose-100">
-                <Bell size={15} />
-              </div>
-            </div>
-
-            <div className="flex items-baseline gap-2.5 mt-2">
-              <span className="font-heading font-extrabold text-3xl text-rose-600 tracking-tight tabular-nums">
-                2
-              </span>
-              <span className="bg-rose-50 text-rose-700 border border-rose-200 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                Within 48 hrs
+              <span className="text-[10px] text-slate-500 block mt-0.5 font-medium truncate">
+                {item.sub}
               </span>
             </div>
-
-            <p className="text-[11px] text-slate-500 mt-2 font-sans">
-              Middleware Architecture & GUI State Machine submissions require submission.
-            </p>
           </div>
-
-          <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
-            <span className="text-slate-600 truncate">Nearest: <strong className="text-slate-800">IT SIA31</strong></span>
-            <span className="text-rose-600 font-semibold shrink-0">Tomorrow</span>
-          </div>
-        </div>
-
-        {/* Card 4: Semester Presence */}
-        <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-sans">
-                Semester Presence
-              </span>
-              <div className="w-8 h-8 rounded-full bg-blue-50 text-[#2563EB] flex items-center justify-center shrink-0 border border-blue-100">
-                <UserCheck size={15} />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between mt-2">
-              <div>
-                <span className="font-heading font-extrabold text-3xl text-slate-900 tracking-tight tabular-nums">
-                  96.4%
-                </span>
-                <div className="text-[11px] text-slate-500 font-mono mt-0.5">
-                  48/50 Sessions
-                </div>
-              </div>
-
-              {/* Progress Circle Visual Badge */}
-              <div className="relative w-12 h-12 flex items-center justify-center">
-                <svg className="w-12 h-12 -rotate-90" viewBox="0 0 36 36">
-                  <path
-                    className="text-slate-100"
-                    strokeWidth="3.5"
-                    stroke="currentColor"
-                    fill="none"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                  <path
-                    className="text-[#2563EB]"
-                    strokeDasharray="96.4, 100"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                    stroke="currentColor"
-                    fill="none"
-                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                  />
-                </svg>
-                <CheckCircle2 size={16} className="text-[#2563EB] absolute" />
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
-            <span className="text-slate-500 font-medium">Compliance: <strong className="text-emerald-700">Excellent</strong></span>
-            <Link href="/student/attendance" className="font-bold text-[#2563EB] hover:underline">
-              View Record →
-            </Link>
-          </div>
-        </div>
-
+        ))}
       </div>
 
-      {/* ── 3. MAIN DASHBOARD CONTENT (Two-Column Responsive Grid) ──── */}
+      {/* ── 3. Main Grid (Two Columns) ─────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* Left Column (8 cols): Today's Schedule & Assignments */}
-        <div className="lg:col-span-8 space-y-6">
+        {/* Left Column: Courses & Assignments (7 cols) */}
+        <div className="lg:col-span-7 space-y-6">
           
-          {/* Today's Class Schedule (Matching Reference Structure) */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
-            <div className="p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-white">
-              <div className="flex items-center gap-2.5">
-                <span className="w-1.5 h-6 rounded-full bg-[#2563EB] shrink-0" />
-                <div>
-                  <h2 className="font-heading font-extrabold text-base text-slate-900 leading-tight m-0">
-                    Today's Class Schedule
-                  </h2>
-                  <p className="text-[11px] text-slate-500 font-sans mt-0.5">
-                    {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })} • Current Academic Block
-                  </p>
-                </div>
+          {/* Enrolled Courses Ledger */}
+          <div className="panel">
+            <div className="panel-heading">
+              <div className="flex items-center gap-2">
+                <BookOpen size={15} className="text-[#1D4ED8]" />
+                <span>Enrolled Academic Courses</span>
               </div>
-
-              <Link 
-                href="/student/schedule"
-                className="text-xs font-bold text-[#2563EB] hover:underline flex items-center gap-1 self-start sm:self-center"
-              >
-                <span>Weekly View</span>
+              <Link href="/student/subjects" className="text-xs text-[#1D4ED8] hover:underline font-semibold flex items-center gap-1">
+                <span>View Full Catalog</span>
                 <ChevronRight size={13} />
               </Link>
             </div>
 
-            <div className="p-4 sm:p-5 space-y-3 font-sans">
-              {todayClasses.map((cls, idx) => (
-                <div 
-                  key={idx}
-                  className="bg-white rounded-2xl border border-slate-200/80 p-4 hover:border-blue-300 hover:shadow-xs transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                >
-                  <div className="flex items-start sm:items-center gap-3.5 min-w-0 flex-1">
-                    {/* Time Blue Badge Box */}
-                    <div className="bg-[#2563EB] text-white rounded-xl px-3 py-2 text-center min-w-[96px] shadow-2xs shrink-0 flex flex-col justify-center">
-                      <span className="font-heading font-bold text-xs leading-none">
-                        {cls.time.split('–')[0]?.trim()}
+            <div className="p-0 divide-y divide-slate-100 font-sans">
+              {enrolledCourses.map((c) => (
+                <div key={c.id} className="p-3.5 hover:bg-slate-50/70 transition-colors flex items-center justify-between gap-3">
+                  <div className="space-y-0.5 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-xs text-[#1D4ED8] bg-blue-50 border border-blue-100 px-1.5 py-0.2 rounded">
+                        {c.code}
                       </span>
-                      <span className="font-heading font-bold text-xs leading-tight mt-0.5">
-                        {cls.time.split('–')[1]?.trim()}
-                      </span>
-                      <span className="bg-white/20 text-white text-[10px] font-medium rounded px-1.5 py-0.2 mt-1 font-sans">
-                        {cls.duration}
+                      <span className="text-[11px] text-slate-500 font-medium">
+                        {c.units.toFixed(1)} Units
                       </span>
                     </div>
-
-                    {/* Course Information Details */}
-                    <div className="space-y-1 min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md border ${cls.statusColor}`}>
-                          {cls.status}
-                        </span>
-                        <span className="font-mono font-bold text-xs text-slate-700">
-                          {cls.code}
-                        </span>
-                      </div>
-
-                      <h3 className="font-heading font-bold text-sm text-slate-900 truncate m-0">
-                        {cls.name}
-                      </h3>
-
-                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 pt-0.5">
-                        <span className="flex items-center gap-1">
-                          <MapPin size={12} className="text-[#2563EB] shrink-0" />
-                          <span className="text-slate-700 font-medium">{cls.room}</span>
-                        </span>
-                        <span>•</span>
-                        <span className="flex items-center gap-1">
-                          <UserIcon size={12} className="text-slate-400 shrink-0" />
-                          <span>{cls.instructor}</span>
-                        </span>
-                      </div>
+                    <h3 className="font-heading font-semibold text-xs text-slate-900 truncate m-0">
+                      {c.name}
+                    </h3>
+                    <div className="text-[11px] text-slate-500 flex items-center gap-2 pt-0.5">
+                      <span>{c.instructor}</span>
+                      <span>•</span>
+                      <span>{c.room}</span>
+                      <span>•</span>
+                      <span>{c.days} ({c.time})</span>
                     </div>
                   </div>
 
-                  {/* Right Action Button */}
-                  <div className="shrink-0 self-end sm:self-center">
-                    <Link
-                      href="/student/schedule"
-                      className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-xs font-semibold px-4 py-2 rounded-xl transition-all shadow-2xs flex items-center gap-1.5"
-                    >
-                      {cls.status === 'In Progress' ? (
-                        <>
-                          <Video size={13} />
-                          <span>Join Live Stream</span>
-                        </>
-                      ) : (
-                        <>
-                          <span>Class Details</span>
-                          <ChevronRight size={13} />
-                        </>
-                      )}
-                    </Link>
-                  </div>
+                  <Link
+                    href={`/student/subjects/${c.id}`}
+                    className="btn-secondary text-[11px] px-2.5 py-1 shrink-0"
+                  >
+                    Details
+                  </Link>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Assignments & Coursework Submissions */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-white">
-              <div className="flex items-center gap-2.5">
-                <span className="w-1.5 h-6 rounded-full bg-[#3B82F6] shrink-0" />
-                <div>
-                  <h2 className="font-heading font-extrabold text-base text-slate-900 leading-tight m-0">
-                    Assignments & Deliverables
-                  </h2>
-                  <p className="text-[11px] text-slate-500 font-sans mt-0.5">
-                    Coursework milestones tracked for Term 1 A.Y. 2026–2027
-                  </p>
-                </div>
+          {/* Upcoming Assignments & Deadlines */}
+          <div className="panel">
+            <div className="panel-heading">
+              <div className="flex items-center gap-2">
+                <ClipboardList size={15} className="text-[#1D4ED8]" />
+                <span>Coursework & Deadlines</span>
               </div>
-
-              <span className="text-xs font-mono font-semibold text-slate-500 bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-200/80">
-                4 Active Items
-              </span>
+              <span className="text-[11px] font-mono text-slate-500">4 Active Items</span>
             </div>
 
-            <div className="divide-y divide-slate-100 font-sans">
+            <div className="p-0 divide-y divide-slate-100 font-sans">
               {homeworks.map((hw) => (
-                <div key={hw.id} className="p-4 hover:bg-slate-50/70 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div className="space-y-1 min-w-0">
+                <div key={hw.id} className="p-3.5 hover:bg-slate-50/70 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
+                  <div className="space-y-0.5 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-[10px] font-bold text-[#2563EB] bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">
+                      <span className="font-mono text-[10px] font-bold text-slate-600 bg-slate-100 px-1.5 py-0.2 rounded">
                         {hw.course}
                       </span>
-                      <span className="text-xs text-slate-500 font-medium">Due: {hw.dueDate}</span>
+                      <span className="text-[11px] text-slate-500">Due: {hw.dueDate}</span>
                     </div>
-                    <div className="text-xs sm:text-sm font-semibold text-slate-900">
+                    <div className="text-xs font-medium text-slate-900 truncate">
                       {hw.assignment}
                     </div>
                   </div>
 
-                  <div className="shrink-0 self-end sm:self-center">
+                  <div className="flex items-center gap-2 self-end sm:self-center shrink-0">
                     {hw.status === 'Submitted' ? (
-                      <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                      <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-semibold px-2 py-0.5 rounded uppercase tracking-wider">
                         Submitted
                       </span>
                     ) : hw.status === 'In Progress' ? (
-                      <span className="bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                      <span className="bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-semibold px-2 py-0.5 rounded uppercase tracking-wider">
                         In Progress
                       </span>
                     ) : (
-                      <span className="bg-slate-100 text-slate-700 border border-slate-200 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                      <span className="bg-slate-100 text-slate-600 border border-slate-200 text-[10px] font-semibold px-2 py-0.5 rounded uppercase tracking-wider">
                         Pending
                       </span>
                     )}
@@ -633,98 +377,98 @@ export default function StudentDashboardPage() {
 
         </div>
 
-        {/* Right Column (4 cols): Campus Bulletin Panel */}
-        <div className="lg:col-span-4 space-y-6">
+        {/* Right Column: Today's Schedule & Announcements (5 cols) */}
+        <div className="lg:col-span-5 space-y-6">
           
-          {/* Campus Bulletin Card (Matching Reference Screenshot) */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden">
-            <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-white">
-              <div className="flex items-center gap-2.5">
-                <span className="w-1.5 h-6 rounded-full bg-[#0EA5C9] shrink-0" />
-                <h2 className="font-heading font-extrabold text-base text-slate-900 leading-tight m-0">
-                  Campus Bulletin
-                </h2>
+          {/* Today's Schedule Timeline */}
+          <div className="panel">
+            <div className="panel-heading">
+              <div className="flex items-center gap-2">
+                <Clock size={15} className="text-[#1D4ED8]" />
+                <span>Today's Class Schedule</span>
               </div>
-              <Megaphone size={16} className="text-[#0EA5C9]" />
+              <span className="text-[11px] font-mono text-slate-500">
+                {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+              </span>
             </div>
 
-            <div className="p-4 sm:p-5 space-y-4 font-sans">
-              {displayBulletins.slice(0, 3).map((b: any, idx) => {
-                const category = b.category || (b.priority === 'high' ? 'Important Notice' : 'Academic Advisory');
-                const dateText = b.published_at || 'Recent';
-
-                return (
-                  <div 
-                    key={b.id || idx}
-                    className="p-4 rounded-xl border border-slate-200/90 hover:border-blue-300 hover:shadow-xs transition-all space-y-2 bg-slate-50/40"
-                  >
-                    <div className="flex items-center justify-between text-[11px]">
-                      <span className="bg-[#2563EB] text-white text-[10px] font-bold px-2.5 py-0.5 rounded-md uppercase tracking-wider">
-                        {category}
-                      </span>
-                      <span className="text-slate-400 font-mono text-[11px]">
-                        {dateText}
-                      </span>
-                    </div>
-
-                    <h3 className="font-heading font-bold text-xs sm:text-sm text-slate-900 leading-snug m-0">
-                      {b.title}
-                    </h3>
-
-                    <p className="text-xs text-slate-600 leading-relaxed m-0 line-clamp-3">
-                      {b.content || b.description || ''}
-                    </p>
-
-                    <div className="pt-2 border-t border-slate-200/60 flex items-center justify-between text-xs">
-                      <span className="text-[11px] text-slate-500 font-medium">
-                        Office of Student Affairs
-                      </span>
-                      <Link 
-                        href="/student/announcements"
-                        className="font-bold text-[#2563EB] hover:underline flex items-center gap-0.5"
-                      >
-                        <span>Details</span>
-                        <ChevronRight size={13} />
-                      </Link>
-                    </div>
-                  </div>
-                );
-              })}
-
-              <div className="pt-1 text-center">
-                <Link
-                  href="/student/announcements"
-                  className="text-xs font-bold text-[#2563EB] hover:underline inline-flex items-center gap-1"
+            <div className="p-4 space-y-3 font-sans">
+              {todayClasses.map((cls, idx) => (
+                <div
+                  key={idx}
+                  className={`p-3 rounded-lg border transition-all ${
+                    idx === 0
+                      ? 'bg-blue-50/70 border-blue-200 text-slate-900'
+                      : 'bg-white border-slate-200/80 text-slate-800'
+                  }`}
                 >
-                  <span>View All Official Bulletins</span>
-                  <ChevronRight size={13} />
-                </Link>
-              </div>
+                  <div className="flex items-center justify-between text-[11px] mb-1">
+                    <span className="font-mono font-bold text-[#1D4ED8]">{cls.code}</span>
+                    <span className={`text-[10px] font-bold uppercase px-1.5 py-0.2 rounded ${
+                      idx === 0 ? 'bg-blue-200/60 text-[#1E3A8A]' : 'bg-slate-100 text-slate-600'
+                    }`}>
+                      {cls.status}
+                    </span>
+                  </div>
+                  <h4 className="font-heading font-bold text-xs text-slate-900 m-0 truncate">
+                    {cls.name}
+                  </h4>
+                  <div className="text-[11px] text-slate-600 flex items-center justify-between pt-1">
+                    <span>{cls.time}</span>
+                    <span className="font-medium text-slate-800">{cls.room}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Quick Academic Contacts Capsule */}
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)] space-y-3.5">
-            <div className="flex items-center gap-2">
-              <Building2 size={16} className="text-[#2563EB]" />
-              <h3 className="font-heading font-bold text-sm text-slate-900 m-0">
-                Registrar & Support
-              </h3>
+          {/* Official University Announcements */}
+          <div className="panel">
+            <div className="panel-heading">
+              <div className="flex items-center gap-2">
+                <Megaphone size={15} className="text-[#1D4ED8]" />
+                <span>Official Campus Bulletins</span>
+              </div>
+              <Link href="/student/announcements" className="text-xs text-[#1D4ED8] hover:underline font-semibold">
+                All Notices →
+              </Link>
             </div>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              For grading clarification, official transcript verification, or clearance questions, visit the Office of the Registrar.
-            </p>
-            <div className="text-[11px] font-mono text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-200/70 space-y-1">
-              <div>📍 Ground Floor, Main Academic Building</div>
-              <div>🕒 Mon – Fri • 08:00 AM – 05:00 PM</div>
-              <div>✉️ registrar@cebucebupor.edu.ph</div>
+
+            <div className="p-0 divide-y divide-slate-100 font-sans">
+              {recentBulletins.length > 0 ? (
+                recentBulletins.map((item: any) => {
+                  const timestamp = item.published_at || item.created_at;
+                  const relativeTime = formatTimeAgo(timestamp);
+                  const tag = (item.target_audience === 'all' || !item.target_audience) ? 'All Campus' : 'Student Advisory';
+
+                  return (
+                    <div key={item.id} className="p-3.5 hover:bg-slate-50/70 transition-colors space-y-1">
+                      <div className="flex items-center justify-between text-[10px]">
+                        <span className="font-semibold uppercase tracking-wider text-[#1D4ED8]">
+                          {tag}
+                        </span>
+                        <span className="text-slate-500 font-medium">{relativeTime}</span>
+                      </div>
+                      <h4 className="font-heading font-bold text-xs text-slate-900 m-0">
+                        {item.title}
+                      </h4>
+                      <p className="text-[11px] text-slate-600 leading-relaxed m-0 pt-0.5 line-clamp-2">
+                        {item.content || item.summary || ''}
+                      </p>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="p-6 text-center text-xs text-slate-400">
+                  No announcements available.
+                </div>
+              )}
             </div>
           </div>
 
         </div>
 
       </div>
-
     </div>
   );
 }

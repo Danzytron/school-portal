@@ -212,119 +212,70 @@ export default function TeacherDashboard() {
   return (
     <div className="space-y-6 font-sans">
       
-      {/* ── 1. VIBRANT BLUE FACULTY HERO ──── */}
-      <div 
-        className="relative overflow-hidden rounded-3xl p-6 sm:p-8 lg:p-9 text-white shadow-[0_10px_25px_-5px_rgba(37,99,235,0.28)] border border-blue-400/30"
-        style={{
-          background: 'linear-gradient(135deg, #1D4ED8 0%, #2563EB 55%, #0284C7 100%)'
-        }}
-      >
-        <div className="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-white/10 blur-2xl pointer-events-none" />
-        <div className="absolute left-1/3 -top-24 w-60 h-60 rounded-full bg-cyan-300/15 blur-xl pointer-events-none" />
-
-        <div className="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-6 lg:gap-8">
-          <div className="space-y-3.5 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-white/95 text-[11px] font-bold border border-white/20 uppercase tracking-wider">
-              <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 animate-pulse" />
-              <span>1ST SEMESTER • FACULTY WORKSPACE</span>
-            </div>
-
-            <h1 className="font-heading font-extrabold text-2xl sm:text-3xl lg:text-4xl text-white tracking-tight leading-tight m-0">
-              Welcome back, {user?.name || 'Prof. Alexander Cruz'}! 👨‍🏫
-            </h1>
-
-            <p className="text-xs sm:text-sm text-blue-50/95 leading-relaxed font-sans max-w-xl">
-              You have <strong className="text-white font-semibold">{facultyData.todays_classes?.length || 2} lecture sessions today</strong> and <strong className="text-white font-semibold">{facultyData.stats?.pendingGrades || 3} pending grade evaluations</strong> awaiting endorsement.
-            </p>
-
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <Link
-                href="/teacher/schedule"
-                className="bg-white hover:bg-blue-50 text-[#2563EB] font-bold text-xs px-5 py-3 rounded-xl shadow-xs hover:shadow-md transition-all flex items-center gap-2 cursor-pointer group"
-              >
-                <Calendar size={14} className="text-[#2563EB]" />
-                <span>Class Timetable</span>
-                <ChevronRight size={13} className="transition-transform group-hover:translate-x-0.5" />
-              </Link>
-
-              <Link
-                href="/teacher/grades"
-                className="bg-white/20 hover:bg-white/30 text-white font-semibold text-xs px-5 py-3 rounded-xl backdrop-blur-md border border-white/25 shadow-2xs hover:shadow-xs transition-all flex items-center gap-2 cursor-pointer"
-              >
-                <GraduationCap size={14} className="text-white/90" />
-                <span>Grade Submissions</span>
-              </Link>
-            </div>
+      {/* ── 1. Faculty Editorial Dossier Header ──── */}
+      <div className="bg-white border border-slate-200/80 rounded-lg p-5 sm:p-6 shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="font-heading text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
+              Faculty Workspace — {user?.name || 'Prof. Alexander Cruz'}
+            </span>
+            <span className="bg-blue-50 text-[#1D4ED8] border border-blue-200 text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">
+              Faculty Member
+            </span>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full xl:w-auto xl:min-w-[390px] shrink-0">
-            <div className="bg-blue-900/35 hover:bg-blue-900/45 backdrop-blur-md rounded-2xl p-4 border border-white/20 transition-all flex flex-col justify-between">
-              <div className="flex items-center justify-between text-[10px] font-bold tracking-wider text-blue-100 uppercase">
-                <span>Teaching Load</span>
-                <BookOpen size={13} className="text-cyan-300" />
-              </div>
-              <div className="font-heading font-extrabold text-2xl sm:text-3xl text-white tracking-tight my-1.5 tabular-nums">
-                {facultyData.stats?.assignedSubjects || 4}
-              </div>
-              <div className="text-[10px] text-blue-100 font-medium truncate">
-                Active Sections
-              </div>
-            </div>
-
-            <div className="bg-blue-900/35 hover:bg-blue-900/45 backdrop-blur-md rounded-2xl p-4 border border-white/20 transition-all flex flex-col justify-between">
-              <div className="flex items-center justify-between text-[10px] font-bold tracking-wider text-blue-100 uppercase">
-                <span>Students</span>
-                <Users size={13} className="text-cyan-300" />
-              </div>
-              <div className="font-heading font-extrabold text-2xl sm:text-3xl text-white tracking-tight my-1.5 tabular-nums">
-                {facultyData.stats?.totalStudents || 142}
-              </div>
-              <div className="text-[10px] text-blue-100 font-medium truncate">
-                Enrolled Roster
-              </div>
-            </div>
-
-            <div className="bg-blue-900/35 hover:bg-blue-900/45 backdrop-blur-md rounded-2xl p-4 border border-white/20 transition-all flex flex-col justify-between">
-              <div className="flex items-center justify-between text-[10px] font-bold tracking-wider text-blue-100 uppercase">
-                <span>Evaluations</span>
-                <AlertCircle size={13} className="text-amber-300 fill-amber-300" />
-              </div>
-              <div className="font-heading font-extrabold text-2xl sm:text-3xl text-white tracking-tight my-1.5 tabular-nums">
-                {facultyData.stats?.pendingGrades || 3}
-              </div>
-              <div className="text-[10px] text-blue-100 font-medium truncate">
-                Pending Final Marks
-              </div>
-            </div>
+          <div className="text-xs text-slate-500 font-sans flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span>College of Information Technology & Computer Studies</span>
+            <span>•</span>
+            <span className="text-[#1D4ED8] font-medium">1st Semester A.Y. 2026–2027</span>
           </div>
+        </div>
+
+        <div className="flex items-center gap-2 self-start sm:self-center">
+          <Link
+            href="/teacher/grades"
+            className="btn-primary text-xs inline-flex items-center gap-1.5"
+          >
+            <GraduationCap size={13} />
+            <span>Grade Management</span>
+          </Link>
+          <Link
+            href="/teacher/attendance"
+            className="btn-secondary text-xs inline-flex items-center gap-1.5"
+          >
+            <ClipboardList size={13} />
+            <span>Attendance Entry</span>
+          </Link>
         </div>
       </div>
 
-      {/* ── 2. FOUR STATISTIC CARDS ──────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+      {/* ── 2. Official Campus Bulletins (Prominent Top Section) ── */}
+      <OfficialCampusBulletins role="teacher" />
+
+      {/* ── 3. Subtle Faculty Metrics ────────────── */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'Assigned Courses', value: facultyData.stats?.assignedSubjects || 4, sub: 'Active Teaching Load', icon: BookOpen, color: 'text-[#2563EB] bg-blue-50 border-blue-100' },
+          { label: 'Assigned Courses', value: facultyData.stats?.assignedSubjects || 4, sub: 'Active Teaching Load', icon: BookOpen, color: 'text-[#1D4ED8] bg-blue-50 border-blue-200' },
           { label: 'Enrolled Students', value: facultyData.stats?.totalStudents || 142, sub: 'Across 4 Sections', icon: Users, color: 'text-slate-700 bg-slate-50 border-slate-200' },
           { label: "Today's Lectures", value: facultyData.todays_classes?.length || 2, sub: 'Classroom Sessions', icon: Calendar, color: 'text-emerald-700 bg-emerald-50 border-emerald-200' },
           { label: 'Pending Evaluations', value: facultyData.stats?.pendingGrades || 3, sub: 'Midterm Marks Queue', icon: AlertCircle, color: 'text-amber-700 bg-amber-50 border-amber-200' },
         ].map((item, idx) => (
           <div
             key={idx}
-            className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)] hover:shadow-md transition-all flex flex-col justify-between"
+            className="bg-white border border-slate-200/80 rounded-lg p-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.03)] flex items-start gap-3"
           >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 font-sans truncate">
+            <div className={`p-2 rounded-md border ${item.color} shrink-0 mt-0.5`}>
+              <item.icon size={15} />
+            </div>
+            <div className="min-w-0">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-500 block truncate">
                 {item.label}
               </span>
-              <div className={`w-8 h-8 rounded-xl border ${item.color} flex items-center justify-center shrink-0`}>
-                <item.icon size={15} />
+              <div className="text-base font-bold text-slate-900 font-heading tabular-nums leading-tight mt-0.5">
+                {item.value}
               </div>
-            </div>
-            <div className="font-heading font-extrabold text-3xl text-slate-900 tracking-tight tabular-nums my-2">
-              {item.value}
-            </div>
-            <div className="pt-2 border-t border-slate-100 text-xs text-slate-500 font-medium truncate">
-              {item.sub}
+              <span className="text-[10px] text-slate-500 block mt-0.5 font-medium truncate">
+                {item.sub}
+              </span>
             </div>
           </div>
         ))}
@@ -340,10 +291,10 @@ export default function TeacherDashboard() {
           <div className="panel">
             <div className="panel-heading">
               <div className="flex items-center gap-2">
-                <Calendar size={15} className="text-[#2563EB]" />
+                <Calendar size={15} className="text-[#1D4ED8]" />
                 <span>Today's Lecture Sessions</span>
               </div>
-              <Link href="/teacher/schedule" className="text-xs text-[#2563EB] hover:underline font-semibold flex items-center gap-1">
+              <Link href="/teacher/schedule" className="text-xs text-[#1D4ED8] hover:underline font-semibold flex items-center gap-1">
                 <span>Full Timetable</span>
                 <ChevronRight size={13} />
               </Link>
@@ -355,7 +306,7 @@ export default function TeacherDashboard() {
                   <div key={i} className="p-4 hover:bg-slate-50/70 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="space-y-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-xs text-[#2563EB] bg-blue-50 border border-blue-100 px-1.5 py-0.2 rounded">
+                        <span className="font-mono font-bold text-xs text-[#1D4ED8] bg-blue-50 border border-blue-100 px-1.5 py-0.2 rounded">
                           {getSafeString(cls.code, 'IT 101')}
                         </span>
                         <span className="text-xs font-semibold text-slate-800 bg-slate-100 px-2 py-0.2 rounded">
@@ -376,12 +327,12 @@ export default function TeacherDashboard() {
 
                       <div className="text-[11px] text-slate-500 flex items-center gap-3 pt-0.5">
                         <span className="flex items-center gap-1 font-mono text-slate-700">
-                          <Clock size={11} className="text-[#2563EB]" />
+                          <Clock size={11} className="text-[#1D4ED8]" />
                           <span>{getSafeString(cls.time, '09:00 AM – 10:30 AM')}</span>
                         </span>
                         <span>•</span>
                         <span className="flex items-center gap-1">
-                          <MapPin size={11} className="text-[#2563EB]" />
+                          <MapPin size={11} className="text-[#1D4ED8]" />
                           <span>{getSafeString(cls.room, 'Classroom')}</span>
                         </span>
                       </div>
@@ -415,10 +366,10 @@ export default function TeacherDashboard() {
           <div className="panel">
             <div className="panel-heading">
               <div className="flex items-center gap-2">
-                <BookOpen size={15} className="text-[#2563EB]" />
+                <BookOpen size={15} className="text-[#1D4ED8]" />
                 <span>Assigned Courses & Enrollment</span>
               </div>
-              <Link href="/teacher/subjects" className="text-xs text-[#2563EB] hover:underline font-semibold flex items-center gap-1">
+              <Link href="/teacher/subjects" className="text-xs text-[#1D4ED8] hover:underline font-semibold flex items-center gap-1">
                 <span>View All</span>
                 <ChevronRight size={13} />
               </Link>
@@ -429,7 +380,7 @@ export default function TeacherDashboard() {
                 <div key={course.id} className="p-4 hover:bg-slate-50/70 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="space-y-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-[#2563EB] text-xs">
+                      <span className="font-mono font-bold text-[#1D4ED8] text-xs">
                         {getSafeString(course.code, 'IT 101')}
                       </span>
                       <span className="bg-slate-100 text-slate-700 px-2 py-0.2 rounded text-[10px] font-semibold">
@@ -479,10 +430,10 @@ export default function TeacherDashboard() {
           <div className="panel">
             <div className="panel-heading">
               <div className="flex items-center gap-2">
-                <Megaphone size={15} className="text-[#2563EB]" />
+                <Megaphone size={15} className="text-[#1D4ED8]" />
                 <span>Department Bulletins & Deadlines</span>
               </div>
-              <Link href="/teacher/announcements" className="text-xs text-[#2563EB] hover:underline font-semibold">
+              <Link href="/teacher/announcements" className="text-xs text-[#1D4ED8] hover:underline font-semibold">
                 All Bulletins →
               </Link>
             </div>
@@ -491,7 +442,7 @@ export default function TeacherDashboard() {
               {facultyData.recent_announcements.map((item: any) => (
                 <div key={item.id} className="p-3.5 hover:bg-slate-50/70 transition-colors space-y-1">
                   <div className="flex items-center justify-between text-[10px]">
-                    <span className="font-semibold uppercase tracking-wider text-[#2563EB]">
+                    <span className="font-semibold uppercase tracking-wider text-[#1D4ED8]">
                       {getSafeString(item.author, 'University Registrar')}
                     </span>
                     <span className="text-slate-400 font-mono">{item.published_at}</span>
@@ -517,14 +468,14 @@ export default function TeacherDashboard() {
                 href="/teacher/grades"
                 className="p-3 rounded-lg border border-slate-200/80 hover:bg-slate-50 transition-colors flex items-center gap-2"
               >
-                <GraduationCap size={15} className="text-[#2563EB]" />
+                <GraduationCap size={15} className="text-[#1D4ED8]" />
                 <span className="font-medium text-slate-800">Grade List</span>
               </Link>
               <Link
                 href="/teacher/attendance"
                 className="p-3 rounded-lg border border-slate-200/80 hover:bg-slate-50 transition-colors flex items-center gap-2"
               >
-                <ClipboardList size={15} className="text-[#2563EB]" />
+                <ClipboardList size={15} className="text-[#1D4ED8]" />
                 <span className="font-medium text-slate-800">Attendance</span>
               </Link>
               <Link

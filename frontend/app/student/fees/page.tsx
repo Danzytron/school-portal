@@ -167,34 +167,34 @@ export default function StudentFeesPage() {
 
         {/* Financial Summary Strip */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 font-sans">
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Total Assessed Fees</span>
+          <div className="bg-white border border-slate-200/90 rounded-lg p-5 shadow-2xs">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Total Assessed Fees</span>
             <div className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1 font-heading tabular-nums">
               {formatCurrency(totalAmount)}
             </div>
             <span className="text-[11px] text-slate-500 mt-1 block">Full Term Assessment</span>
           </div>
 
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Total Payments Received</span>
-            <div className="text-2xl sm:text-3xl font-bold text-emerald-600 mt-1 font-heading tabular-nums">
+          <div className="bg-white border border-slate-200/90 rounded-lg p-5 shadow-2xs">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Total Payments Received</span>
+            <div className="text-2xl sm:text-3xl font-bold text-emerald-700 mt-1 font-heading tabular-nums">
               {formatCurrency(amountPaid)}
             </div>
-            <span className="text-[11px] text-emerald-600 font-semibold mt-1 block">Posted Official Receipts</span>
+            <span className="text-[11px] text-emerald-700 font-semibold mt-1 block">Posted Official Receipts</span>
           </div>
 
-          <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 block">Current Outstanding Balance</span>
-            <div className={`text-2xl sm:text-3xl font-bold mt-1 font-heading tabular-nums ${isPaid ? 'text-[#2563EB]' : 'text-rose-600'}`}>
+          <div className="bg-white border border-slate-200/90 rounded-lg p-5 shadow-2xs">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">Current Outstanding Balance</span>
+            <div className={`text-2xl sm:text-3xl font-bold mt-1 font-heading tabular-nums ${isPaid ? 'text-[#1D4ED8]' : 'text-rose-600'}`}>
               {formatCurrency(balance)}
             </div>
             <div className="mt-1">
               {isPaid ? (
-                <span className="text-[11px] text-[#2563EB] font-semibold flex items-center gap-1">
+                <span className="text-[11px] text-[#1D4ED8] font-semibold flex items-center gap-1">
                   <CheckCircle2 size={12} /> Cleared for Examination Permit
                 </span>
               ) : (
-                <span className="text-[11px] text-amber-600 font-semibold flex items-center gap-1">
+                <span className="text-[11px] text-amber-700 font-semibold flex items-center gap-1">
                   <AlertCircle size={12} /> Pending Installment Balance
                 </span>
               )}
@@ -203,11 +203,11 @@ export default function StudentFeesPage() {
         </div>
 
         {/* Filter Ribbon */}
-        <div className="bg-white border border-slate-200/80 rounded-2xl p-4 shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="bg-white border border-slate-200/90 rounded-lg p-4 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Building2 size={18} className="text-[#2563EB]" />
+            <Building2 size={18} className="text-[#1D4ED8]" />
             <div>
-              <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-0.5">
+              <label className="block text-[10px] font-semibold uppercase tracking-wider text-slate-500 mb-0.5">
                 Select Statement Term
               </label>
               <select
@@ -226,7 +226,7 @@ export default function StudentFeesPage() {
 
           <div className="flex items-center gap-3">
             <span className="text-xs text-slate-500">Account Status:</span>
-            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold px-2.5 py-1 rounded-lg uppercase">
+            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-semibold px-2.5 py-0.5 rounded uppercase">
               {isPaid ? 'Paid in Full / Cleared' : 'Active Balance'}
             </span>
           </div>
@@ -241,7 +241,7 @@ export default function StudentFeesPage() {
                 <div className="panel">
                   <div className="panel-heading">
                     <div className="flex items-center gap-2">
-                      <FileCheck size={16} className="text-[#2563EB]" />
+                      <FileCheck size={16} className="text-[#1D4ED8]" />
                       <span className="font-heading font-bold text-slate-900">Itemized Fee Assessment</span>
                     </div>
                     <span className="text-[11px] font-mono text-slate-500">21.0 Total Units</span>
@@ -304,7 +304,7 @@ export default function StudentFeesPage() {
                             <td className="px-4 py-3 text-right text-xs uppercase tracking-wider">
                               Total Semester Assessment:
                             </td>
-                            <td className="px-4 py-3 text-right font-mono font-bold text-[#2563EB] text-sm">
+                            <td className="px-4 py-3 text-right font-mono font-bold text-[#1D4ED8] text-sm">
                               ₱26,450.00
                             </td>
                           </tr>
@@ -328,7 +328,7 @@ export default function StudentFeesPage() {
                       ))}
                       <div className="p-3.5 bg-slate-50 flex items-center justify-between text-xs">
                         <span className="font-semibold uppercase text-slate-700 text-[10px]">Total Semester Assessment:</span>
-                        <span className="font-mono font-bold text-[#2563EB] text-sm">₱26,450.00</span>
+                        <span className="font-mono font-bold text-[#1D4ED8] text-sm">₱26,450.00</span>
                       </div>
                     </div>
                   </div>
@@ -337,10 +337,10 @@ export default function StudentFeesPage() {
 
               {/* Right Column: Installment Due Dates & Guidelines (5 cols) */}
               <div className="lg:col-span-5 space-y-6">
-                <div className="bg-white border border-slate-200/80 rounded-2xl p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)] font-sans">
+                <div className="bg-white border border-slate-200/90 rounded-lg p-5 shadow-2xs font-sans">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
                     <div className="flex items-center gap-2">
-                      <Calendar size={16} className="text-[#2563EB]" />
+                      <Calendar size={16} className="text-[#1D4ED8]" />
                       <span className="font-heading font-bold text-slate-900 text-sm">Installment Schedule</span>
                     </div>
                     <span className="text-[10px] text-slate-400 font-mono">CHED Standard</span>
@@ -399,7 +399,7 @@ export default function StudentFeesPage() {
             <div className="panel">
               <div className="panel-heading">
                 <div className="flex items-center gap-2">
-                  <Receipt size={16} className="text-[#2563EB]" />
+                  <Receipt size={16} className="text-[#1D4ED8]" />
                   <span className="font-heading font-bold text-slate-900">Verified Payment Transaction History</span>
                 </div>
                 <span className="text-[11px] font-mono text-slate-500">Office of the Cashier</span>
@@ -421,7 +421,7 @@ export default function StudentFeesPage() {
                     </thead>
                     <tbody className="divide-y divide-slate-100 font-sans">
                       <tr className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 font-mono font-bold text-[#2563EB]">OR-2026-08149</td>
+                        <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">OR-2026-08149</td>
                         <td className="px-4 py-3 font-mono text-slate-600">Aug 14, 2026</td>
                         <td className="px-4 py-3 text-slate-800 font-medium">BDO Online Bills Payment</td>
                         <td className="px-4 py-3 font-mono text-slate-500">TXN-882910394</td>
@@ -433,7 +433,7 @@ export default function StudentFeesPage() {
                         </td>
                       </tr>
                       <tr className="hover:bg-slate-50/50">
-                        <td className="px-4 py-3 font-mono font-bold text-[#2563EB]">OR-2026-09012</td>
+                        <td className="px-4 py-3 font-mono font-bold text-[#1D4ED8]">OR-2026-09012</td>
                         <td className="px-4 py-3 font-mono text-slate-600">Aug 22, 2026</td>
                         <td className="px-4 py-3 text-slate-800 font-medium">University Cashier Window 2</td>
                         <td className="px-4 py-3 font-mono text-slate-500">CSH-2026-4402</td>
@@ -456,7 +456,7 @@ export default function StudentFeesPage() {
                   ].map((tx, idx) => (
                     <div key={idx} className="p-3.5 space-y-2 hover:bg-slate-50/50">
                       <div className="flex items-center justify-between">
-                        <span className="font-mono font-bold text-xs text-[#2563EB]">{tx.or}</span>
+                        <span className="font-mono font-bold text-xs text-[#1D4ED8]">{tx.or}</span>
                         <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-semibold uppercase">
                           Validated
                         </span>
@@ -480,7 +480,7 @@ export default function StudentFeesPage() {
           <div className="bg-slate-100 p-4 sm:p-6 rounded-lg border border-slate-300">
             <div className="flex items-center justify-between mb-3 text-xs">
               <span className="font-semibold text-slate-700 flex items-center gap-1.5">
-                <Eye size={14} className="text-[#2563EB]" />
+                <Eye size={14} className="text-[#1D4ED8]" />
                 <span>Document Print Preview (Actual Output on Paper)</span>
               </span>
               <button 

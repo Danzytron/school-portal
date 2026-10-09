@@ -10,8 +10,6 @@ import {
   Minus,
   Maximize2,
   RefreshCw,
-  AlertCircle,
-  ExternalLink,
   Sparkles
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
@@ -240,17 +238,19 @@ export function AiChatWidget() {
               setIsOpen(true);
               setIsMinimized(false);
             }}
-            className="relative flex items-center justify-center w-14 h-14 sm:w-15 sm:h-15 bg-white text-slate-800 rounded-full border border-slate-200/90 shadow-lg shadow-blue-500/15 hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-200/60"
+            className="relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 p-2 bg-white text-slate-800 rounded-full border border-slate-200/90 shadow-lg shadow-blue-500/15 hover:shadow-xl hover:shadow-blue-500/25 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-200/60"
             aria-label="Chat with Lumi AI"
           >
-            {/* Soft cyan-blue radial backdrop hint */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-cyan-50/50 to-blue-50/50 -z-10" />
-
-            {/* Official Lumi AI Logo */}
-            <LumiLogo size={36} className="transition-transform duration-300 group-hover:scale-110" priority />
+            {/* Official Lumi AI Logo - Tightly fitted with zero white margins */}
+            <div className="w-full h-full flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
+              <LumiLogo className="w-full h-full" priority />
+            </div>
 
             {/* Live Online Badge */}
-            <span className="absolute bottom-1 right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white shadow-xs" title="Lumi AI Online" />
+            <span 
+              className="absolute bottom-1 right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full border-2 border-white shadow-xs" 
+              title="Lumi AI Online" 
+            />
 
             {/* Unread Message Badge */}
             {hasUnread && (
@@ -277,10 +277,12 @@ export function AiChatWidget() {
           {/* Clean White Chat Header with subtle cyan/blue accents */}
           <div className="bg-white text-slate-900 px-4 py-3 sm:py-3.5 flex items-center justify-between border-b border-blue-100 shadow-2xs">
             <div className="flex items-center gap-3 min-w-0">
-              <div className="relative p-1 bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl border border-blue-100/80 shrink-0 shadow-2xs">
-                <LumiLogo size={30} priority />
+              {/* Header Avatar: Transparent, perfectly fitted, no unnecessary border or container */}
+              <div className="relative w-9 h-9 sm:w-10 sm:h-10 shrink-0 flex items-center justify-center">
+                <LumiLogo className="w-full h-full" priority />
                 <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-500 rounded-full border-2 border-white" />
               </div>
+
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
                   <h3 id="lumi-ai-title" className="font-bold text-sm leading-tight text-slate-900 tracking-tight flex items-center gap-1">
@@ -301,7 +303,7 @@ export function AiChatWidget() {
                 <button
                   onClick={handleClearChat}
                   title="New conversation"
-                  className="p-1.5 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors text-xs flex items-center gap-1"
+                  className="p-1.5 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors text-xs flex items-center gap-1 cursor-pointer"
                   aria-label="Start new chat"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
@@ -311,7 +313,7 @@ export function AiChatWidget() {
               <button
                 onClick={() => setIsMinimized(!isMinimized)}
                 title={isMinimized ? "Expand" : "Minimize"}
-                className="p-1.5 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                className="p-1.5 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
                 aria-label={isMinimized ? "Expand chat" : "Minimize chat"}
               >
                 {isMinimized ? <Maximize2 className="w-4 h-4" /> : <Minus className="w-4 h-4" />}
@@ -319,7 +321,7 @@ export function AiChatWidget() {
               <button
                 onClick={() => setIsOpen(false)}
                 title="Close Lumi AI"
-                className="p-1.5 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+                className="p-1.5 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
                 aria-label="Close"
               >
                 <X className="w-4 h-4" />
@@ -350,12 +352,10 @@ export function AiChatWidget() {
                       key={msg.id}
                       className={`flex flex-col ${isAssistant ? 'items-start' : 'items-end'}`}
                     >
-                      <div className="flex items-start gap-2 max-w-[92%]">
+                      <div className="flex items-start gap-2.5 max-w-[92%]">
                         {isAssistant && (
-                          <div className="shrink-0 mt-0.5">
-                            <div className="w-7 h-7 rounded-full bg-white border border-blue-100 shadow-2xs flex items-center justify-center p-0.5">
-                              <LumiLogo size={20} />
-                            </div>
+                          <div className="shrink-0 mt-0.5 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center">
+                            <LumiLogo className="w-full h-full" />
                           </div>
                         )}
 
@@ -382,7 +382,7 @@ export function AiChatWidget() {
                               {msg.isError && (
                                 <button
                                   onClick={handleRetry}
-                                  className="flex items-center gap-1 text-[#2563EB] hover:text-[#1D4ED8] font-medium transition-colors"
+                                  className="flex items-center gap-1 text-[#2563EB] hover:text-[#1D4ED8] font-medium transition-colors cursor-pointer"
                                   title="Retry request"
                                 >
                                   <RefreshCw className="w-3 h-3" />
@@ -393,7 +393,7 @@ export function AiChatWidget() {
                               {isAssistant && (
                                 <button
                                   onClick={() => handleCopy(msg.id, msg.content)}
-                                  className="flex items-center gap-1 hover:text-slate-700 transition-colors py-0.5"
+                                  className="flex items-center gap-1 hover:text-slate-700 transition-colors py-0.5 cursor-pointer"
                                   title="Copy response"
                                 >
                                   {copiedId === msg.id ? (
@@ -419,11 +419,9 @@ export function AiChatWidget() {
 
                 {/* Animated Typing Indicator */}
                 {isLoading && (
-                  <div className="flex items-start gap-2 max-w-[85%]">
-                    <div className="shrink-0 mt-0.5">
-                      <div className="w-7 h-7 rounded-full bg-white border border-blue-100 shadow-2xs flex items-center justify-center p-0.5">
-                        <LumiLogo size={20} />
-                      </div>
+                  <div className="flex items-start gap-2.5 max-w-[85%]">
+                    <div className="shrink-0 mt-0.5 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center">
+                      <LumiLogo className="w-full h-full" />
                     </div>
                     <div className="bg-white border border-slate-200/90 rounded-2xl rounded-tl-xs px-3.5 py-2.5 shadow-2xs">
                       <div className="flex items-center gap-2">

@@ -337,7 +337,7 @@ export function AiChatWidget() {
               <div className="bg-[#F0F7FF] border-b border-blue-100/70 px-3.5 py-1.5 text-[11px] text-blue-900 flex items-center justify-between">
                 <div className="flex items-center gap-1.5 truncate">
                   <Sparkles className="w-3.5 h-3.5 text-[#2563EB] shrink-0" />
-                  <span className="font-medium truncate">Powered by Google Gemini • Manila Time (UTC+8)</span>
+                  <span className="font-medium truncate">Powered by Groq • Manila Time (UTC+8)</span>
                 </div>
                 <span className="text-[10px] font-mono font-medium bg-white text-[#2563EB] px-2 py-0.5 rounded-full border border-blue-200/60 shadow-2xs">
                   Active

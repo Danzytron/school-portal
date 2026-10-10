@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateGeminiChatReply, ChatMessage } from '@/lib/ai/geminiClient';
+import { generateAiChatReply, ChatMessage } from '@/lib/ai/groqClient';
 import { buildPortalContext } from '@/lib/ai/portalContextBuilder';
 
 // Lightweight rate limiting: 45 requests per minute per IP or session
@@ -98,8 +98,8 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // 5. Invoke Gemini AI (with multi-turn conversational history and runtime awareness)
-    const reply = await generateGeminiChatReply({
+    // 5. Invoke Lumi AI (Groq API prioritized, Gemini fallback, dynamic temporal awareness)
+    const reply = await generateAiChatReply({
       message,
       history,
       context: portalContext,

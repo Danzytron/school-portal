@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateGeminiChatReply, ChatMessage } from '@/lib/ai/geminiClient';
 import { buildPortalContext } from '@/lib/ai/portalContextBuilder';
 
-// Lightweight rate limiting: 30 requests per minute per IP or session
+// Lightweight rate limiting: 45 requests per minute per IP or session
 const chatRateLimit = new Map<string, { count: number; resetAt: number }>();
-const MAX_REQUESTS_PER_MINUTE = 30;
+const MAX_REQUESTS_PER_MINUTE = 45;
 const RATE_LIMIT_WINDOW = 60 * 1000;
 
 function getClientIdentifier(request: NextRequest): string {
@@ -36,25 +36,18 @@ function checkRateLimit(id: string): boolean {
 
 export async function POST(request: NextRequest) {
   try {
-    // 1. Verify Authentication
-    // Check both cookies and Authorization header
+    // 1. Check Authentication Tokens
     const tokenCookie = request.cookies.get('auth_token')?.value;
     const roleCookie = request.cookies.get('auth_role')?.value;
     const authHeader = request.headers.get('authorization');
     const headerToken = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
 
     const activeToken = tokenCookie || headerToken;
-
-    if (!activeToken) {
-      return NextResponse.json(
-        { error: 'Unauthorized. Please sign in to the CEC School Portal to use the AI Assistant.' },
-        { status: 401 }
-      );
-    }
+    const isAuthenticated = Boolean(activeToken);
 
     // 2. Rate Limiting Check
     const clientIp = getClientIdentifier(request);
-    const rateLimitKey = `${clientIp}_${activeToken.substring(0, 16)}`;
+    const rateLimitKey = `${clientIp}_${activeToken ? activeToken.substring(0, 16) : 'anonymous'}`;
     if (!checkRateLimit(rateLimitKey)) {
       return NextResponse.json(
         { error: 'Too many requests. Please wait a moment before sending another message.' },
@@ -66,33 +59,46 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => null);
     if (!body || typeof body.message !== 'string' || body.message.trim() === '') {
       return NextResponse.json(
-        { error: 'Invalid request. Message is required.' },
+        { error: 'Invalid request. Message cannot be empty.' },
         { status: 400 }
       );
     }
 
     const message = body.message.trim();
-    if (message.length > 2000) {
+    if (message.length > 4000) {
       return NextResponse.json(
-        { error: 'Message exceeds maximum allowable length of 2000 characters.' },
+        { error: 'Message exceeds maximum allowable length of 4000 characters.' },
         { status: 400 }
       );
     }
 
     const history: ChatMessage[] = Array.isArray(body.history) ? body.history : [];
 
-    // Determine role from authenticated cookie first (never trust unverified client role)
-    const userRole = (roleCookie || (body.role && ['student', 'teacher', 'admin'].includes(body.role) ? body.role : 'student')).toLowerCase();
-    const userName = body.name || (userRole === 'teacher' ? 'Faculty Member' : userRole === 'admin' ? 'Administrator' : 'Student');
+    // Determine user role and name
+    let userRole = 'guest';
+    let userName = 'Student';
 
-    // 4. Assemble Verified Portal Context
-    const portalContext = await buildPortalContext({
-      userRole,
-      userName,
-      token: activeToken,
-    });
+    if (isAuthenticated) {
+      userRole = (roleCookie || (body.role && ['student', 'teacher', 'admin'].includes(body.role) ? body.role : 'student')).toLowerCase();
+      userName = body.name || (userRole === 'teacher' ? 'Faculty Member' : userRole === 'admin' ? 'Administrator' : 'Student');
+    }
 
-    // 5. Invoke Gemini API (with server-side key and strict grounding)
+    // 4. Assemble Verified Portal Context (only for authenticated users)
+    let portalContext = '';
+    if (isAuthenticated && activeToken) {
+      portalContext = await buildPortalContext({
+        userRole,
+        userName,
+        token: activeToken,
+      });
+    } else {
+      portalContext = JSON.stringify({
+        authenticated: false,
+        note: 'User is not signed in. Do not provide personal student records. Guide them to sign in if personal grades or schedules are requested.',
+      });
+    }
+
+    // 5. Invoke Gemini AI (with multi-turn conversational history and runtime awareness)
     const reply = await generateGeminiChatReply({
       message,
       history,
@@ -106,7 +112,7 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error('[AI CHAT ROUTE ERROR]', error);
+    console.error('[LUMI AI ROUTE ERROR]', error);
     return NextResponse.json(
       { error: 'An unexpected error occurred while processing your request. Please try again.' },
       { status: 500 }

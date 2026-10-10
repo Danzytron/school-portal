@@ -476,13 +476,16 @@ ${typeof context === 'string' ? context : JSON.stringify(context, null, 2)}
 
   // 2. If Groq is configured, execute via Groq's ultra-fast OpenAI-compatible API
   if (isGroqConfigured) {
-    // Candidate Groq models to try
+    // Candidate Groq models to try (prioritizes configured model, followed by verified active models)
     const candidateModels = Array.from(
       new Set([
         preferredGroqModel,
+        'qwen/qwen3.8-27b',
+        'openai/gpt-oss-120b',
         'llama-3.3-70b-versatile',
+        'openai/gpt-oss-20b',
         'llama-3.1-8b-instant',
-        'mixtral-8x7b-32768',
+        'allam-2-7b',
       ])
     );
 

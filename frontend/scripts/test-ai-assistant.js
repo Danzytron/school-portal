@@ -286,11 +286,29 @@ console.log('\n================================================================'
 console.log(`Total Diagnostic Score: ${passedTests}/${totalTests} Passed (${Math.round((passedTests / totalTests) * 100)}%)`);
 console.log('================================================================\n');
 
-if (isRealGroqKey) {
-  console.log('✨ Live Groq API key detected and verified.');
-} else {
-  console.log('📌 READY FOR USER API KEY:');
-  console.log('   The Groq backend integration is fully configured and waiting for your key.');
-  console.log('   1. Get your API key from: https://console.groq.com/keys');
-  console.log('   2. Set GROQ_API_KEY in frontend/.env.local (locally) or Vercel Dashboard (production).');
+async function runLiveVerification() {
+  if (isRealGroqKey) {
+    console.log('✨ Live Groq API key detected. Running Live Generation Verification...');
+    try {
+      const { generateAiChatReply } = require('../lib/ai/groqClient.ts');
+      const liveReply = await generateAiChatReply({
+        message: 'Explain Java inheritance in 1 clear sentence.',
+        userName: 'Student',
+        userRole: 'student',
+      });
+      console.log('\n[LIVE API RESULT]');
+      console.log('Model Response:', liveReply.trim());
+      console.log('\n[PASS] 13. Live Groq Generation: Successfully connected & received live model output.');
+    } catch (err) {
+      console.log('\n[FAIL] 13. Live Groq Generation:', err.message);
+    }
+  } else {
+    console.log('📌 READY FOR USER API KEY:');
+    console.log('   The Groq backend integration is fully configured and waiting for your key.');
+    console.log('   1. Get your API key from: https://console.groq.com/keys');
+    console.log('   2. Set GROQ_API_KEY in frontend/.env.local (locally) or Vercel Dashboard (production).');
+  }
 }
+
+runLiveVerification();
+

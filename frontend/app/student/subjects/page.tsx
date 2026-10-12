@@ -19,8 +19,8 @@ const DEFAULT_ENROLLED_SUBJECTS: any[] = [
     instructor: 'Sir Vincent John Cababan',
     schedule: {
       day_of_week: 'Monday and Wednesday',
-      start_time: '10:30 AM',
-      end_time: '12:00 PM',
+      start_time: '11:30 AM',
+      end_time: '01:00 PM',
       room: { name: 'H 204' },
       teacher: { user: { name: 'Sir Vincent John Cababan' } }
     }

@@ -6,6 +6,8 @@
  * from the portal API/database while strictly isolating permissions and filtering any sensitive metadata.
  */
 
+import { evaluateStudentSchedule } from '@/lib/schedule/scheduleEngine';
+
 const DEFAULT_STUDENT_GRADES = [
   { code: 'FREE ELEC 1', name: 'FREE ELECTIVE 1 (Mobile App Development)', units: 3, prelim: 1.25, midterm: 1.25, semi_final: 1.25, final: 1.25, final_grade: 1.25, remarks: 'Passed', instructor: 'Sir Vincent John Cababan' },
   { code: 'GE ELEC 5', name: 'ANG PANITIKAN NG PILIPINAS', units: 3, prelim: 1.50, midterm: 1.50, semi_final: 1.25, final: 1.25, final_grade: 1.25, remarks: 'Passed', instructor: 'Ms. Lindy Enaldo' },
@@ -33,8 +35,8 @@ const DEFAULT_STUDENT_SCHEDULES = [
   { day_of_week: 'Wednesday', time: '09:30 AM – 10:30 AM', code: 'IT IAS31', name: 'Information Assurance and Security 1 (Lecture)', room: 'Room OL 108', instructor: 'Sir Jay-ar Base', section: 'BSIT 3-A' },
   { day_of_week: 'Monday', time: '10:30 AM – 11:30 AM', code: 'IT NET31', name: 'Networking 1 (Lecture)', room: 'Room OL 109', instructor: 'Sir Arnel L. Villanueva', section: 'BSIT 3-A' },
   { day_of_week: 'Wednesday', time: '10:30 AM – 11:30 AM', code: 'IT NET31', name: 'Networking 1 (Lecture)', room: 'Room OL 109', instructor: 'Sir Arnel L. Villanueva', section: 'BSIT 3-A' },
-  { day_of_week: 'Monday', time: '10:30 AM – 12:00 PM', code: 'FREE ELEC 1', name: 'Free Elective 1 (Mobile App Development)', room: 'Room H 204', instructor: 'Sir Vincent John Cababan', section: 'BSIT 3-A' },
-  { day_of_week: 'Wednesday', time: '10:30 AM – 12:00 PM', code: 'FREE ELEC 1', name: 'Free Elective 1 (Mobile App Development)', room: 'Room H 204', instructor: 'Sir Vincent John Cababan', section: 'BSIT 3-A' },
+  { day_of_week: 'Monday', time: '11:30 AM – 01:00 PM', code: 'FREE ELEC 1', name: 'Free Elective 1 (Mobile App Development)', room: 'Room H 204', instructor: 'Sir Vincent John Cababan', section: 'BSIT 3-A' },
+  { day_of_week: 'Wednesday', time: '11:30 AM – 01:00 PM', code: 'FREE ELEC 1', name: 'Free Elective 1 (Mobile App Development)', room: 'Room H 204', instructor: 'Sir Vincent John Cababan', section: 'BSIT 3-A' },
 
   // Tuesday and Thursday
   { day_of_week: 'Tuesday', time: '03:00 PM – 04:30 PM', code: 'IT NET31 LAB', name: 'Networking 1 (Laboratory)', room: 'Computer Lab 3 (CL 3)', instructor: 'Sir Arnel L. Villanueva', section: 'BSIT 3-A' },
@@ -186,13 +188,51 @@ export async function buildPortalContext({
         instructor: g.instructor,
       })),
       schedules: studentSchedules,
-      nextClass: {
-        code: 'IT IAS31',
-        name: 'Information Assurance and Security 1 (Lecture)',
-        time: '09:30 AM – 10:30 AM',
-        room: 'Room OL 108',
-        instructor: 'Sir Jay-ar Base',
-      },
+      live_schedule_status: (() => {
+        const evalResult = evaluateStudentSchedule(studentSchedules);
+        return {
+          current_manila_date: evalResult.manilaTime.formattedDate,
+          current_manila_time: evalResult.manilaTime.formattedTime,
+          overall_status: evalResult.overallStatus,
+          status_headline: evalResult.statusHeadline,
+          status_subtext: evalResult.statusSubtext,
+          current_ongoing_class: evalResult.currentClass
+            ? {
+                code: evalResult.currentClass.code,
+                name: evalResult.currentClass.name,
+                time: evalResult.currentClass.timeRangeFormatted,
+                room: evalResult.currentClass.room,
+                instructor: evalResult.currentClass.instructor,
+                remaining: evalResult.currentClass.remainingText,
+              }
+            : null,
+          next_scheduled_class: evalResult.nextScheduledClass
+            ? {
+                code: evalResult.nextScheduledClass.occurrence.code,
+                name: evalResult.nextScheduledClass.occurrence.name,
+                day: evalResult.nextScheduledClass.targetDayName,
+                date_label: evalResult.nextScheduledClass.targetDateFormatted,
+                time: evalResult.nextScheduledClass.occurrence.timeRangeFormatted,
+                room: evalResult.nextScheduledClass.occurrence.room,
+                instructor: evalResult.nextScheduledClass.occurrence.instructor,
+                countdown: evalResult.nextScheduledClass.countdownText,
+              }
+            : null,
+        };
+      })(),
+      nextClass: (() => {
+        const evalResult = evaluateStudentSchedule(studentSchedules);
+        const target = evalResult.currentClass || evalResult.nextScheduledClass?.occurrence;
+        if (!target) return null;
+        return {
+          code: target.code,
+          name: target.name,
+          day: target.dayOfWeek,
+          time: target.timeRangeFormatted,
+          room: target.room,
+          instructor: target.instructor,
+        };
+      })(),
       instructors: [
         { name: 'Sir Charles Bacotot', subject: 'IT SIA31 (System Integration and Architecture 2)' },
         { name: 'Sir Yestin Prado', subject: 'IT EVD31 (Event Driven Programming)' },

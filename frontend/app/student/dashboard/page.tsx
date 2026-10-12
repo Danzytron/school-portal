@@ -6,6 +6,7 @@ import { api } from '@/lib/api';
 import { StudentDashboard } from '@/types';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { OfficialCampusBulletins } from '@/components/dashboard/OfficialCampusBulletins';
+import { TodaysClassSchedule } from '@/components/dashboard/TodaysClassSchedule';
 import { StudentDashboardSkeleton } from '@/components/ui/skeleton';
 import { 
   BookOpen, 
@@ -77,41 +78,6 @@ export default function StudentDashboardPage() {
     fetchDashboard();
   }, []);
 
-  const todayClasses = [
-    {
-      code: 'IT SIA31',
-      name: 'System Integration and Architecture 2',
-      instructor: 'Sir Charles Bacotot',
-      time: '07:30 AM – 08:30 AM',
-      room: 'Room OL 110',
-      status: 'Current Session'
-    },
-    {
-      code: 'IT EVD31',
-      name: 'Event Driven Programming (Lecture)',
-      instructor: 'Sir Yestin Prado',
-      time: '08:30 AM – 09:30 AM',
-      room: 'Room OL 107',
-      status: 'Next Up'
-    },
-    {
-      code: 'IT IAS31',
-      name: 'Information Assurance and Security 1',
-      instructor: 'Sir Jay-ar Base',
-      time: '09:30 AM – 10:30 AM',
-      room: 'Room OL 108',
-      status: 'Upcoming'
-    },
-    {
-      code: 'IT NET31',
-      name: 'Networking 1 (Lecture)',
-      instructor: 'Sir Arnel L. Villanueva',
-      time: '10:30 AM – 11:30 AM',
-      room: 'Room OL 109',
-      status: 'Upcoming'
-    }
-  ];
-
   const enrolledCourses = [
     {
       id: '1',
@@ -119,7 +85,7 @@ export default function StudentDashboardPage() {
       name: 'Free Elective 1 (Mobile App Development)',
       instructor: 'Sir Vincent John Cababan',
       days: 'Mon & Wed',
-      time: '10:30 AM – 12:00 PM',
+      time: '11:30 AM – 01:00 PM',
       room: 'Room H 204',
       units: 3.0
     },
@@ -380,47 +346,14 @@ export default function StudentDashboardPage() {
         {/* Right Column: Today's Schedule & Announcements (5 cols) */}
         <div className="lg:col-span-5 space-y-6">
           
-          {/* Today's Schedule Timeline */}
-          <div className="panel">
-            <div className="panel-heading">
-              <div className="flex items-center gap-2">
-                <Clock size={15} className="text-[#1D4ED8]" />
-                <span>Today's Class Schedule</span>
-              </div>
-              <span className="text-[11px] font-mono text-slate-500">
-                {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
-              </span>
-            </div>
-
-            <div className="p-4 space-y-3 font-sans">
-              {todayClasses.map((cls, idx) => (
-                <div
-                  key={idx}
-                  className={`p-3 rounded-lg border transition-all ${
-                    idx === 0
-                      ? 'bg-blue-50/70 border-blue-200 text-slate-900'
-                      : 'bg-white border-slate-200/80 text-slate-800'
-                  }`}
-                >
-                  <div className="flex items-center justify-between text-[11px] mb-1">
-                    <span className="font-mono font-bold text-[#1D4ED8]">{cls.code}</span>
-                    <span className={`text-[10px] font-bold uppercase px-1.5 py-0.2 rounded ${
-                      idx === 0 ? 'bg-blue-200/60 text-[#1E3A8A]' : 'bg-slate-100 text-slate-600'
-                    }`}>
-                      {cls.status}
-                    </span>
-                  </div>
-                  <h4 className="font-heading font-bold text-xs text-slate-900 m-0 truncate">
-                    {cls.name}
-                  </h4>
-                  <div className="text-[11px] text-slate-600 flex items-center justify-between pt-1">
-                    <span>{cls.time}</span>
-                    <span className="font-medium text-slate-800">{cls.room}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          {/* Real-Time Today's Class Schedule */}
+          <TodaysClassSchedule
+            initialSchedules={
+              Array.isArray(data?.upcoming_classes) && data.upcoming_classes.length > 0
+                ? data.upcoming_classes
+                : undefined
+            }
+          />
 
           {/* Official University Announcements */}
           <div className="panel">

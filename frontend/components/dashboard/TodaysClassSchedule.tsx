@@ -82,6 +82,14 @@ export function TodaysClassSchedule({
 
   useEffect(() => {
     fetchStudentSchedule(false);
+
+    const handleScheduleSync = () => {
+      fetchStudentSchedule(true);
+    };
+    window.addEventListener('cec:schedule-sync', handleScheduleSync);
+    return () => {
+      window.removeEventListener('cec:schedule-sync', handleScheduleSync);
+    };
   }, [fetchStudentSchedule]);
 
   // Real-time clock ticker (every 15 seconds + immediate update on tab focus/visibility)

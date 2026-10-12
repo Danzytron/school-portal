@@ -71,10 +71,21 @@ class DashboardService
 
     public function getStudentDashboard($studentId)
     {
+        $student = Student::find($studentId);
+        $schedules = collect();
+
+        if ($student && $student->section_id) {
+            $schedules = Schedule::where('section_id', $student->section_id)
+                ->with(['subject', 'section', 'teacher.user', 'room'])
+                ->orderBy('start_time')
+                ->get();
+        }
+
         return [
             'enrolled_subjects' => \App\Models\EnrollmentSubject::whereHas('enrollment', function($q) use ($studentId) {
                 $q->where('student_id', $studentId)->where('status', 'approved');
             })->count(),
+            'upcoming_classes' => $schedules,
             'recent_announcements' => Announcement::where('is_published', true)
                 ->whereIn('target_audience', ['all', 'students', 'student'])
                 ->latest()->take(5)->get(),

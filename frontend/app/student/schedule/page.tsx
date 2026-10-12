@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 import { Schedule, Semester } from '@/types';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { TodaysClassSchedule } from '@/components/dashboard/TodaysClassSchedule';
 import { SkeletonTable } from '@/components/ui/skeleton';
 import { LoadingState } from '@/components/ui/LoadingState';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -32,8 +33,8 @@ const DEFAULT_STUDENT_SCHEDULES: any[] = [
   { id: 6, day_of_week: 'Wednesday', start_time: '09:30:00', end_time: '10:30:00', subject: { id: 8, code: 'IT IAS31', name: 'INFORMATION ASSURANCE AND SECURITY 1 (LECTURE)', units: 2 }, room: { id: 7, name: 'OL 108' }, teacher: { id: 6, user: { name: 'Sir Jay-ar Base' } }, section: { id: 1, name: 'BSIT 3-A' } },
   { id: 7, day_of_week: 'Monday', start_time: '10:30:00', end_time: '11:30:00', subject: { id: 10, code: 'IT NET31', name: 'NETWORKING 1 (LECTURE)', units: 2 }, room: { id: 8, name: 'OL 109' }, teacher: { id: 7, user: { name: 'Sir Arnel L. Villanueva' } }, section: { id: 1, name: 'BSIT 3-A' } },
   { id: 8, day_of_week: 'Wednesday', start_time: '10:30:00', end_time: '11:30:00', subject: { id: 10, code: 'IT NET31', name: 'NETWORKING 1 (LECTURE)', units: 2 }, room: { id: 8, name: 'OL 109' }, teacher: { id: 7, user: { name: 'Sir Arnel L. Villanueva' } }, section: { id: 1, name: 'BSIT 3-A' } },
-  { id: 9, day_of_week: 'Monday', start_time: '11:30:00', end_time: '13:00:00', subject: { id: 1, code: 'FREE ELEC 1', name: 'FREE ELECTIVE 1', units: 3 }, room: { id: 1, name: 'H 204' }, teacher: { id: 1, user: { name: 'Sir Vincent John Cababan' } }, section: { id: 1, name: 'BSIT 3-A' } },
-  { id: 10, day_of_week: 'Wednesday', start_time: '11:30:00', end_time: '13:00:00', subject: { id: 1, code: 'FREE ELEC 1', name: 'FREE ELECTIVE 1', units: 3 }, room: { id: 1, name: 'H 204' }, teacher: { id: 1, user: { name: 'Sir Vincent John Cababan' } }, section: { id: 1, name: 'BSIT 3-A' } },
+  { id: 9, day_of_week: 'Monday', start_time: '10:30:00', end_time: '12:00:00', subject: { id: 1, code: 'FREE ELEC 1', name: 'FREE ELECTIVE 1', units: 3 }, room: { id: 1, name: 'H 204' }, teacher: { id: 1, user: { name: 'Sir Vincent John Cababan' } }, section: { id: 1, name: 'BSIT 3-A' } },
+  { id: 10, day_of_week: 'Wednesday', start_time: '10:30:00', end_time: '12:00:00', subject: { id: 1, code: 'FREE ELEC 1', name: 'FREE ELECTIVE 1', units: 3 }, room: { id: 1, name: 'H 204' }, teacher: { id: 1, user: { name: 'Sir Vincent John Cababan' } }, section: { id: 1, name: 'BSIT 3-A' } },
 
   // Tuesday and Thursday
   { id: 11, day_of_week: 'Tuesday', start_time: '15:00:00', end_time: '16:30:00', subject: { id: 11, code: 'IT NET31 LAB', name: 'NETWORKING 1 (LABORATORY)', units: 1 }, room: { id: 9, name: 'CL 3' }, teacher: { id: 7, user: { name: 'Sir Arnel L. Villanueva' } }, section: { id: 1, name: 'BSIT 3-A' } },
@@ -59,6 +60,17 @@ const DEFAULT_STUDENT_SCHEDULES: any[] = [
   { id: 29, day_of_week: 'Friday', start_time: '15:00:00', end_time: '16:00:00', subject: { id: 4, code: 'IT ELEC 1', name: 'ELECTIVE 1 (LECTURE)', units: 2 }, room: { id: 4, name: 'OL 111' }, teacher: { id: 4, user: { name: 'Ms. En Catarungan' } }, section: { id: 1, name: 'BSIT 3-A' } },
   { id: 30, day_of_week: 'Saturday', start_time: '15:00:00', end_time: '16:00:00', subject: { id: 4, code: 'IT ELEC 1', name: 'ELECTIVE 1 (LECTURE)', units: 2 }, room: { id: 4, name: 'OL 111' }, teacher: { id: 4, user: { name: 'Ms. En Catarungan' } }, section: { id: 1, name: 'BSIT 3-A' } },
 ];
+
+const LEGACY_SEED_CODES = new Set(['IT101', 'IT102', 'IT103', 'GE101', 'GE102', 'PE101', 'NSTP1']);
+
+function isLegacySeedSchedule(list: any[]): boolean {
+  if (!Array.isArray(list) || list.length === 0) return true;
+  return list.every((item) => {
+    const code = item?.subject?.code || item?.code || '';
+    const section = item?.section?.name || item?.section || '';
+    return LEGACY_SEED_CODES.has(code) || section === 'BSIT-1A';
+  });
+}
 
 export default function StudentSchedulePage() {
   const [schedules, setSchedules] = useState<any[]>(DEFAULT_STUDENT_SCHEDULES);
@@ -113,7 +125,7 @@ export default function StudentSchedulePage() {
       try {
         const response = await api.get<Schedule[]>(`/student/schedule?semester_id=${selectedSemester}`);
         const data = (response as any)?.data ?? response;
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data) && data.length > 0 && !isLegacySeedSchedule(data)) {
           setSchedules(data);
         } else {
           setSchedules(DEFAULT_STUDENT_SCHEDULES);
@@ -226,6 +238,9 @@ export default function StudentSchedulePage() {
           </div>
         </div>
       </div>
+
+      {/* Real-Time Today's Class Schedule Status Banner */}
+      <TodaysClassSchedule initialSchedules={schedules} />
 
       {loadingSchedule ? (
         <div className="panel p-4">

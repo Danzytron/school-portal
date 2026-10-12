@@ -157,8 +157,8 @@ export const DEFAULT_STUDENT_WEEKLY_SCHEDULES: RawScheduleEntry[] = [
   { id: 6, day_of_week: 'Wednesday', start_time: '09:30:00', end_time: '10:30:00', subject: { id: 8, code: 'IT IAS31', name: 'Information Assurance and Security 1 (Lecture)', units: 2 }, room: { id: 7, name: 'Room OL 108' }, teacher: { id: 6, user: { name: 'Sir Jay-ar Base' } }, section: { id: 1, name: 'BSIT 3-A' } },
   { id: 7, day_of_week: 'Monday', start_time: '10:30:00', end_time: '11:30:00', subject: { id: 10, code: 'IT NET31', name: 'Networking 1 (Lecture)', units: 2 }, room: { id: 8, name: 'Room OL 109' }, teacher: { id: 7, user: { name: 'Sir Arnel L. Villanueva' } }, section: { id: 1, name: 'BSIT 3-A' } },
   { id: 8, day_of_week: 'Wednesday', start_time: '10:30:00', end_time: '11:30:00', subject: { id: 10, code: 'IT NET31', name: 'Networking 1 (Lecture)', units: 2 }, room: { id: 8, name: 'Room OL 109' }, teacher: { id: 7, user: { name: 'Sir Arnel L. Villanueva' } }, section: { id: 1, name: 'BSIT 3-A' } },
-  { id: 9, day_of_week: 'Monday', start_time: '11:30:00', end_time: '13:00:00', subject: { id: 1, code: 'FREE ELEC 1', name: 'Free Elective 1 (Mobile App Development)', units: 3 }, room: { id: 1, name: 'Room H 204' }, teacher: { id: 1, user: { name: 'Sir Vincent John Cababan' } }, section: { id: 1, name: 'BSIT 3-A' } },
-  { id: 10, day_of_week: 'Wednesday', start_time: '11:30:00', end_time: '13:00:00', subject: { id: 1, code: 'FREE ELEC 1', name: 'Free Elective 1 (Mobile App Development)', units: 3 }, room: { id: 1, name: 'Room H 204' }, teacher: { id: 1, user: { name: 'Sir Vincent John Cababan' } }, section: { id: 1, name: 'BSIT 3-A' } },
+  { id: 9, day_of_week: 'Monday', start_time: '10:30:00', end_time: '12:00:00', subject: { id: 1, code: 'FREE ELEC 1', name: 'Free Elective 1 (Mobile App Development)', units: 3 }, room: { id: 1, name: 'Room H 204' }, teacher: { id: 1, user: { name: 'Sir Vincent John Cababan' } }, section: { id: 1, name: 'BSIT 3-A' } },
+  { id: 10, day_of_week: 'Wednesday', start_time: '10:30:00', end_time: '12:00:00', subject: { id: 1, code: 'FREE ELEC 1', name: 'Free Elective 1 (Mobile App Development)', units: 3 }, room: { id: 1, name: 'Room H 204' }, teacher: { id: 1, user: { name: 'Sir Vincent John Cababan' } }, section: { id: 1, name: 'BSIT 3-A' } },
 
   // Tuesday and Thursday
   { id: 11, day_of_week: 'Tuesday', start_time: '15:00:00', end_time: '16:30:00', subject: { id: 11, code: 'IT NET31 LAB', name: 'Networking 1 (Laboratory)', units: 1 }, room: { id: 9, name: 'CL 3' }, teacher: { id: 7, user: { name: 'Sir Arnel L. Villanueva' } }, section: { id: 1, name: 'BSIT 3-A' } },
@@ -184,6 +184,32 @@ export const DEFAULT_STUDENT_WEEKLY_SCHEDULES: RawScheduleEntry[] = [
   { id: 29, day_of_week: 'Friday', start_time: '15:00:00', end_time: '16:00:00', subject: { id: 4, code: 'IT ELEC 1', name: 'Elective 1 (Lecture)', units: 2 }, room: { id: 4, name: 'Room OL 111' }, teacher: { id: 4, user: { name: 'Ms. En Catarungan' } }, section: { id: 1, name: 'BSIT 3-A' } },
   { id: 30, day_of_week: 'Saturday', start_time: '15:00:00', end_time: '16:00:00', subject: { id: 4, code: 'IT ELEC 1', name: 'Elective 1 (Lecture)', units: 2 }, room: { id: 4, name: 'Room OL 111' }, teacher: { id: 4, user: { name: 'Ms. En Catarungan' } }, section: { id: 1, name: 'BSIT 3-A' } },
 ];
+
+const LEGACY_SEED_CODES = new Set([
+  'IT101',
+  'IT102',
+  'IT103',
+  'GE101',
+  'GE102',
+  'PE101',
+  'NSTP1',
+]);
+
+/**
+ * Returns true if the API payload is the un-updated legacy BSIT-1A database seeder
+ * (IT101, IT102, IT103, GE101, GE102, PE101, NSTP1) rather than the student's BSIT 3-A schedule.
+ */
+export function isLegacySeedSchedule(list: any[]): boolean {
+  if (!Array.isArray(list) || list.length === 0) return true;
+  return list.every((item) => {
+    const code = item?.subject?.code || item?.code || '';
+    const section =
+      typeof item?.section === 'string'
+        ? item.section
+        : item?.section?.name || '';
+    return LEGACY_SEED_CODES.has(code) || section === 'BSIT-1A';
+  });
+}
 
 /**
  * Extracts accurate date and time components in the Asia/Manila timezone.

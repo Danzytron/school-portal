@@ -20,6 +20,7 @@ import {
   DEFAULT_STUDENT_WEEKLY_SCHEDULES,
   RawScheduleEntry,
   evaluateStudentSchedule,
+  isLegacySeedSchedule,
 } from '@/lib/schedule/scheduleEngine';
 
 interface TodaysClassScheduleProps {
@@ -31,18 +32,31 @@ export function TodaysClassSchedule({
   initialSchedules,
   className = '',
 }: TodaysClassScheduleProps) {
-  const [schedules, setSchedules] = useState<RawScheduleEntry[]>(
-    initialSchedules && initialSchedules.length > 0
+  const validInitial =
+    initialSchedules &&
+    initialSchedules.length > 0 &&
+    !isLegacySeedSchedule(initialSchedules)
       ? initialSchedules
-      : DEFAULT_STUDENT_WEEKLY_SCHEDULES
-  );
-  const [loading, setLoading] = useState<boolean>(!initialSchedules);
+      : DEFAULT_STUDENT_WEEKLY_SCHEDULES;
+
+  const [schedules, setSchedules] = useState<RawScheduleEntry[]>(validInitial);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [now, setNow] = useState<Date>(() => new Date());
 
+  useEffect(() => {
+    if (
+      initialSchedules &&
+      initialSchedules.length > 0 &&
+      !isLegacySeedSchedule(initialSchedules)
+    ) {
+      setSchedules(initialSchedules);
+    }
+  }, [initialSchedules]);
+
   // Fetch the student's saved weekly schedule from the authenticated API
   const fetchStudentSchedule = useCallback(async (silent = false) => {
-    if (!silent) {
+    if (!silent && schedules.length === 0) {
       setLoading(true);
       setError(null);
     }
@@ -55,14 +69,12 @@ export function TodaysClassSchedule({
         ? response.data
         : null;
 
-      if (Array.isArray(data) && data.length > 0) {
+      if (Array.isArray(data) && data.length > 0 && !isLegacySeedSchedule(data)) {
         setSchedules(data);
         setError(null);
       } else {
-        // Use the student's verified CEC semester schedule
-        setSchedules((prev) =>
-          prev && prev.length > 0 ? prev : DEFAULT_STUDENT_WEEKLY_SCHEDULES
-        );
+        // Use the student's verified CEC BSIT 3-A semester schedule
+        setSchedules(DEFAULT_STUDENT_WEEKLY_SCHEDULES);
       }
     } catch (err: any) {
       // If we have no saved schedules at all, surface the error state with Retry
@@ -74,11 +86,9 @@ export function TodaysClassSchedule({
         return prev;
       });
     } finally {
-      if (!silent) {
-        setLoading(false);
-      }
+      setLoading(false);
     }
-  }, []);
+  }, [schedules.length]);
 
   useEffect(() => {
     fetchStudentSchedule(false);

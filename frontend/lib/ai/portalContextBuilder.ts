@@ -6,7 +6,7 @@
  * from the portal API/database while strictly isolating permissions and filtering any sensitive metadata.
  */
 
-import { evaluateStudentSchedule } from '@/lib/schedule/scheduleEngine';
+import { evaluateStudentSchedule, isLegacySeedSchedule } from '@/lib/schedule/scheduleEngine';
 
 const DEFAULT_STUDENT_GRADES = [
   { code: 'FREE ELEC 1', name: 'FREE ELECTIVE 1 (Mobile App Development)', units: 3, prelim: 1.25, midterm: 1.25, semi_final: 1.25, final: 1.25, final_grade: 1.25, remarks: 'Passed', instructor: 'Sir Vincent John Cababan' },
@@ -35,8 +35,8 @@ const DEFAULT_STUDENT_SCHEDULES = [
   { day_of_week: 'Wednesday', time: '09:30 AM – 10:30 AM', code: 'IT IAS31', name: 'Information Assurance and Security 1 (Lecture)', room: 'Room OL 108', instructor: 'Sir Jay-ar Base', section: 'BSIT 3-A' },
   { day_of_week: 'Monday', time: '10:30 AM – 11:30 AM', code: 'IT NET31', name: 'Networking 1 (Lecture)', room: 'Room OL 109', instructor: 'Sir Arnel L. Villanueva', section: 'BSIT 3-A' },
   { day_of_week: 'Wednesday', time: '10:30 AM – 11:30 AM', code: 'IT NET31', name: 'Networking 1 (Lecture)', room: 'Room OL 109', instructor: 'Sir Arnel L. Villanueva', section: 'BSIT 3-A' },
-  { day_of_week: 'Monday', time: '11:30 AM – 01:00 PM', code: 'FREE ELEC 1', name: 'Free Elective 1 (Mobile App Development)', room: 'Room H 204', instructor: 'Sir Vincent John Cababan', section: 'BSIT 3-A' },
-  { day_of_week: 'Wednesday', time: '11:30 AM – 01:00 PM', code: 'FREE ELEC 1', name: 'Free Elective 1 (Mobile App Development)', room: 'Room H 204', instructor: 'Sir Vincent John Cababan', section: 'BSIT 3-A' },
+  { day_of_week: 'Monday', time: '10:30 AM – 12:00 PM', code: 'FREE ELEC 1', name: 'Free Elective 1 (Mobile App Development)', room: 'Room H 204', instructor: 'Sir Vincent John Cababan', section: 'BSIT 3-A' },
+  { day_of_week: 'Wednesday', time: '10:30 AM – 12:00 PM', code: 'FREE ELEC 1', name: 'Free Elective 1 (Mobile App Development)', room: 'Room H 204', instructor: 'Sir Vincent John Cababan', section: 'BSIT 3-A' },
 
   // Tuesday and Thursday
   { day_of_week: 'Tuesday', time: '03:00 PM – 04:30 PM', code: 'IT NET31 LAB', name: 'Networking 1 (Laboratory)', room: 'Computer Lab 3 (CL 3)', instructor: 'Sir Arnel L. Villanueva', section: 'BSIT 3-A' },
@@ -117,7 +117,7 @@ export async function buildPortalContext({
 
         if (gradesRes.status === 'fulfilled' && gradesRes.value.ok) {
           const apiGrades = await gradesRes.value.json();
-          if (Array.isArray(apiGrades) && apiGrades.length > 0) {
+          if (Array.isArray(apiGrades) && apiGrades.length > 0 && !isLegacySeedSchedule(apiGrades)) {
             studentGrades = apiGrades.map((g: any) => ({
               code: g.subject?.code || 'Subject',
               name: g.subject?.name || '',
@@ -135,7 +135,7 @@ export async function buildPortalContext({
 
         if (schedRes.status === 'fulfilled' && schedRes.value.ok) {
           const apiSched = await schedRes.value.json();
-          if (Array.isArray(apiSched) && apiSched.length > 0) {
+          if (Array.isArray(apiSched) && apiSched.length > 0 && !isLegacySeedSchedule(apiSched)) {
             studentSchedules = apiSched.map((s: any) => ({
               day_of_week: s.day_of_week,
               time: `${s.start_time?.slice(0, 5) || ''} - ${s.end_time?.slice(0, 5) || ''}`,

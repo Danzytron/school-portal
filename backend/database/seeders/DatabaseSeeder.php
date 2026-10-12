@@ -194,16 +194,25 @@ class DatabaseSeeder extends Seeder
         ];
 
         $studentNum = 1;
-        // Create the primary demo student first
+        // Create the primary demo student first (BSIT 3-A with 14 official CEC BSIT 3-A courses)
+        $bsit3aSection = Section::create([
+            'name' => 'BSIT 3-A',
+            'course_id' => $courses['BSIT']->id,
+            'year_level' => 3,
+            'school_year_id' => $schoolYear->id,
+            'max_students' => 45,
+        ]);
+        $sections['BSIT 3-A'] = $bsit3aSection;
+
         $demoStudentUser = User::create(['name' => 'Roldan Jr. Delarmente', 'email' => 'student@schoolportal.test', 'password' => Hash::make('roldan2026'), 'role' => 'student']);
         $demoStudent = Student::create([
             'user_id' => $demoStudentUser->id,
             'student_id_number' => '2026-00001',
             'course_id' => $courses['BSIT']->id,
-            'year_level' => 1,
-            'section_id' => $sections['BSIT-1A']->id,
+            'year_level' => 3,
+            'section_id' => $bsit3aSection->id,
             'contact_number' => '09171234567',
-            'address' => '123 Rizal St., Manila',
+            'address' => 'Cebu City, Philippines',
             'date_of_birth' => '2005-03-15',
             'enrollment_status' => 'enrolled',
         ]);
@@ -238,7 +247,161 @@ class DatabaseSeeder extends Seeder
         }
 
         // ============================
-        // Teacher-Subject Assignments & Schedules
+        // Official CEC BSIT 3-A Subjects, Faculty, Rooms & 30 Schedule Slots
+        // ============================
+        $cecRooms = [];
+        foreach (['OL 110', 'OL 107', 'OL 108', 'OL 109', 'H 204', 'CL 3', 'H 301', 'K 104', 'A 202', 'CL 1', 'OL 111'] as $rName) {
+            $cecRooms[$rName] = Room::create([
+                'name' => $rName,
+                'building' => 'CEC Main Campus',
+                'floor' => '2nd',
+                'capacity' => 45,
+                'type' => str_starts_with($rName, 'CL') ? 'laboratory' : 'lecture',
+            ]);
+        }
+
+        $cecFaculty = [];
+        $cecFacultyNames = [
+            'Sir Charles Bacotot',
+            'Sir Yestin Prado',
+            'Sir Jay-ar Base',
+            'Sir Arnel L. Villanueva',
+            'Sir Vincent John Cababan',
+            'Ms. Krystel Hurboda',
+            'Ms. Lindy Enaldo',
+            'Sir Arjay Alangcas',
+            'Ms. En Catarungan',
+        ];
+        foreach ($cecFacultyNames as $idx => $fName) {
+            $fu = User::create([
+                'name' => $fName,
+                'email' => 'faculty' . ($idx + 1) . '@cec.edu.ph',
+                'password' => Hash::make('roldan2026'),
+                'role' => 'teacher',
+            ]);
+            $cecFaculty[$fName] = Teacher::create([
+                'user_id' => $fu->id,
+                'employee_id' => 'CEC-FAC-' . str_pad($idx + 1, 3, '0', STR_PAD_LEFT),
+                'department' => 'College of Information Technology',
+                'specialization' => 'Information Technology',
+                'contact_number' => '091700000' . str_pad($idx + 1, 2, '0', STR_PAD_LEFT),
+            ]);
+        }
+
+        $cecSubjectsMeta = [
+            ['code' => 'FREE ELEC 1', 'name' => 'FREE ELECTIVE 1', 'units' => 3, 'instructor' => 'Sir Vincent John Cababan'],
+            ['code' => 'GE ELEC 5', 'name' => 'ANG PANITIKAN NG PILIPINAS', 'units' => 3, 'instructor' => 'Ms. Lindy Enaldo'],
+            ['code' => 'GE ELEC 6', 'name' => 'PHILIPPINE POPULAR CULTURE', 'units' => 3, 'instructor' => 'Ms. Krystel Hurboda'],
+            ['code' => 'IT ELEC 1', 'name' => 'ELECTIVE 1 (LECTURE)', 'units' => 2, 'instructor' => 'Ms. En Catarungan'],
+            ['code' => 'IT ELEC 1 LAB', 'name' => 'ELECTIVE 1 (LABORATORY)', 'units' => 1, 'instructor' => 'Ms. En Catarungan'],
+            ['code' => 'IT EVD31', 'name' => 'EVENT DRIVEN PROGRAMMING (LECTURE)', 'units' => 2, 'instructor' => 'Sir Yestin Prado'],
+            ['code' => 'IT EVD31 LAB', 'name' => 'EVENT DRIVEN PROGRAMMING (LABORATORY)', 'units' => 1, 'instructor' => 'Sir Yestin Prado'],
+            ['code' => 'IT IAS31', 'name' => 'INFORMATION ASSURANCE AND SECURITY 1 (LECTURE)', 'units' => 2, 'instructor' => 'Sir Jay-ar Base'],
+            ['code' => 'IT IAS31 LAB', 'name' => 'INFORMATION ASSURANCE AND SECURITY 1 (LABORATORY)', 'units' => 1, 'instructor' => 'Sir Jay-ar Base'],
+            ['code' => 'IT NET31', 'name' => 'NETWORKING 1 (LECTURE)', 'units' => 2, 'instructor' => 'Sir Arnel L. Villanueva'],
+            ['code' => 'IT NET31 LAB', 'name' => 'NETWORKING 1 (LABORATORY)', 'units' => 1, 'instructor' => 'Sir Arnel L. Villanueva'],
+            ['code' => 'IT SIA31', 'name' => 'SYSTEM INTEGRATION AND ARCHITECTURE 2 (LECTURE)', 'units' => 2, 'instructor' => 'Sir Charles Bacotot'],
+            ['code' => 'IT SIA31 LAB', 'name' => 'SYSTEM INTEGRATION AND ARCHITECTURE 2 (LABORATORY)', 'units' => 1, 'instructor' => 'Sir Charles Bacotot'],
+            ['code' => 'IT SP131', 'name' => 'SOCIAL AND PROFESSIONAL ISSUES 1', 'units' => 3, 'instructor' => 'Sir Arjay Alangcas'],
+        ];
+
+        $cecSubjects = [];
+        foreach ($cecSubjectsMeta as $sm) {
+            $sub = Subject::create([
+                'code' => $sm['code'],
+                'name' => $sm['name'],
+                'units' => $sm['units'],
+                'course_id' => $courses['BSIT']->id,
+                'year_level' => 3,
+                'semester' => 1,
+            ]);
+            $cecSubjects[$sm['code']] = $sub;
+        }
+
+        $cecScheduleSlots = [
+            ['day' => 'Monday', 'start' => '07:30:00', 'end' => '08:30:00', 'code' => 'IT SIA31', 'room' => 'OL 110', 'instructor' => 'Sir Charles Bacotot'],
+            ['day' => 'Wednesday', 'start' => '07:30:00', 'end' => '08:30:00', 'code' => 'IT SIA31', 'room' => 'OL 110', 'instructor' => 'Sir Charles Bacotot'],
+            ['day' => 'Monday', 'start' => '08:30:00', 'end' => '09:30:00', 'code' => 'IT EVD31', 'room' => 'OL 107', 'instructor' => 'Sir Yestin Prado'],
+            ['day' => 'Wednesday', 'start' => '08:30:00', 'end' => '09:30:00', 'code' => 'IT EVD31', 'room' => 'OL 107', 'instructor' => 'Sir Yestin Prado'],
+            ['day' => 'Monday', 'start' => '09:30:00', 'end' => '10:30:00', 'code' => 'IT IAS31', 'room' => 'OL 108', 'instructor' => 'Sir Jay-ar Base'],
+            ['day' => 'Wednesday', 'start' => '09:30:00', 'end' => '10:30:00', 'code' => 'IT IAS31', 'room' => 'OL 108', 'instructor' => 'Sir Jay-ar Base'],
+            ['day' => 'Monday', 'start' => '10:30:00', 'end' => '11:30:00', 'code' => 'IT NET31', 'room' => 'OL 109', 'instructor' => 'Sir Arnel L. Villanueva'],
+            ['day' => 'Wednesday', 'start' => '10:30:00', 'end' => '11:30:00', 'code' => 'IT NET31', 'room' => 'OL 109', 'instructor' => 'Sir Arnel L. Villanueva'],
+            ['day' => 'Monday', 'start' => '10:30:00', 'end' => '12:00:00', 'code' => 'FREE ELEC 1', 'room' => 'H 204', 'instructor' => 'Sir Vincent John Cababan'],
+            ['day' => 'Wednesday', 'start' => '10:30:00', 'end' => '12:00:00', 'code' => 'FREE ELEC 1', 'room' => 'H 204', 'instructor' => 'Sir Vincent John Cababan'],
+            ['day' => 'Tuesday', 'start' => '15:00:00', 'end' => '16:30:00', 'code' => 'IT NET31 LAB', 'room' => 'CL 3', 'instructor' => 'Sir Arnel L. Villanueva'],
+            ['day' => 'Thursday', 'start' => '15:00:00', 'end' => '16:30:00', 'code' => 'IT NET31 LAB', 'room' => 'CL 3', 'instructor' => 'Sir Arnel L. Villanueva'],
+            ['day' => 'Tuesday', 'start' => '17:30:00', 'end' => '18:30:00', 'code' => 'GE ELEC 6', 'room' => 'H 301', 'instructor' => 'Ms. Krystel Hurboda'],
+            ['day' => 'Thursday', 'start' => '17:30:00', 'end' => '18:30:00', 'code' => 'GE ELEC 6', 'room' => 'H 301', 'instructor' => 'Ms. Krystel Hurboda'],
+            ['day' => 'Saturday', 'start' => '17:30:00', 'end' => '18:30:00', 'code' => 'GE ELEC 6', 'room' => 'H 301', 'instructor' => 'Ms. Krystel Hurboda'],
+            ['day' => 'Tuesday', 'start' => '18:30:00', 'end' => '19:30:00', 'code' => 'GE ELEC 5', 'room' => 'K 104', 'instructor' => 'Ms. Lindy Enaldo'],
+            ['day' => 'Thursday', 'start' => '18:30:00', 'end' => '19:30:00', 'code' => 'GE ELEC 5', 'room' => 'K 104', 'instructor' => 'Ms. Lindy Enaldo'],
+            ['day' => 'Saturday', 'start' => '18:30:00', 'end' => '19:30:00', 'code' => 'GE ELEC 5', 'room' => 'K 104', 'instructor' => 'Ms. Lindy Enaldo'],
+            ['day' => 'Tuesday', 'start' => '19:30:00', 'end' => '21:00:00', 'code' => 'IT SP131', 'room' => 'A 202', 'instructor' => 'Sir Arjay Alangcas'],
+            ['day' => 'Thursday', 'start' => '19:30:00', 'end' => '21:00:00', 'code' => 'IT SP131', 'room' => 'A 202', 'instructor' => 'Sir Arjay Alangcas'],
+            ['day' => 'Friday', 'start' => '07:30:00', 'end' => '09:00:00', 'code' => 'IT IAS31 LAB', 'room' => 'CL 1', 'instructor' => 'Sir Jay-ar Base'],
+            ['day' => 'Saturday', 'start' => '07:30:00', 'end' => '09:00:00', 'code' => 'IT IAS31 LAB', 'room' => 'CL 1', 'instructor' => 'Sir Jay-ar Base'],
+            ['day' => 'Friday', 'start' => '09:00:00', 'end' => '10:30:00', 'code' => 'IT EVD31 LAB', 'room' => 'CL 1', 'instructor' => 'Sir Yestin Prado'],
+            ['day' => 'Saturday', 'start' => '09:00:00', 'end' => '10:30:00', 'code' => 'IT EVD31 LAB', 'room' => 'CL 1', 'instructor' => 'Sir Yestin Prado'],
+            ['day' => 'Friday', 'start' => '10:30:00', 'end' => '12:00:00', 'code' => 'IT SIA31 LAB', 'room' => 'CL 1', 'instructor' => 'Sir Charles Bacotot'],
+            ['day' => 'Saturday', 'start' => '10:30:00', 'end' => '12:00:00', 'code' => 'IT SIA31 LAB', 'room' => 'CL 1', 'instructor' => 'Sir Charles Bacotot'],
+            ['day' => 'Friday', 'start' => '13:30:00', 'end' => '15:00:00', 'code' => 'IT ELEC 1 LAB', 'room' => 'CL 1', 'instructor' => 'Ms. En Catarungan'],
+            ['day' => 'Saturday', 'start' => '13:30:00', 'end' => '15:00:00', 'code' => 'IT ELEC 1 LAB', 'room' => 'CL 1', 'instructor' => 'Ms. En Catarungan'],
+            ['day' => 'Friday', 'start' => '15:00:00', 'end' => '16:00:00', 'code' => 'IT ELEC 1', 'room' => 'OL 111', 'instructor' => 'Ms. En Catarungan'],
+            ['day' => 'Saturday', 'start' => '15:00:00', 'end' => '16:00:00', 'code' => 'IT ELEC 1', 'room' => 'OL 111', 'instructor' => 'Ms. En Catarungan'],
+        ];
+
+        $firstScheduleBySubject = [];
+        foreach ($cecScheduleSlots as $slot) {
+            $sched = Schedule::create([
+                'subject_id' => $cecSubjects[$slot['code']]->id,
+                'section_id' => $bsit3aSection->id,
+                'teacher_id' => $cecFaculty[$slot['instructor']]->id,
+                'room_id' => $cecRooms[$slot['room']]->id,
+                'semester_id' => $sem1->id,
+                'day_of_week' => $slot['day'],
+                'start_time' => $slot['start'],
+                'end_time' => $slot['end'],
+            ]);
+            if (!isset($firstScheduleBySubject[$slot['code']])) {
+                $firstScheduleBySubject[$slot['code']] = $sched;
+            }
+        }
+
+        $demoEnrollment = Enrollment::create([
+            'student_id' => $demoStudent->id,
+            'semester_id' => $sem1->id,
+            'status' => 'approved',
+            'enrolled_at' => now()->subMonths(2),
+            'approved_by' => $adminUser->id,
+        ]);
+
+        foreach ($cecSubjectsMeta as $sm) {
+            $code = $sm['code'];
+            EnrollmentSubject::create([
+                'enrollment_id' => $demoEnrollment->id,
+                'subject_id' => $cecSubjects[$code]->id,
+                'section_id' => $bsit3aSection->id,
+                'schedule_id' => $firstScheduleBySubject[$code]->id ?? null,
+            ]);
+
+            Grade::create([
+                'student_id' => $demoStudent->id,
+                'subject_id' => $cecSubjects[$code]->id,
+                'semester_id' => $sem1->id,
+                'section_id' => $bsit3aSection->id,
+                'teacher_id' => $cecFaculty[$sm['instructor']]->id,
+                'midterm' => 1.25,
+                'final' => 1.25,
+                'final_grade' => 1.25,
+                'remarks' => 'Passed',
+                'is_submitted' => true,
+                'submitted_at' => now()->subWeeks(1),
+            ]);
+        }
+
+        // ============================
+        // Teacher-Subject Assignments & Schedules for Other Sections
         // ============================
         $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
         $timeSlots = [
@@ -331,31 +494,6 @@ class DatabaseSeeder extends Seeder
                     'schedule_id' => $schedules[$key]->id ?? null,
                 ]);
             }
-        }
-
-        // ============================
-        // Grades for demo student (BSIT-1A)
-        // ============================
-        $gradeValues = [1.00, 1.25, 1.50, 1.75, 2.00, 2.25, 2.50, 2.75, 3.00];
-        foreach ($bsit1aSubjects as $subCode) {
-            $midterm = $gradeValues[array_rand($gradeValues)];
-            $final = $gradeValues[array_rand($gradeValues)];
-            $finalGrade = round(($midterm + $final) / 2, 2);
-            $remarks = $finalGrade <= 3.00 ? 'Passed' : 'Failed';
-
-            Grade::create([
-                'student_id' => $demoStudent->id,
-                'subject_id' => $subjects[$subCode]->id,
-                'semester_id' => $sem1->id,
-                'section_id' => $sections['BSIT-1A']->id,
-                'teacher_id' => $teachers['TCH-2025-001']->id,
-                'midterm' => $midterm,
-                'final' => $final,
-                'final_grade' => $finalGrade,
-                'remarks' => $remarks,
-                'is_submitted' => true,
-                'submitted_at' => now()->subWeeks(1),
-            ]);
         }
 
         // ============================

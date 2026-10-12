@@ -85,7 +85,7 @@ export default function StudentDashboardPage() {
       name: 'Free Elective 1 (Mobile App Development)',
       instructor: 'Sir Vincent John Cababan',
       days: 'Mon & Wed',
-      time: '11:30 AM – 01:00 PM',
+      time: '10:30 AM – 12:00 PM',
       room: 'Room H 204',
       units: 3.0
     },

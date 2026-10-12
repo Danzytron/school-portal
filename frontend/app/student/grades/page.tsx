@@ -38,6 +38,16 @@ const DEFAULT_STUDENT_GRADES: any[] = [
   { id: 14, subject: { id: 14, code: 'IT SP131', name: 'SOCIAL AND PROFESSIONAL ISSUES 1', units: 3 }, midterm: 1.25, final: 1.25, final_grade: 1.25, remarks: 'Passed', teacher: { user: { name: 'Sir Arjay Alangcas' } } },
 ];
 
+const LEGACY_SEED_CODES = new Set(['IT101', 'IT102', 'IT103', 'GE101', 'GE102', 'PE101', 'NSTP1']);
+
+function isLegacySeedGrades(list: any[]): boolean {
+  if (!Array.isArray(list) || list.length === 0) return true;
+  return list.every((item) => {
+    const code = item?.subject?.code || item?.code || '';
+    return LEGACY_SEED_CODES.has(code);
+  });
+}
+
 export default function StudentGradesPage() {
   const [grades, setGrades] = useState<Grade[]>(DEFAULT_STUDENT_GRADES);
   const [semesters, setSemesters] = useState<Semester[]>([]);
@@ -81,7 +91,7 @@ export default function StudentGradesPage() {
       try {
         const response = await api.get<Grade[]>(`/student/grades?semester_id=${selectedSemester}`);
         const data = (response as any)?.data ?? response;
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data) && data.length > 0 && !isLegacySeedGrades(data)) {
           setGrades(data);
         } else {
           setGrades(DEFAULT_STUDENT_GRADES);

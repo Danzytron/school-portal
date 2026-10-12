@@ -19,8 +19,8 @@ const DEFAULT_ENROLLED_SUBJECTS: any[] = [
     instructor: 'Sir Vincent John Cababan',
     schedule: {
       day_of_week: 'Monday and Wednesday',
-      start_time: '11:30 AM',
-      end_time: '01:00 PM',
+      start_time: '10:30 AM',
+      end_time: '12:00 PM',
       room: { name: 'H 204' },
       teacher: { user: { name: 'Sir Vincent John Cababan' } }
     }
@@ -196,6 +196,17 @@ const DEFAULT_ENROLLED_SUBJECTS: any[] = [
   }
 ];
 
+const LEGACY_SEED_CODES = new Set(['IT101', 'IT102', 'IT103', 'GE101', 'GE102', 'PE101', 'NSTP1']);
+
+function isLegacySeedData(list: any[]): boolean {
+  if (!Array.isArray(list) || list.length === 0) return true;
+  return list.every((item) => {
+    const code = item?.subject?.code || item?.code || '';
+    const section = item?.section?.name || item?.section || '';
+    return LEGACY_SEED_CODES.has(code) || section === 'BSIT-1A';
+  });
+}
+
 export default function StudentSubjectsPage() {
   const [subjects, setSubjects] = useState<EnrollmentSubject[]>(DEFAULT_ENROLLED_SUBJECTS);
   const [semesters, setSemesters] = useState<Semester[]>([]);
@@ -239,8 +250,7 @@ export default function StudentSubjectsPage() {
       try {
         const response = await api.get<EnrollmentSubject[]>(`/student/subjects?semester_id=${selectedSemester}`);
         const data = (response as any)?.data ?? response;
-        if (Array.isArray(data) && data.length > 0) {
-          // If the backend has subjects with schedule links, map them; otherwise keep the 14 subjects
+        if (Array.isArray(data) && data.length > 0 && !isLegacySeedData(data)) {
           setSubjects(data);
         } else {
           setSubjects(DEFAULT_ENROLLED_SUBJECTS);

@@ -27,24 +27,24 @@ export interface ChatMessage {
 
 const SUGGESTED_PROMPTS = [
   { 
-    label: "Explain Java in simple terms.", 
-    query: "Explain Java in simple terms.",
+    label: "Explain my grades", 
+    query: "Can you explain my current grades and GPA?",
+    icon: "📊"
+  },
+  { 
+    label: "Help with my schedule", 
+    query: "Help me understand my class schedule",
+    icon: "🗓️"
+  },
+  { 
+    label: "Explain Java", 
+    query: "Explain Java in simple terms with a code example.",
     icon: "☕"
   },
   { 
-    label: "Help me debug my code.", 
-    query: "Can you help me debug my programming code? Here is what I am trying to fix:",
-    icon: "💻"
-  },
-  { 
-    label: "Summarize my study notes.", 
-    query: "Can you summarize key computer science concepts and study notes?",
-    icon: "📝"
-  },
-  { 
-    label: "Help me understand my class schedule.", 
-    query: "Help me understand my class schedule",
-    icon: "🗓️"
+    label: "Help me with the portal", 
+    query: "How can you help me navigate and use the Cebu Eastern College School Portal?",
+    icon: "🏫"
   },
 ];
 
@@ -402,12 +402,12 @@ export function AiChatWidget() {
                       <LumiLogo className="w-full h-full lumi-logo-spin-in" priority />
                     </div>
 
-                    <h4 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
-                      Hi! I&apos;m Lumi AI.
+                    <h4 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+                      Hi! I&apos;m Lumi AI, your CEC AI Assistant. 👋
                     </h4>
 
-                    <p className="text-xs sm:text-[13px] text-slate-500 max-w-[280px] sm:max-w-[320px] mt-1.5 mb-5 leading-relaxed">
-                      Your AI assistant for learning, programming, and everyday questions.
+                    <p className="text-xs sm:text-[13px] text-slate-500 max-w-[300px] sm:max-w-[340px] mt-1.5 mb-5 leading-relaxed">
+                      I&apos;m here to help you with school-related questions, your school portal, grades, class schedules, and general knowledge. What can I help you with today?
                     </p>
 
                     <div className="w-full max-w-sm space-y-2 text-left">
@@ -438,7 +438,7 @@ export function AiChatWidget() {
                       return (
                         <div
                           key={msg.id}
-                          className={`flex flex-col ${isAssistant ? 'items-start' : 'items-end'}`}
+                          className={`flex flex-col lumi-stagger-1 ${isAssistant ? 'items-start' : 'items-end'}`}
                         >
                           {isAssistant ? (
                             /* Lumi AI Response (spacious, clean layout) */
@@ -580,9 +580,9 @@ export function AiChatWidget() {
                   )}
                 </form>
 
-                {/* EXACT AI Disclaimer Text */}
+                {/* AI Disclaimer Text */}
                 <p className="mt-2 text-center text-[11px] text-slate-400 select-none">
-                  Lumi is AI and can make mistakes.
+                  Lumi is AI and can make mistakes. Please verify important information.
                 </p>
               </div>
             </>

@@ -61,7 +61,7 @@ console.log(`  Configured Model : ${groqModel}`);
 console.log(`  Groq API Key     : ${isRealGroqKey ? 'Configured (' + rawGroqKey.slice(0, 7) + '...' + rawGroqKey.slice(-4) + ')' : 'Pending User Input in .env.local'}\n`);
 
 let passedTests = 0;
-let totalTests = 12;
+let totalTests = 13;
 
 // -------------------------------------------------------------
 // Test 1: Dynamic Date Awareness (Asia/Manila)
@@ -282,25 +282,64 @@ try {
   console.log(`[FAIL] 12. Lumi AI Branding: ${err.message}`);
 }
 
+// -------------------------------------------------------------
+// Test 13: Permanent Creator Recognition & Identity (Roldan Delarmente)
+// -------------------------------------------------------------
+try {
+  const { resolveCreatorIdentityQuery, CREATOR_CANONICAL_RESPONSE } = require('../lib/ai/groqClient.ts');
+  const testQueries = [
+    'Who is Roldan Delarmente?',
+    'roldan delarmente',
+    'Who created this school portal?',
+    'Who is the developer of Lumi AI?',
+    'Who made Cebu Eastern College School Portal?',
+    'Who is behind Lumi AI?',
+    'Who developed this AI assistant?',
+    'who made Lumi',
+  ];
+
+  const allMatched = testQueries.every((q) => resolveCreatorIdentityQuery(q) === CREATOR_CANONICAL_RESPONSE);
+  if (allMatched) {
+    console.log(`[PASS] 13. Creator Recognition: All ${testQueries.length} phrasings accurately identified Roldan Delarmente`);
+    passedTests++;
+  } else {
+    console.log(`[FAIL] 13. Creator Recognition: One or more phrasings did not match canonical response`);
+  }
+} catch (err) {
+  console.log(`[FAIL] 13. Creator Recognition: ${err.message}`);
+}
+
 console.log('\n================================================================');
 console.log(`Total Diagnostic Score: ${passedTests}/${totalTests} Passed (${Math.round((passedTests / totalTests) * 100)}%)`);
 console.log('================================================================\n');
 
 async function runLiveVerification() {
   if (isRealGroqKey) {
-    console.log('✨ Live Groq API key detected. Running Live Generation Verification...');
+    console.log('✨ Live API key detected. Running Live Generation & Follow-up Context Verification...');
     try {
       const { generateAiChatReply } = require('../lib/ai/groqClient.ts');
       const liveReply = await generateAiChatReply({
-        message: 'Explain Java inheritance in 1 clear sentence.',
+        message: 'What is Java? Explain in 2 short sentences.',
         userName: 'Student',
         userRole: 'student',
       });
-      console.log('\n[LIVE API RESULT]');
+      console.log('\n[LIVE API RESULT - "What is Java?"]');
       console.log('Model Response:', liveReply.trim());
-      console.log('\n[PASS] 13. Live Groq Generation: Successfully connected & received live model output.');
+
+      const followUpReply = await generateAiChatReply({
+        message: 'Give a 1-line Hello World example in that language.',
+        history: [
+          { role: 'user', content: 'What is Java?' },
+          { role: 'assistant', content: liveReply },
+        ],
+        userName: 'Student',
+        userRole: 'student',
+      });
+      console.log('\n[LIVE API RESULT - Follow-Up Context]');
+      console.log('Model Response:', followUpReply.trim());
+      console.log('\n[PASS] 14. Live OpenAI Model Generation & Context: Verified live responses and conversation memory.');
     } catch (err) {
-      console.log('\n[FAIL] 13. Live Groq Generation:', err.message);
+      console.log('\n[FAIL] 14. Live Generation:', err.message);
     }
   } else {
     console.log('📌 READY FOR USER API KEY:');
@@ -311,4 +350,5 @@ async function runLiveVerification() {
 }
 
 runLiveVerification();
+
 

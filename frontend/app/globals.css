@@ -195,3 +195,141 @@
     margin: 0.8cm 1cm;
   }
 }
+
+/* ============================================================================
+   Lumi AI Chatbot — Premium Opening, Closing & Launcher Animations
+   ============================================================================ */
+
+@keyframes lumi-window-open {
+  0% {
+    opacity: 0;
+    transform: translate3d(16px, 24px, 0) scale(0.82);
+  }
+  72% {
+    opacity: 1;
+    transform: translate3d(-1px, -2px, 0) scale(1.012);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes lumi-window-close {
+  0% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(16px, 22px, 0) scale(0.82);
+  }
+}
+
+@keyframes lumi-logo-emerge {
+  0% {
+    transform: scale(0.7) rotate(-45deg);
+    opacity: 0.4;
+  }
+  70% {
+    transform: scale(1.06) rotate(4deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes lumi-stagger-fade-up {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes lumi-launcher-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.68) rotate(16deg);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.06) rotate(-3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes lumi-launcher-idle {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -3px, 0);
+  }
+}
+
+.lumi-chat-window-open {
+  transform-origin: bottom right;
+  animation: lumi-window-open 380ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.lumi-chat-window-close {
+  transform-origin: bottom right;
+  animation: lumi-window-close 240ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  will-change: transform, opacity;
+  pointer-events: none;
+}
+
+.lumi-logo-spin-in {
+  animation: lumi-logo-emerge 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.lumi-stagger-1 {
+  animation: lumi-stagger-fade-up 260ms cubic-bezier(0.22, 1, 0.36, 1) 40ms both;
+}
+
+.lumi-stagger-2 {
+  animation: lumi-stagger-fade-up 300ms cubic-bezier(0.22, 1, 0.36, 1) 85ms both;
+}
+
+.lumi-stagger-3 {
+  animation: lumi-stagger-fade-up 280ms cubic-bezier(0.22, 1, 0.36, 1) 125ms both;
+}
+
+.lumi-launcher-restore {
+  animation: lumi-launcher-enter 320ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.lumi-launcher-float {
+  animation: lumi-launcher-idle 3.6s ease-in-out infinite;
+}
+
+.lumi-launcher-float:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lumi-chat-window-open,
+  .lumi-chat-window-close,
+  .lumi-logo-spin-in,
+  .lumi-stagger-1,
+  .lumi-stagger-2,
+  .lumi-stagger-3,
+  .lumi-launcher-restore,
+  .lumi-launcher-float {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}
+

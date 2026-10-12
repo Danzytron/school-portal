@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   X, 
   ArrowUp,
@@ -51,6 +51,9 @@ const SUGGESTED_PROMPTS = [
 export function AiChatWidget() {
   const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [hasClosedOnce, setHasClosedOnce] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -62,21 +65,89 @@ export function AiChatWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
+  const openTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Clean up animation timers on unmount
+  useEffect(() => {
+    return () => {
+      if (openTimeoutRef.current) clearTimeout(openTimeoutRef.current);
+      if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+    };
+  }, []);
+
+  // Open chat with smooth spring animation
+  const handleOpenChat = useCallback(() => {
+    if (isAnimating || (isOpen && !isClosing)) return;
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+
+    setIsAnimating(true);
+    setIsClosing(false);
+    setIsMinimized(false);
+    setIsOpen(true);
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    openTimeoutRef.current = setTimeout(() => {
+      setIsAnimating(false);
+    }, prefersReducedMotion ? 10 : 380);
+  }, [isAnimating, isOpen, isClosing]);
+
+  // Close chat with smooth shrink-to-launcher animation
+  const handleCloseChat = useCallback(() => {
+    if (isAnimating || !isOpen || isClosing) return;
+    if (openTimeoutRef.current) {
+      clearTimeout(openTimeoutRef.current);
+      openTimeoutRef.current = null;
+    }
+
+    setIsAnimating(true);
+    setIsClosing(true);
+
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    closeTimeoutRef.current = setTimeout(() => {
+      setIsOpen(false);
+      setIsClosing(false);
+      setIsAnimating(false);
+      setHasClosedOnce(true);
+    }, prefersReducedMotion ? 10 : 240);
+  }, [isAnimating, isOpen, isClosing]);
+
+  // Support Escape key to smoothly close chat
+  useEffect(() => {
+    if (!isOpen || isClosing) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleCloseChat();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, isClosing, handleCloseChat]);
 
   // Scroll to bottom when messages update
   useEffect(() => {
-    if (isOpen && !isMinimized) {
+    if (isOpen && !isClosing && !isMinimized) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages, isLoading, isOpen, isMinimized]);
+  }, [messages, isLoading, isOpen, isClosing, isMinimized]);
 
   // Focus textarea when opened
   useEffect(() => {
-    if (isOpen && !isMinimized) {
+    if (isOpen && !isClosing && !isMinimized) {
       setHasUnread(false);
-      setTimeout(() => textareaRef.current?.focus(), 150);
+      const timer = setTimeout(() => textareaRef.current?.focus(), 180);
+      return () => clearTimeout(timer);
     }
-  }, [isOpen, isMinimized]);
+  }, [isOpen, isClosing, isMinimized]);
 
   // Auto-resize textarea height as user types
   useEffect(() => {
@@ -219,7 +290,7 @@ export function AiChatWidget() {
     <div className="fixed z-40 select-none">
       {/* Floating Launcher Button */}
       {!isOpen && (
-        <div className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 group">
+        <div className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 group lumi-launcher-float">
           {/* Tooltip on Hover */}
           <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-slate-900 text-white text-xs font-medium rounded-xl shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-all duration-200 -translate-x-1 group-hover:translate-x-0 hidden sm:flex items-center gap-1.5 border border-slate-700/50">
             <span>Chat with Lumi AI</span>
@@ -227,15 +298,15 @@ export function AiChatWidget() {
           </div>
 
           <button
-            onClick={() => {
-              setIsOpen(true);
-              setIsMinimized(false);
-            }}
-            className="relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 p-2.5 bg-white text-slate-800 rounded-full border border-slate-200/90 shadow-lg shadow-blue-500/10 hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-200/60 cursor-pointer"
+            onClick={handleOpenChat}
+            disabled={isAnimating}
+            className={`relative flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 p-2.5 bg-white text-slate-800 rounded-full border border-slate-200/90 hover:border-blue-300/90 shadow-lg shadow-blue-500/12 hover:shadow-[0_10px_28px_-4px_rgba(37,99,235,0.28)] transition-all duration-300 transform hover:scale-108 active:scale-92 focus:outline-none focus:ring-4 focus:ring-blue-200/60 cursor-pointer ${
+              hasClosedOnce ? 'lumi-launcher-restore' : ''
+            }`}
             aria-label="Open Lumi AI"
           >
             {/* Official Transparent Lumi AI Logo */}
-            <div className="w-full h-full flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
+            <div className="w-full h-full flex items-center justify-center transition-transform duration-300 ease-out group-hover:scale-105 group-hover:rotate-6">
               <LumiLogo className="w-full h-full" priority />
             </div>
 
@@ -265,14 +336,16 @@ export function AiChatWidget() {
           aria-labelledby="lumi-ai-title"
           className={`fixed inset-x-2 bottom-2 top-14 sm:inset-auto sm:bottom-5 sm:right-5 w-auto sm:w-[440px] ${
             isMinimized ? 'sm:h-[64px]' : 'sm:h-[630px]'
-          } bg-white border border-slate-200/90 rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-all duration-200 animate-in fade-in zoom-in-95`}
+          } bg-white border border-slate-200/90 rounded-2xl shadow-2xl flex flex-col overflow-hidden transition-[height] duration-250 ease-out ${
+            isClosing ? 'lumi-chat-window-close' : 'lumi-chat-window-open'
+          }`}
         >
-          {/* Header */}
-          <div className="bg-white text-slate-900 px-4 py-3 flex items-center justify-between border-b border-slate-100 shrink-0">
+          {/* Header (Stagger 1) */}
+          <div className="bg-white text-slate-900 px-4 py-3 flex items-center justify-between border-b border-slate-100 shrink-0 lumi-stagger-1">
             <div className="flex items-center gap-2.5 min-w-0">
-              {/* Avatar */}
+              {/* Avatar with subtle spin-in on open */}
               <div className="relative w-8 h-8 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center p-1 shrink-0">
-                <LumiLogo className="w-full h-full" priority />
+                <LumiLogo className="w-full h-full lumi-logo-spin-in" priority />
                 <span className="absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 rounded-full border-1.5 border-white" />
               </div>
 
@@ -307,7 +380,8 @@ export function AiChatWidget() {
                 {isMinimized ? <Maximize2 className="w-4 h-4" /> : <Minus className="w-4 h-4" />}
               </button>
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={handleCloseChat}
+                disabled={isAnimating}
                 title="Close Lumi AI"
                 className="p-1.5 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
                 aria-label="Close"
@@ -319,13 +393,13 @@ export function AiChatWidget() {
 
           {!isMinimized && (
             <>
-              {/* Chat Viewport */}
-              <div className="flex-1 overflow-y-auto bg-[#F8FAFC]/50 flex flex-col">
+              {/* Chat Viewport (Stagger 2) */}
+              <div className="flex-1 overflow-y-auto bg-[#F8FAFC]/50 flex flex-col lumi-stagger-2">
                 {messages.length === 0 ? (
                   /* Welcome Screen (when no messages yet) */
                   <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
                     <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-blue-50/80 border border-blue-100/90 flex items-center justify-center p-2.5 sm:p-3 mb-3.5 shadow-xs shadow-blue-500/5">
-                      <LumiLogo className="w-full h-full" priority />
+                      <LumiLogo className="w-full h-full lumi-logo-spin-in" priority />
                     </div>
 
                     <h4 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
@@ -463,8 +537,8 @@ export function AiChatWidget() {
                 )}
               </div>
 
-              {/* Composer & Disclaimer Area */}
-              <div className="p-3 bg-white border-t border-slate-100 shrink-0">
+              {/* Composer & Disclaimer Area (Stagger 3) */}
+              <div className="p-3 bg-white border-t border-slate-100 shrink-0 lumi-stagger-3">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();

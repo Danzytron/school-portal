@@ -8,12 +8,11 @@ import {
   MapPin,
   User as UserIcon,
   CheckCircle2,
-  AlertTriangle,
+  AlertCircle,
   RefreshCw,
   ChevronRight,
-  Sparkles,
   BookOpen,
-  Radio,
+  Coffee,
 } from 'lucide-react';
 import { api } from '@/lib/api';
 import {
@@ -76,8 +75,7 @@ export function TodaysClassSchedule({
         // Use the student's verified CEC BSIT 3-A semester schedule
         setSchedules(DEFAULT_STUDENT_WEEKLY_SCHEDULES);
       }
-    } catch (err: any) {
-      // If we have no saved schedules at all, surface the error state with Retry
+    } catch {
       setSchedules((prev) => {
         if (!prev || prev.length === 0) {
           setError('Unable to load your class schedule right now.');
@@ -141,55 +139,56 @@ export function TodaysClassSchedule({
     conflictsToday,
   } = evaluation;
 
-  // Loading Skeleton
+  // Clean, neutral loading skeleton
   if (loading) {
     return (
-      <div className={`panel ${className}`}>
-        <div className="panel-heading">
-          <div className="flex items-center gap-2">
-            <Clock size={15} className="text-[#1D4ED8]" />
-            <span>Today&apos;s Class Schedule</span>
+      <div className={`bg-white border border-[#E5E7EB] rounded-lg shadow-sm overflow-hidden ${className}`}>
+        <div className="bg-[#F7F8FA] border-b border-[#E5E7EB] px-5 py-3.5 flex items-center justify-between">
+          <div className="space-y-1">
+            <div className="h-4 w-36 bg-[#E5E7EB] rounded animate-pulse" />
+            <div className="h-3 w-28 bg-[#E5E7EB]/70 rounded animate-pulse" />
           </div>
-          <span className="h-3.5 w-24 bg-slate-200 rounded animate-pulse" />
+          <div className="h-5 w-24 bg-[#E5E7EB] rounded animate-pulse" />
         </div>
         <div className="p-4 space-y-3">
-          <div className="h-24 bg-slate-100 rounded-lg animate-pulse border border-slate-200/60" />
-          <div className="h-16 bg-slate-50 rounded-lg animate-pulse border border-slate-200/60" />
-          <div className="h-16 bg-slate-50 rounded-lg animate-pulse border border-slate-200/60" />
+          <div className="h-20 bg-[#F7F8FA] rounded-md border border-[#E5E7EB] animate-pulse" />
+          <div className="h-16 bg-[#F7F8FA] rounded-md border border-[#E5E7EB] animate-pulse" />
         </div>
       </div>
     );
   }
 
-  // Error State with Retry Button
+  // Refined error state with retry
   if (error && schedules.length === 0) {
     return (
-      <div className={`panel ${className}`}>
-        <div className="panel-heading">
-          <div className="flex items-center gap-2">
-            <Clock size={15} className="text-[#1D4ED8]" />
-            <span>Today&apos;s Class Schedule</span>
+      <div className={`bg-white border border-[#E5E7EB] rounded-lg shadow-sm overflow-hidden ${className}`}>
+        <div className="bg-[#F7F8FA] border-b border-[#E5E7EB] px-5 py-3.5 flex items-center justify-between">
+          <div>
+            <h3 className="font-heading text-sm font-semibold text-[#1F2937] m-0">
+              Today&apos;s Class Schedule
+            </h3>
+            <p className="text-xs text-[#6B7280] m-0 mt-0.5">Your classes for today</p>
           </div>
-          <span className="text-[11px] font-mono text-slate-500">
+          <span className="text-xs font-mono text-[#6B7280]">
             {manilaTime.formattedShortDate}
           </span>
         </div>
-        <div className="p-6 text-center space-y-3 font-sans">
-          <div className="w-10 h-10 rounded-full bg-red-50 border border-red-200 text-red-600 flex items-center justify-center mx-auto">
-            <AlertTriangle size={18} />
+        <div className="p-6 text-center space-y-3">
+          <div className="w-9 h-9 rounded-full bg-red-50 border border-red-200 text-red-600 flex items-center justify-center mx-auto">
+            <AlertCircle size={16} />
           </div>
-          <div className="space-y-1">
-            <h4 className="font-heading font-bold text-xs text-slate-900 m-0">
-              Failed to Load Schedule
+          <div className="space-y-0.5">
+            <h4 className="text-xs font-semibold text-[#1F2937] m-0">
+              Failed to load schedule
             </h4>
-            <p className="text-[11px] text-slate-500 m-0">{error}</p>
+            <p className="text-xs text-[#6B7280] m-0">{error}</p>
           </div>
           <button
             type="button"
             onClick={() => fetchStudentSchedule(false)}
-            className="btn-secondary text-xs inline-flex items-center gap-1.5 px-3 py-1.5 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#1F2937] bg-white border border-[#E5E7EB] hover:bg-[#F7F8FA] rounded-md transition-colors cursor-pointer"
           >
-            <RefreshCw size={12} />
+            <RefreshCw size={12} className="text-[#6B7280]" />
             <span>Retry</span>
           </button>
         </div>
@@ -198,93 +197,103 @@ export function TodaysClassSchedule({
   }
 
   return (
-    <div className={`panel ${className}`}>
-      {/* Header with Live Manila Date & Time */}
-      <div className="panel-heading">
-        <div className="flex items-center gap-2">
-          <Clock size={15} className="text-[#1D4ED8]" />
-          <span>Today&apos;s Class Schedule</span>
+    <div className={`bg-white border border-[#E5E7EB] rounded-lg shadow-sm overflow-hidden font-sans ${className}`}>
+      
+      {/* ── 1. Section Header ── */}
+      <div className="bg-[#F7F8FA] border-b border-[#E5E7EB] px-5 py-3.5 flex items-center justify-between gap-3">
+        <div>
+          <h3 className="font-heading text-sm font-semibold text-[#1F2937] tracking-tight m-0">
+            Today&apos;s Class Schedule
+          </h3>
+          <p className="text-xs text-[#6B7280] m-0 mt-0.5 font-normal">
+            Your classes for today
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1 text-[10px] font-mono font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            {manilaTime.formattedTime} PHT
+
+        {/* Small subtle date and live time badge */}
+        <div className="flex items-center gap-2 shrink-0">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[#315E8A] bg-white border border-[#E5E7EB] px-2.5 py-1 rounded-md shadow-2xs">
+            <Clock size={12} className="text-[#315E8A]" />
+            <span className="font-mono tabular-nums">{manilaTime.formattedTime}</span>
           </span>
-          <span className="text-[11px] font-mono text-slate-500">
+          <span className="text-xs text-[#6B7280] font-medium hidden sm:inline-block">
             {manilaTime.formattedShortDate}
           </span>
         </div>
       </div>
 
-      <div className="p-4 space-y-4 font-sans">
+      <div className="p-4 sm:p-5 space-y-4">
+
         {/* ── CASE 5: No Classes Scheduled At All ── */}
         {overallStatus === 'NO_CLASSES_SCHEDULED' && (
-          <div className="p-5 rounded-lg bg-slate-50/80 border border-slate-200/80 text-center space-y-2">
-            <div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 text-slate-500 flex items-center justify-center mx-auto">
-              <BookOpen size={16} />
+          <div className="p-5 rounded-md bg-[#F7F8FA] border border-[#E5E7EB] text-center space-y-2">
+            <div className="w-8 h-8 rounded-full bg-white border border-[#E5E7EB] text-[#6B7280] flex items-center justify-center mx-auto">
+              <BookOpen size={14} />
             </div>
-            <h4 className="font-heading font-bold text-xs text-slate-900 m-0">
+            <h4 className="text-xs font-semibold text-[#1F2937] m-0">
               No classes are currently scheduled.
             </h4>
-            <p className="text-[11px] text-slate-500 m-0 leading-relaxed">
+            <p className="text-xs text-[#6B7280] m-0 max-w-sm mx-auto leading-relaxed">
               There are no enrolled class sessions found in your timetable for this term.
             </p>
           </div>
         )}
 
-        {/* ── CASE 1: Ongoing Class Right Now ── */}
+        {/* ── CASE 1: Current Ongoing Class (Thin Blue Left Border + Muted Background) ── */}
         {overallStatus === 'ONGOING' && currentClass && (
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {ongoingClasses.map((activeCls) => (
               <div
                 key={activeCls.id}
-                className="p-3.5 rounded-lg bg-blue-50/90 border-2 border-[#1D4ED8]/80 shadow-[0_2px_8px_rgba(29,78,216,0.08)] space-y-2 transition-all"
+                className="bg-[#F0F5FA] border border-[#E5E7EB] border-l-4 border-l-[#315E8A] rounded-md p-3.5 space-y-2.5 transition-colors"
               >
+                {/* Header row: Status Indicator + Remaining Time */}
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-center gap-1.5">
-                    <Radio size={13} className="text-[#1D4ED8] animate-pulse" />
-                    <span className="text-[11px] font-heading font-bold uppercase tracking-wider text-[#1E3A8A]">
-                      Class in Progress
+                    <span className="w-2 h-2 rounded-full bg-[#27815B]" />
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-[#27815B]">
+                      Ongoing
                     </span>
+                    <span className="text-xs text-[#6B7280]">• Class in Progress</span>
                   </div>
-                  <span className="inline-flex items-center gap-1 bg-[#1D4ED8] text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shadow-2xs">
-                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
-                    ONGOING
-                  </span>
+
+                  {activeCls.remainingText && (
+                    <span className="text-xs font-medium text-[#315E8A] font-mono tabular-nums">
+                      {activeCls.remainingText}
+                    </span>
+                  )}
                 </div>
 
+                {/* Subject Code & Name */}
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-bold text-xs text-[#1D4ED8] bg-white/90 border border-blue-200 px-1.5 py-0.5 rounded">
+                    <span className="font-mono text-xs font-semibold text-[#315E8A] bg-white border border-[#E5E7EB] px-1.5 py-0.5 rounded">
                       {activeCls.code}
                     </span>
-                    {activeCls.remainingText && (
-                      <span className="text-[11px] font-semibold text-blue-800 bg-blue-100/80 px-2 py-0.5 rounded">
-                        {activeCls.remainingText}
+                    {activeCls.units && (
+                      <span className="text-[11px] text-[#6B7280]">
+                        {activeCls.units.toFixed(1)} Units
                       </span>
                     )}
                   </div>
-                  <h4 className="font-heading font-bold text-sm text-slate-900 m-0 mt-1.5 leading-snug">
+                  <h4 className="font-heading text-sm font-semibold text-[#1F2937] m-0 mt-1 leading-snug">
                     {activeCls.name}
                   </h4>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 pt-1 text-[11px] text-slate-700 border-t border-blue-200/60">
-                  <div className="flex items-center gap-1.5">
-                    <UserIcon size={12} className="text-[#1D4ED8] shrink-0" />
-                    <span className="truncate font-medium">{activeCls.instructor}</span>
+                {/* Meta Row: Time, Room, Instructor */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 border-t border-[#E5E7EB]/80 text-xs text-[#6B7280]">
+                  <div className="flex items-center gap-1.5 font-mono text-[#1F2937]">
+                    <Clock size={13} className="text-[#315E8A] shrink-0" />
+                    <span>{activeCls.timeRangeFormatted}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[#1F2937]">
+                    <MapPin size={13} className="text-[#6B7280] shrink-0" />
+                    <span className="font-medium truncate">{activeCls.room}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <MapPin size={12} className="text-[#1D4ED8] shrink-0" />
-                    <span className="truncate font-semibold text-slate-900">
-                      {activeCls.room}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 sm:col-span-2">
-                    <Clock size={12} className="text-[#1D4ED8] shrink-0" />
-                    <span className="font-mono font-medium">
-                      {activeCls.timeRangeFormatted}
-                    </span>
+                    <UserIcon size={13} className="text-[#6B7280] shrink-0" />
+                    <span className="truncate">{activeCls.instructor}</span>
                   </div>
                 </div>
               </div>
@@ -292,59 +301,59 @@ export function TodaysClassSchedule({
           </div>
         )}
 
-        {/* ── CASE 2 & CASE 4: No Class Ongoing Right Now (Free Time Banner) ── */}
+        {/* ── CASE 2 & CASE 4: No Class Ongoing Right Now (Subtle Neutral Card) ── */}
         {(overallStatus === 'UPCOMING_TODAY' || overallStatus === 'NO_CLASS_TODAY') && (
-          <div className="p-3.5 rounded-lg bg-slate-50/90 border border-slate-200/90 flex items-start gap-3">
-            <div className="p-2 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-700 shrink-0 mt-0.5">
-              <Sparkles size={15} />
+          <div className="bg-[#F7F8FA] border border-[#E5E7EB] rounded-md p-3.5 flex items-start gap-3">
+            <div className="w-8 h-8 rounded-md bg-white border border-[#E5E7EB] text-[#6B7280] flex items-center justify-center shrink-0 mt-0.5">
+              <Coffee size={15} />
             </div>
             <div className="space-y-0.5 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h4 className="font-heading font-bold text-xs text-slate-900 m-0">
+              <div className="flex items-center gap-2">
+                <h4 className="text-xs font-semibold text-[#1F2937] m-0">
                   No class at this time.
                 </h4>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  Free Time
+                <span className="text-[10px] font-medium uppercase tracking-wider text-[#6B7280] bg-white border border-[#E5E7EB] px-1.5 py-0.5 rounded">
+                  Free Period
                 </span>
               </div>
-              <p className="text-[11px] text-slate-600 m-0 leading-relaxed">
+              <p className="text-xs text-[#6B7280] m-0 leading-relaxed">
                 You don&apos;t have any ongoing classes right now. Enjoy your free time!
               </p>
             </div>
           </div>
         )}
 
-        {/* ── CASE 3: All Classes for Today Are Completed ── */}
+        {/* ── CASE 3: Done for the Day (Subtle Neutral Card) ── */}
         {overallStatus === 'DONE_FOR_TODAY' && (
-          <div className="p-3.5 rounded-lg bg-emerald-50/60 border border-emerald-200/80 flex items-start gap-3">
-            <div className="p-2 rounded-md bg-emerald-100/80 border border-emerald-200 text-emerald-700 shrink-0 mt-0.5">
-              <CheckCircle2 size={15} />
+          <div className="bg-[#F7F8FA] border border-[#E5E7EB] rounded-md p-3.5 flex items-start gap-3">
+            <div className="w-8 h-8 rounded-md bg-white border border-[#E5E7EB] text-[#27815B] flex items-center justify-center shrink-0 mt-0.5">
+              <CheckCircle2 size={16} />
             </div>
             <div className="space-y-0.5 min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <h4 className="font-heading font-bold text-xs text-slate-900 m-0">
+              <div className="flex items-center gap-2">
+                <h4 className="text-xs font-semibold text-[#1F2937] m-0">
                   No More Classes Today
                 </h4>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.2 rounded bg-white text-emerald-700 border border-emerald-200">
-                  No class at this time.
+                <span className="text-[10px] font-medium uppercase tracking-wider text-[#27815B] bg-white border border-[#E5E7EB] px-1.5 py-0.5 rounded">
+                  Completed
                 </span>
               </div>
-              <p className="text-[11px] text-slate-600 m-0 leading-relaxed">
-                You&apos;re done with your classes for today! You don&apos;t have any ongoing classes right now. Enjoy your free time!
+              <p className="text-xs text-[#6B7280] m-0 leading-relaxed">
+                You&apos;re done with your classes for today! No class at this time.
               </p>
             </div>
           </div>
         )}
 
-        {/* ── Overlapping Schedule Conflict Warning (if any exist today) ── */}
+        {/* ── Schedule Conflict Notification (Clean alert banner) ── */}
         {conflictsToday.length > 0 && (
-          <div className="p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 flex items-start gap-2.5 text-[11px]">
-            <AlertTriangle size={14} className="text-amber-600 shrink-0 mt-0.5" />
+          <div className="bg-[#FFFBEB] border border-[#FDE68A] text-[#92400E] rounded-md p-3 flex items-start gap-2.5 text-xs">
+            <AlertCircle size={15} className="text-[#D97706] shrink-0 mt-0.5" />
             <div>
-              <span className="font-bold">Schedule Conflict Detected: </span>
+              <span className="font-semibold">Schedule Note: </span>
               {conflictsToday.map((c, i) => (
                 <span key={i}>
-                  {c.classA.code} and {c.classB.code} overlap ({c.overlapWindow})
+                  {c.classA.code} and {c.classB.code} share the same slot ({c.overlapWindow})
                   {i < conflictsToday.length - 1 ? '; ' : '.'}
                 </span>
               ))}
@@ -352,81 +361,75 @@ export function TodaysClassSchedule({
           </div>
         )}
 
-        {/* ── Next Scheduled Class Spotlight (Upcoming Today, Tomorrow, or Next Scheduled Day) ── */}
+        {/* ── Next Class Spotlight (Clean White Card with Subtle Border & Soft Shadow) ── */}
         {nextScheduledClass && (
-          <div className="p-3.5 rounded-lg bg-white border border-blue-200/90 shadow-[0_1px_3px_rgba(29,78,216,0.05)] space-y-2">
+          <div className="bg-white border border-[#E5E7EB] rounded-md p-3.5 space-y-2.5 shadow-2xs hover:border-[#D1D5DB] transition-colors">
+            {/* Spotlight Header */}
             <div className="flex items-center justify-between gap-2 flex-wrap">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#1D4ED8] bg-blue-50 border border-blue-200 px-2 py-0.5 rounded">
+              <span className="text-[11px] font-semibold text-[#315E8A] bg-[#F0F5FA] border border-[#E5E7EB] px-2 py-0.5 rounded">
                 {nextScheduledClass.headlineLabel}
               </span>
-              <span className="text-[11px] font-medium text-slate-600">
+              <span className="text-xs text-[#6B7280] font-medium">
                 {nextScheduledClass.targetDateFormatted}
               </span>
             </div>
 
             {nextScheduledClass.isTomorrow && (
-              <p className="text-[11px] font-semibold text-[#1E3A8A] bg-blue-50/70 border border-blue-100 px-2.5 py-1 rounded m-0">
+              <p className="text-xs font-medium text-[#1F2937] bg-[#F7F8FA] border border-[#E5E7EB] px-2.5 py-1 rounded m-0">
                 Your next class is tomorrow.
               </p>
             )}
 
+            {/* Subject details */}
             <div>
               <div className="flex items-center justify-between gap-2">
-                <span className="font-mono font-bold text-xs text-[#1D4ED8]">
+                <span className="font-mono text-xs font-semibold text-[#1F2937]">
                   {nextScheduledClass.occurrence.code}
                 </span>
-                <span className="text-[11px] font-semibold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.2 rounded">
+                <span className="text-xs font-medium text-[#315E8A] font-mono tabular-nums">
                   {nextScheduledClass.isToday && evaluation.nextClassToday?.startsInText
                     ? evaluation.nextClassToday.startsInText
                     : nextScheduledClass.isTomorrow
-                    ? `Tomorrow • ${nextScheduledClass.occurrence.startTimeFormatted}`
-                    : `${nextScheduledClass.targetDayName} • ${nextScheduledClass.occurrence.startTimeFormatted}`}
+                    ? `Tomorrow at ${nextScheduledClass.occurrence.startTimeFormatted}`
+                    : `${nextScheduledClass.targetDayName} at ${nextScheduledClass.occurrence.startTimeFormatted}`}
                 </span>
               </div>
-              <h4 className="font-heading font-bold text-xs text-slate-900 m-0 mt-1">
+              <h4 className="font-heading text-xs font-semibold text-[#1F2937] m-0 mt-1 leading-snug">
                 {nextScheduledClass.occurrence.name}
               </h4>
             </div>
 
-            <div className="text-[11px] text-slate-600 grid grid-cols-1 sm:grid-cols-2 gap-1 pt-1 border-t border-slate-100">
+            {/* Meta: Time, Room, Instructor */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 border-t border-[#E5E7EB] text-xs text-[#6B7280]">
+              <div className="flex items-center gap-1.5 font-mono text-[#1F2937]">
+                <Clock size={12} className="text-[#6B7280] shrink-0" />
+                <span>{nextScheduledClass.occurrence.timeRangeFormatted}</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-[#1F2937]">
+                <MapPin size={12} className="text-[#6B7280] shrink-0" />
+                <span className="font-medium truncate">{nextScheduledClass.occurrence.room}</span>
+              </div>
               <div className="flex items-center gap-1.5">
-                <UserIcon size={11} className="text-slate-400 shrink-0" />
+                <UserIcon size={12} className="text-[#6B7280] shrink-0" />
                 <span className="truncate">{nextScheduledClass.occurrence.instructor}</span>
               </div>
-              <div className="flex items-center gap-1.5">
-                <MapPin size={11} className="text-slate-400 shrink-0" />
-                <span className="font-medium text-slate-800 truncate">
-                  {nextScheduledClass.occurrence.room}
-                </span>
-              </div>
-              <div className="flex items-center gap-1.5 sm:col-span-2">
-                <Clock size={11} className="text-slate-400 shrink-0" />
-                <span className="font-mono">
-                  {nextScheduledClass.occurrence.timeRangeFormatted}
-                </span>
-              </div>
             </div>
-
-            <p className="text-[11px] text-slate-500 m-0 pt-0.5 italic">
-              {nextScheduledClass.countdownText}
-            </p>
           </div>
         )}
 
-        {/* ── Full List of Today's Classes (When Today Has Classes) ── */}
+        {/* ── Chronological List of Today's Classes (Neutral White Cards) ── */}
         {todayClasses.length > 0 ? (
           <div className="space-y-2 pt-1">
-            <div className="flex items-center justify-between text-[11px] text-slate-500 px-0.5">
-              <span className="font-semibold uppercase tracking-wider text-[10px]">
-                {manilaTime.weekday} Timetable ({todayClasses.length}{' '}
-                {todayClasses.length === 1 ? 'Class' : 'Classes'})
+            <div className="flex items-center justify-between text-xs text-[#6B7280] px-0.5">
+              <span className="font-semibold uppercase tracking-wider text-[11px] text-[#1F2937]">
+                {manilaTime.weekday} Classes ({todayClasses.length})
               </span>
               <Link
                 href="/student/schedule"
-                className="text-[#1D4ED8] hover:underline font-semibold inline-flex items-center gap-0.5 text-[11px]"
+                className="text-[#315E8A] hover:underline font-medium inline-flex items-center gap-0.5 text-xs"
               >
-                <span>Full Week</span>
-                <ChevronRight size={12} />
+                <span>Full Timetable</span>
+                <ChevronRight size={13} />
               </Link>
             </div>
 
@@ -439,60 +442,70 @@ export function TodaysClassSchedule({
                 return (
                   <div
                     key={cls.id}
-                    className={`p-3 rounded-lg border transition-all ${
+                    className={`p-3 rounded-md border transition-all ${
                       isOngoing
-                        ? 'bg-blue-50/70 border-[#1D4ED8] text-slate-900 shadow-2xs'
+                        ? 'bg-[#F0F5FA] border-[#E5E7EB] border-l-4 border-l-[#315E8A] shadow-2xs'
                         : isNextUp
-                        ? 'bg-amber-50/40 border-amber-200 text-slate-900'
+                        ? 'bg-white border-[#E5E7EB] border-l-2 border-l-[#315E8A]'
                         : isCompleted
-                        ? 'bg-slate-50/70 border-slate-200/70 text-slate-500 opacity-80'
-                        : 'bg-white border-slate-200/80 text-slate-800'
+                        ? 'bg-[#F7F8FA] border-[#E5E7EB] opacity-75'
+                        : 'bg-white border-[#E5E7EB]'
                     }`}
                   >
-                    <div className="flex items-center justify-between text-[11px] mb-1 gap-2">
-                      <div className="flex items-center gap-1.5 min-w-0">
+                    {/* Header Row: Subject Code + Status Label */}
+                    <div className="flex items-center justify-between text-xs mb-1 gap-2">
+                      <div className="flex items-center gap-2 min-w-0">
                         <span
-                          className={`font-mono font-bold ${
-                            isCompleted ? 'text-slate-500 line-through' : 'text-[#1D4ED8]'
+                          className={`font-mono font-semibold ${
+                            isCompleted ? 'text-[#6B7280] line-through' : 'text-[#315E8A]'
                           }`}
                         >
                           {cls.code}
                         </span>
-                        {cls.hasConflict && (
-                          <span className="text-[9px] font-bold uppercase px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 border border-amber-300">
-                            Conflict
+                        {cls.units && (
+                          <span className="text-[11px] text-[#6B7280]">
+                            {cls.units.toFixed(1)} Units
                           </span>
                         )}
                       </div>
 
                       <span
-                        className={`text-[10px] font-bold uppercase px-1.5 py-0.2 rounded shrink-0 ${
+                        className={`text-[10px] font-medium uppercase px-2 py-0.5 rounded ${
                           isOngoing
-                            ? 'bg-[#1D4ED8] text-white'
+                            ? 'bg-emerald-50 text-[#27815B] border border-emerald-200'
                             : isNextUp
-                            ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                            ? 'bg-[#F0F5FA] text-[#315E8A] border border-[#E5E7EB]'
                             : isCompleted
-                            ? 'bg-slate-200/70 text-slate-600'
-                            : 'bg-slate-100 text-slate-600'
+                            ? 'bg-[#E5E7EB] text-[#6B7280]'
+                            : 'bg-[#F7F8FA] text-[#6B7280] border border-[#E5E7EB]'
                         }`}
                       >
-                        {cls.statusLabel}
+                        {isOngoing ? 'Ongoing' : cls.statusLabel}
                       </span>
                     </div>
 
+                    {/* Subject Title */}
                     <h4
-                      className={`font-heading font-bold text-xs m-0 truncate ${
-                        isCompleted ? 'text-slate-600' : 'text-slate-900'
+                      className={`font-heading text-xs font-semibold m-0 truncate ${
+                        isCompleted ? 'text-[#6B7280]' : 'text-[#1F2937]'
                       }`}
                     >
                       {cls.name}
                     </h4>
 
-                    <div className="text-[11px] text-slate-600 flex flex-wrap items-center justify-between gap-2 pt-1.5">
-                      <span className="font-mono">{cls.timeRangeFormatted}</span>
-                      <span className="font-medium text-slate-800">
-                        {cls.instructor} • {cls.room}
-                      </span>
+                    {/* Meta Row: Time, Room, Faculty */}
+                    <div className="text-xs text-[#6B7280] flex flex-wrap items-center justify-between gap-2 pt-1.5 border-t border-[#E5E7EB]/60 mt-1.5">
+                      <div className="flex items-center gap-1.5 font-mono text-[#1F2937]">
+                        <Clock size={11} className="text-[#6B7280]" />
+                        <span>{cls.timeRangeFormatted}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-[#6B7280]">
+                        <MapPin size={11} />
+                        <span className="font-medium text-[#1F2937]">{cls.room}</span>
+                        <span>•</span>
+                        <UserIcon size={11} />
+                        <span className="truncate">{cls.instructor}</span>
+                      </div>
                     </div>
                   </div>
                 );
@@ -501,14 +514,14 @@ export function TodaysClassSchedule({
           </div>
         ) : (
           overallStatus === 'NO_CLASS_TODAY' && (
-            <div className="flex items-center justify-between pt-1 text-[11px] text-slate-500 border-t border-slate-100">
+            <div className="flex items-center justify-between pt-2 text-xs text-[#6B7280] border-t border-[#E5E7EB]">
               <span>No classes scheduled on {manilaTime.weekday}s.</span>
               <Link
                 href="/student/schedule"
-                className="text-[#1D4ED8] hover:underline font-semibold inline-flex items-center gap-0.5"
+                className="text-[#315E8A] hover:underline font-medium inline-flex items-center gap-0.5"
               >
                 <span>View Weekly Timetable</span>
-                <ChevronRight size={12} />
+                <ChevronRight size={13} />
               </Link>
             </div>
           )
